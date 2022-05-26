@@ -56,6 +56,8 @@ function factorCeil(num, factor) {
  * @prop zIndexArray {Element[]}
  */
 function ImagePiece(props) {
+	const EXTRA_SPACE = 30;
+
 	debugLog(`<ImagePiece> (${props.row}, ${props.col}) is rendered`);
 
 	const [position, setPosition] = useState({
@@ -72,6 +74,10 @@ function ImagePiece(props) {
 	function normalizePosition(x, y) {
 		if (typeof x === "object") {
 			[x, y] = [x.x, x.y];
+		}
+		
+		if (typeof x !== 'number' || typeof y !== 'number') {
+			throw "Bad argument";
 		}
 
 		const rect = props.container.getBoundingClientRect();
@@ -115,9 +121,10 @@ function ImagePiece(props) {
 			setDragState(false);
 
 			let { x, y } = normalizePosition(ref.current.getBoundingClientRect()),
-				nearestXLine = x + props.width / 2 - ((x + props.width / 2) % props.width),
+				nearestXLine =
+					x + props.width / 2 - ((x + props.width / 2) % props.width) - EXTRA_SPACE,
 				nearestYLine =
-					y + props.height / 2 - ((y + props.height / 2) % props.height);
+					y + props.height / 2 - ((y + props.height / 2) % props.height) - EXTRA_SPACE;
 
 			if (Math.abs(x - nearestXLine) < 20) {
 				x = nearestXLine;
@@ -157,20 +164,18 @@ function ImagePiece(props) {
 			ref={ref}
 			className={"image-piece" + (dragState ? " selected" : "")}
 			style={{
-				backgroundPosition: `${props.width * -props.col}px ${
-					props.height * -props.row
-				}px`,
-				width: props.width,
-				height: props.height,
+				backgroundPosition:
+					`${
+						props.width * -props.col + EXTRA_SPACE}px ${
+						props.height * -props.row + EXTRA_SPACE}px`,
+				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
+				width: props.width + EXTRA_SPACE * 2,
+				height: props.height + EXTRA_SPACE * 2,
 				left: position.x,
 				top: position.y,
 				zIndex: dragState ? makeTop() : props.zIndexArray.indexOf(ref) + 1 || null
 			}}
 			onClick={dragState ? null : startDrag}
-			// onPointerDown={dragState ? null : startDrag}
-			// onPointerUp={dragState ? stopDrag : null}
-			// onPointerOut={dragState ? stopDrag : null}
-			// onPointerMove={dragState ? dragMove : null}
 		/>
 	);
 }

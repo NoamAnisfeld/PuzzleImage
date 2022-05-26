@@ -1,5 +1,10 @@
 :root {
 	direction: rtl;
+	box-sizing: border-box;
+}
+
+*, ::before, ::after {
+	box-sizing: inherit;
 }
 
 body {
@@ -63,8 +68,6 @@ h1 {
 	margin: 1em auto;
 	border: 20px groove brown;
 	border-style: ridge groove groove ridge;
-	width: var(--width);
-	height: var(--height);
 	background-image: repeating-linear-gradient(
 			to right,
 			blue 0 1px,
@@ -88,13 +91,14 @@ h1 {
 .image-piece {
 	position: absolute;
 	left: calc(50% - var(--width) / (2 * var(--cols)));
-	background-color: blue;
 	background-image: var(--image);
 	background-size: var(--width);
+	background-origin: border-box;
 	background-repeat: no-repeat;
 	min-width: 10px;
 	min-height: 10px;
 	touch-action: none;
+	// border: var(--EXTRA_SPACE) solid #fff8;
 }
 
 .image-piece.selected {
