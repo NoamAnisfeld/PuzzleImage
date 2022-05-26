@@ -25,6 +25,28 @@ function edgeClipPath({ edge, length, bumperSize }) {
         `;
     } else if (edge === 'right') {        
         path = `
+            v ${length / 2 - bumperSize}
+            c   ${bumperSize * 0.2} ${bumperSize}
+                ${bumperSize * 0.9} -${bumperSize}
+                ${bumperSize} ${bumperSize}
+            c   -${bumperSize * 0.1} ${bumperSize * 2}
+                -${bumperSize * 0.8} 0
+                -${bumperSize} ${bumperSize}
+            v ${length / 2 - bumperSize}
+        `;
+    } else if (edge === 'bottom') {
+        path = `
+            h -${(length - bumperSize * 2) / 2}
+            c   -${bumperSize} ${bumperSize * 0.2}
+                ${bumperSize} ${bumperSize * 0.9}
+                -${bumperSize} ${bumperSize}
+            c   -${bumperSize * 2} -${bumperSize * 0.1} 
+                0 -${bumperSize * 0.8}
+                -${bumperSize} -${bumperSize}
+            h -${length / 2 - bumperSize}
+        `;
+    } else if (edge === 'left') {        
+        path = `
             v ${(length - bumperSize) / 2}
             c   ${bumperSize * 0.2} ${bumperSize}
                 ${bumperSize * 0.9} -${bumperSize}
@@ -32,7 +54,7 @@ function edgeClipPath({ edge, length, bumperSize }) {
             c   -${bumperSize * 0.1} ${bumperSize * 2}
                 -${bumperSize * 0.8} 0
                 -${bumperSize} ${bumperSize}
-            v ${(length - bumperSize) / 2}
+            v ${length /2 - bumperSize}
         `;
     }
 
@@ -52,7 +74,17 @@ function makeClipPath(PIECE_WIDTH, PIECE_HEIGHT, BUMPER_WIDTH, BUMPER_HEIGHT) {
             length: PIECE_HEIGHT,
             bumperSize: BUMPER_HEIGHT
         }) +
-        `h-${PIECE_WIDTH} v-${PIECE_HEIGHT}"`;
+        edgeClipPath({
+            edge: 'bottom',
+            length: PIECE_WIDTH,
+            bumperSize: BUMPER_WIDTH
+        }) +
+        edgeClipPath({
+            edge: 'left',
+            length: PIECE_HEIGHT,
+            bumperSize: BUMPER_HEIGHT
+        }) +
+        `z"`;
 }
 
 
