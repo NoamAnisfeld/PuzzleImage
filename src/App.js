@@ -1,6 +1,7 @@
 import './App.scss';
 import { useState, useEffect, useRef } from 'react';
 import { defaultSettings, SettingsPanel } from './SettingsPanel.js';
+import { ImagePiece } from './ImagePiece';
 
 // ***** Debugging Utilities *****
 const debugConsole = document.getElementById("debug-console");
@@ -42,144 +43,6 @@ function factorCeil(num, factor) {
 	return num - (num % factor) + factor;
 }
 
-// defaultSettings.imageWidth = factorRound(
-// 	defaultSettings.imageWidth,
-// 	ROUND_FACTOR * defaultSettings.cols
-// );
-
-/*
- * @prop width {integer}
- * @prop height {integer}
- * @prop row {integer}
- * @prop col {integer}
- * @prop container {HTMLElement}
- * @prop zIndexArray {Element[]}
- */
-function ImagePiece(props) {
-	const EXTRA_SPACE = 30;
-
-	debugLog(`<ImagePiece> (${props.row}, ${props.col}) is rendered`);
-
-	const [position, setPosition] = useState({
-			x: null,
-			y: -props.height
-		}),
-		[dragState, setDragState] = useState(false),
-		// [dragPinpoint, setDragPinpoint] = useState({
-		// 	x: 0,
-		// 	y: 0
-		// }),
-		ref = useRef(null);
-
-	function normalizePosition(x, y) {
-		if (typeof x === "object") {
-			[x, y] = [x.x, x.y];
-		}
-		
-		if (typeof x !== 'number' || typeof y !== 'number') {
-			throw "Bad argument";
-		}
-
-		const rect = props.container.getBoundingClientRect();
-		return {
-			x: x - rect.x,
-			y: y - rect.y
-		};
-	}
-
-	function startDrag(event) {
-		debugLog("startDrag");
-
-		event.preventDefault();
-		event.stopPropagation();
-
-		const rect = event.target.getBoundingClientRect(),
-			dragPinpoint = { x: event.clientX - rect.x, y: event.clientY - rect.y };
-		//		setDragPinpoint({ x: event.clientX - rect.x, y: event.clientY - rect.y });
-		setDragState(true);
-
-		function globalPointerMoveEvent(event) {
-			const rect = props.container.getBoundingClientRect(),
-				newX = event.clientX - dragPinpoint.x - rect.x,
-				newY = event.clientY - dragPinpoint.y - rect.y;
-
-			setPosition({
-				x: newX,
-				y: newY
-			});
-		}
-
-		document.addEventListener("pointermove", globalPointerMoveEvent);
-
-		function stopDrag(event) {
-			debugLog("stopDrag", event.type);
-
-			event.preventDefault();
-			event.stopPropagation();
-
-			document.removeEventListener("pointermove", globalPointerMoveEvent);
-			setDragState(false);
-
-			let { x, y } = normalizePosition(ref.current.getBoundingClientRect()),
-				nearestXLine =
-					x + props.width / 2 - ((x + props.width / 2) % props.width) - EXTRA_SPACE,
-				nearestYLine =
-					y + props.height / 2 - ((y + props.height / 2) % props.height) - EXTRA_SPACE;
-
-			if (Math.abs(x - nearestXLine) < 20) {
-				x = nearestXLine;
-			}
-			if (Math.abs(y - nearestYLine) < 20) {
-				y = nearestYLine;
-			}
-
-			setPosition({
-				x: x,
-				y: y
-			});
-		}
-
-		["click" /* , "mouseout", "blur" */].forEach((eventName) => {
-			document.addEventListener(eventName, stopDrag, {
-				capture: true,
-				once: true
-			});
-		});
-	}
-
-	function makeTop() {
-		const arr = props.zIndexArray;
-
-		for (let i = 0; i < arr.length; i++) {
-			if (arr[i] === ref) {
-				arr.splice(i, 1);
-			}
-		}
-		arr.push(ref);
-		return arr.length;
-	}
-
-	return (
-		<div
-			ref={ref}
-			className={"image-piece" + (dragState ? " selected" : "")}
-			style={{
-				backgroundPosition:
-					`${
-						props.width * -props.col + EXTRA_SPACE}px ${
-						props.height * -props.row + EXTRA_SPACE}px`,
-				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
-				width: props.width + EXTRA_SPACE * 2,
-				height: props.height + EXTRA_SPACE * 2,
-				left: position.x,
-				top: position.y,
-				zIndex: dragState ? makeTop() : props.zIndexArray.indexOf(ref) + 1 || null
-			}}
-			onClick={dragState ? null : startDrag}
-		/>
-	);
-}
-
 /*
  * @prop imageWidth {integer}
  * @prop imageHeight {integer}
@@ -194,10 +57,8 @@ function GameBoard(props) {
 		ref = useRef(null);
 
 	useEffect(() => {
-		if (!puzzleFrameRect) {
-			setPuzzleFrameRect(ref.current.getBoundingClientRect());
-		}
-	});
+		setPuzzleFrameRect(ref.current.getBoundingClientRect());
+	}, [puzzleFrameRect]);
 
 	function makePieces(container) {
 		const array = [];

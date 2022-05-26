@@ -66,6 +66,8 @@ h1 {
 
 #game-wrapper {
 	margin: 1em auto;
+	width: min-content;
+	height: min-content;
 	border: 20px groove brown;
 	border-style: ridge groove groove ridge;
 	background-image: repeating-linear-gradient(
@@ -98,6 +100,7 @@ h1 {
 	min-width: 10px;
 	min-height: 10px;
 	touch-action: none;
+	clip-path: path(var(--clip-path));
 	// border: var(--EXTRA_SPACE) solid #fff8;
 }
 
