@@ -48,41 +48,6 @@ function factorCeil(num, factor) {
 // );
 
 /*
- * @prop imageUrl {string}
- * @prop imageWidth {integer}
- * @prop heightCallback {function(height:{number})}
- */
-// function ImageInitializer(props) {
-// 	const [errorState, setErrorState] = useState(false),
-// 		ref = useRef(null);
-
-// 	function sendHeight() {
-// 		const rect = ref.current.getBoundingClientRect();
-// 		props.heightCallback(rect.height);
-// 	}
-
-// 	useEffect(() => {
-// 		if (ref.current.complete) {
-// 			sendHeight();
-// 		}
-// 	});
-
-// 	if (errorState) {
-// 		return <div className="error">Error loading image</div>;
-// 	} else {
-// 		return (
-// 			<img
-// 				ref={ref}
-// 				src={props.imageUrl}
-// 				width={props.imageWidth}
-// 				onError={() => setErrorState(true)}
-// 				onLoad={sendHeight}
-// 			/>
-// 		);
-// 	}
-// }
-
-/*
  * @prop width {integer}
  * @prop height {integer}
  * @prop row {integer}
@@ -174,29 +139,6 @@ function ImagePiece(props) {
 			});
 		});
 	}
-
-	// 	function stopDrag(event) {
-	// 		event.preventDefault();
-
-	// 		setDragState(false);
-
-	// 		setPosition({
-	// 			x: factorRound(position.x, ROUND_FACTOR),
-	// 			y: factorRound(position.y, ROUND_FACTOR)
-	// 		});
-	// 	}
-
-	// 	function dragMove(event) {
-	// 		event.preventDefault();
-
-	// 		const newX = event.clientX - dragPinpoint.x - props.containerRect.x,
-	// 			newY = event.clientY - dragPinpoint.y - props.containerRect.y;
-
-	// 		setPosition({
-	// 			x: newX,
-	// 			y: newY
-	// 		});
-	// 	}
 
 	function makeTop() {
 		const arr = props.zIndexArray;
