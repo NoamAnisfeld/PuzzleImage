@@ -1,60 +1,68 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 
 const EXTRA_SPACE = 30;
 
-function edgeClipPath({ edge, length, bumperSize }) {
-    if (!['top', 'right', 'bottom', 'left'].includes(edge) ||
-        length <= 0 ||
-        bumperSize <= 0 ||
-        bumperSize > length) {
+function edgeClipPath({ lineDirection, lineLength, bumpDirection, /*deprecated*/ edge, bumperSize }) {
+
+    if (/* !['up', 'down', 'right', 'left'].includes(lineDirection) ||
+    !['clockwise', 'counterclockwise'].includes(bumpDirection) || */
+    lineLength <= 0 ||
+    bumperSize <= 0 ||
+    bumperSize > lineLength) {
         throw 'Bad argument';
     }
+
+    const factorsMatrix = [
+        [1, -0.2],
+        [-1, -0.9],
+        [1, -1],
+        [2, 0.1],
+        [0, 0.8],
+        [1, 1],
+    ];
+
+    const pointsMatrix = factorsMatrix.flat().map(n => n * bumperSize);
 
     let path;
     
     if (edge === 'top') {
         path = `
-            h ${(length - bumperSize * 2) / 2}
-            c   ${bumperSize} -${bumperSize * 0.2}
-                -${bumperSize} -${bumperSize * 0.9}
-                ${bumperSize} -${bumperSize}
-            c   ${bumperSize * 2} ${bumperSize * 0.1} 
-                0 ${bumperSize * 0.8}
-                ${bumperSize} ${bumperSize}
-            h ${(length - bumperSize * 2) / 2}
+            h ${(lineLength - bumperSize * 2) / 2}
+            c ${pointsMatrix.join(' ')}
+            h ${(lineLength - bumperSize * 2) / 2}
         `;
     } else if (edge === 'right') {        
         path = `
-            v ${length / 2 - bumperSize}
+            v ${lineLength / 2 - bumperSize}
             c   ${bumperSize * 0.2} ${bumperSize}
                 ${bumperSize * 0.9} -${bumperSize}
                 ${bumperSize} ${bumperSize}
             c   -${bumperSize * 0.1} ${bumperSize * 2}
                 -${bumperSize * 0.8} 0
                 -${bumperSize} ${bumperSize}
-            v ${length / 2 - bumperSize}
+            v ${lineLength / 2 - bumperSize}
         `;
     } else if (edge === 'bottom') {
         path = `
-            h -${(length - bumperSize * 2) / 2}
+            h -${(lineLength - bumperSize * 2) / 2}
             c   -${bumperSize} ${bumperSize * 0.2}
                 ${bumperSize} ${bumperSize * 0.9}
                 -${bumperSize} ${bumperSize}
             c   -${bumperSize * 2} -${bumperSize * 0.1} 
                 0 -${bumperSize * 0.8}
                 -${bumperSize} -${bumperSize}
-            h -${length / 2 - bumperSize}
+            h -${lineLength / 2 - bumperSize}
         `;
     } else if (edge === 'left') {        
         path = `
-            v ${(length - bumperSize) / 2}
+            v ${(lineLength - bumperSize) / 2}
             c   ${bumperSize * 0.2} ${bumperSize}
                 ${bumperSize * 0.9} -${bumperSize}
                 ${bumperSize} ${bumperSize}
             c   -${bumperSize * 0.1} ${bumperSize * 2}
                 -${bumperSize * 0.8} 0
                 -${bumperSize} ${bumperSize}
-            v ${length /2 - bumperSize}
+            v ${lineLength /2 - bumperSize}
         `;
     }
 
@@ -66,22 +74,22 @@ function makeClipPath(PIECE_WIDTH, PIECE_HEIGHT, BUMPER_WIDTH, BUMPER_HEIGHT) {
     return `"M${EXTRA_SPACE} ${EXTRA_SPACE}` +
         edgeClipPath({
             edge: 'top',
-            length: PIECE_WIDTH,
+            lineLength: PIECE_WIDTH,
             bumperSize: BUMPER_WIDTH
         }) +
         edgeClipPath({
             edge: 'right',
-            length: PIECE_HEIGHT,
+            lineLength: PIECE_HEIGHT,
             bumperSize: BUMPER_HEIGHT
         }) +
         edgeClipPath({
             edge: 'bottom',
-            length: PIECE_WIDTH,
+            lineLength: PIECE_WIDTH,
             bumperSize: BUMPER_WIDTH
         }) +
         edgeClipPath({
             edge: 'left',
-            length: PIECE_HEIGHT,
+            lineLength: PIECE_HEIGHT,
             bumperSize: BUMPER_HEIGHT
         }) +
         `z"`;
@@ -209,7 +217,9 @@ function ImagePiece(props) {
 						props.width * -props.col + EXTRA_SPACE}px ${
 						props.height * -props.row + EXTRA_SPACE}px`,
 				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
-                '--clip-path': makeClipPath(props.width, props.height, EXTRA_SPACE, EXTRA_SPACE),
+                '--clip-path': useMemo(
+                    () => makeClipPath(props.width, props.height, EXTRA_SPACE, EXTRA_SPACE),
+                    [props.width, props.height, EXTRA_SPACE]),
 				width: props.width + EXTRA_SPACE * 2,
 				height: props.height + EXTRA_SPACE * 2,
 				left: position.x,
