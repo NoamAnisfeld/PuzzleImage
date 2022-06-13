@@ -13,12 +13,15 @@ const GlobalSettings = createContext(defaultSettings);
 /*
  * @prop startGameCallback {function(settings:{object})}
  */
-function SettingsPanel({ setImageUrl, rows, cols, setRows, setCols, startGameCallback }) {
+function SettingsPanel({
+	rows,
+	cols,
+	setImageUrl,
+	setRows,
+	setCols,
+	startGameCallback
+}) {
 	const
-		// [imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
-		// [imageAspectRatio, setImageAspectRatio] = useState(null),
-		// [rows, setRows] = useState(defaultSettings.rows),
-		// [cols, setCols] = useState(defaultSettings.cols),
 		[isClosing, setIsClosing] = useState(false);
 
 	function handleChangeRows(event) {
@@ -41,19 +44,12 @@ function SettingsPanel({ setImageUrl, rows, cols, setRows, setCols, startGameCal
 		const newUrl = prompt("הכנס כתובת של תמונה");
 		if (newUrl) {
 			setImageUrl(newUrl);
-			// setImageAspectRatio(null); // perhaps don't to if it's the same URL as before because it wouldn't onLoad?
 		}
 	}
 
 	function handleStartGame() {
 		setIsClosing(true);
-
-		startGameCallback({
-			// imageUrl: imageUrl,
-			// imageAspectRatio: imageAspectRatio,
-			// rows: rows,
-			// cols: cols
-		});
+		startGameCallback();
 	}
 
 	return (

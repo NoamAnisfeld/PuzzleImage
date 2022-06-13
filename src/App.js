@@ -1,5 +1,5 @@
 import './App.scss';
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { defaultSettings, GlobalSettings, SettingsPanel } from './SettingsPanel.js';
 import { ImagePiece } from './ImagePiece';
 
@@ -28,22 +28,7 @@ function debugLog(...args) {
 	// });
 }
 
-// ***** App *****
-// const ROUND_FACTOR = 10;
-
-function factorRound(num, factor) {
-	return Math.round(num / factor) * factor;
-}
-
-function factorFloor(num, factor) {
-	return num - (num % factor);
-}
-
-function factorCeil(num, factor) {
-	return num - (num % factor) + factor;
-}
-
-function Image() {
+function MainImage() {
 	return (
 		<GlobalSettings.Consumer>
 		{ settings =>
@@ -63,12 +48,13 @@ function Image() {
 function GameBoard({ imageWidth, imageHeight, rows, cols, zIndexArray, gameStarted }) {
 	debugLog("<GameBoard> is rendered");
 
-	const [puzzleFrameRect, setPuzzleFrameRect] = useState(),
+	const
+		// [puzzleFrameRect, setPuzzleFrameRect] = useState(),
 		ref = useRef(null);
 
-	useEffect(() => {
-		setPuzzleFrameRect(ref.current.getBoundingClientRect());
-	}, []);
+	// useEffect(() => {
+	// 	setPuzzleFrameRect(ref.current.getBoundingClientRect());
+	// }, []);
 
 	function makePieces(container) {
 		const array = [];
@@ -94,9 +80,7 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, zIndexArray, gameStart
 			<div id="puzzle-frame" ref={ref}>
 				{ gameStarted ?
 					makePieces(ref.current) :
-					<GlobalSettings.Consumer>
-					{ ({imageUrl}) => <Image imageUrl={imageUrl} /> }
-					</GlobalSettings.Consumer>
+					<MainImage />
 				}
 			</div>
 		</div>
@@ -109,60 +93,53 @@ function App() {
 	const
 		[imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
 		[imageWidth, setImageWidth] = useState(defaultSettings.imageWidth),
-		[imageHeight, setImageHeight] = useState(defaultSettings.imageWidth),
 		[imageAspectRatio, setImageAspectRatio] = useState(1),
+		imageHeight = imageWidth / imageAspectRatio,
 		[rows, setRows] = useState(defaultSettings.rows),
 		[cols, setCols] = useState(defaultSettings.cols),
 		[gameStarted, setGameStarted] = useState(false);
-
-	function handleStartGame(settings) {
-		// setImageUrl(settings.imageUrl);		
-		// setImageWidth(defaultSettings.imageWidth);
-		// setImageHeight(defaultSettings.imageWidth / imageAspectRatio);
-		// setRows(settings.rows);
-		// setCols(settings.cols);
-		setGameStarted(true);
-	}
+		
 
 	return (
-		<GlobalSettings.Consumer>
-		{(settings) => (
-		<GlobalSettings.Provider value={{
-			...settings,
-			imageUrl: imageUrl,
-			imageAspectRatio: imageAspectRatio,
-			setImageAspectRatio: setImageAspectRatio
-		}}>
-			<div
-				id="app"
-				style={{
-					"--image": `url("${imageUrl}")`,
-					"--width": `${imageWidth}px`,
-					"--height": `${imageWidth / imageAspectRatio}px`,
-					"--rows": rows,
-					"--cols": cols,
-				}}
-			>
-				<SettingsPanel
-					setImageUrl={setImageUrl}
-					rows={rows}
-					cols={cols}
-					setRows={setRows}
-					setCols={setCols}
-					startGameCallback={handleStartGame}
-				/>
-				<GameBoard
-					imageUrl={imageUrl}
-					imageWidth={imageWidth}
-					imageHeight={imageWidth / imageAspectRatio}
-					rows={rows}
-					cols={cols}
-					zIndexArray={[]}
-					gameStarted={gameStarted}
-				/>
-			</div>
-		</GlobalSettings.Provider>)}
-		</GlobalSettings.Consumer>
+		<GlobalSettings.Consumer>{(settings) =>
+			<GlobalSettings.Provider value={{
+				...settings,
+				...{
+					imageUrl,
+					imageAspectRatio,
+					setImageAspectRatio
+				}
+			}}>
+				<div
+					id="app"
+					style={{
+						"--image": `url("${imageUrl}")`,
+						"--width": `${imageWidth}px`,
+						"--height": `${imageHeight}px`,
+						"--rows": rows,
+						"--cols": cols,
+					}}
+				>
+					<SettingsPanel
+						rows={rows}
+						cols={cols}
+						setImageUrl={setImageUrl}
+						setRows={setRows}
+						setCols={setCols}
+						startGameCallback={() => setGameStarted(true)}
+					/>
+					<GameBoard
+						imageUrl={imageUrl}
+						imageWidth={imageWidth}
+						imageHeight={imageHeight}
+						rows={rows}
+						cols={cols}
+						zIndexArray={[]}
+						gameStarted={gameStarted}
+					/>
+				</div>
+			</GlobalSettings.Provider>
+		}</GlobalSettings.Consumer>
 	);
 }
 
