@@ -145,20 +145,21 @@ function App() {
 			>
 				<SettingsPanel
 					setImageUrl={setImageUrl}
+					rows={rows}
+					cols={cols}
 					setRows={setRows}
 					setCols={setCols}
 					startGameCallback={handleStartGame}
 				/>
-				{/* {gameStarted ? ( */}
-					<GameBoard
-						imageUrl={imageUrl}
-						imageWidth={imageWidth}
-						imageHeight={imageHeight}
-						rows={rows}
-						cols={cols}
-						zIndexArray={[]}
-					/>
-				{/* ) : <img src={imageUrl} />} */}
+				<GameBoard
+					imageUrl={imageUrl}
+					imageWidth={imageWidth}
+					imageHeight={imageWidth / imageAspectRatio}
+					rows={rows}
+					cols={cols}
+					zIndexArray={[]}
+					gameStarted={gameStarted}
+				/>
 			</div>
 		</GlobalSettings.Provider>)}
 		</GlobalSettings.Consumer>

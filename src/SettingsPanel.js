@@ -13,7 +13,7 @@ const GlobalSettings = createContext(defaultSettings);
 /*
  * @prop startGameCallback {function(settings:{object})}
  */
-function SettingsPanel({ setImageUrl, setRows, setCols, startGameCallback }) {
+function SettingsPanel({ setImageUrl, rows, cols, setRows, setCols, startGameCallback }) {
 	const
 		// [imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
 		// [imageAspectRatio, setImageAspectRatio] = useState(null),
@@ -61,11 +61,11 @@ function SettingsPanel({ setImageUrl, setRows, setCols, startGameCallback }) {
 			<form id="controls">
 				<label>
 					שורות:
-					<input type="number" /* value={rows} */ onChange={handleChangeRows} />
+					<input type="number" value={rows} onChange={handleChangeRows} />
 				</label>
 				<label>
 					עמודות:
-					<input type="number" /* value={cols} */ onChange={handleChangeCols} />
+					<input type="number" value={cols} onChange={handleChangeCols} />
 				</label>
 				<button type="button" onClick={handleChangeImage}>
 					החלפת תמונה
