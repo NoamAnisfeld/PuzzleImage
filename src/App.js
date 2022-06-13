@@ -1,6 +1,6 @@
 import './App.scss';
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { defaultSettings, SettingsPanel } from './SettingsPanel.js';
+import { defaultSettings, GlobalSettings, SettingsPanel } from './SettingsPanel.js';
 import { ImagePiece } from './ImagePiece';
 
 // ***** Debugging Utilities *****
@@ -43,19 +43,12 @@ function factorCeil(num, factor) {
 	return num - (num % factor) + factor;
 }
 
-const GlobalSettings = createContext({
-	...defaultSettings,
-	updateSetting(prop, value) {
-		this[prop] = value;
-	}
-});
-
-function Image({ imageUrl }) {
+function Image() {
 	return (
 		<GlobalSettings.Consumer>
 		{ settings =>
 			<img
-				src={imageUrl}
+				src={settings.imageUrl}
 				onLoad={(e) =>
 					settings.setImageAspectRatio(
 						e.target.naturalWidth / e.target.naturalHeight
@@ -116,18 +109,18 @@ function App() {
 	const
 		[imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
 		[imageWidth, setImageWidth] = useState(defaultSettings.imageWidth),
-		[imageHeight, setImageHeight] = useState(0),
+		[imageHeight, setImageHeight] = useState(defaultSettings.imageWidth),
 		[imageAspectRatio, setImageAspectRatio] = useState(1),
 		[rows, setRows] = useState(defaultSettings.rows),
 		[cols, setCols] = useState(defaultSettings.cols),
 		[gameStarted, setGameStarted] = useState(false);
 
 	function handleStartGame(settings) {
-		setImageUrl(settings.imageUrl);		
-		setImageWidth(defaultSettings.imageWidth);
-		setImageHeight(defaultSettings.imageWidth / imageAspectRatio);
-		setRows(settings.rows);
-		setCols(settings.cols);
+		// setImageUrl(settings.imageUrl);		
+		// setImageWidth(defaultSettings.imageWidth);
+		// setImageHeight(defaultSettings.imageWidth / imageAspectRatio);
+		// setRows(settings.rows);
+		// setCols(settings.cols);
 		setGameStarted(true);
 	}
 
@@ -150,7 +143,12 @@ function App() {
 					"--cols": cols,
 				}}
 			>
-				<SettingsPanel handleStartGame={handleStartGame} />
+				<SettingsPanel
+					setImageUrl={setImageUrl}
+					setRows={setRows}
+					setCols={setCols}
+					startGameCallback={handleStartGame}
+				/>
 				{/* {gameStarted ? ( */}
 					<GameBoard
 						imageUrl={imageUrl}

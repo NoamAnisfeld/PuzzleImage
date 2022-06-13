@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { createContext, useState } from 'react';
 
 const defaultSettings = {
     imageUrl:
@@ -8,15 +8,17 @@ const defaultSettings = {
     cols: 2
 };
 
+const GlobalSettings = createContext(defaultSettings);
+
 /*
  * @prop startGameCallback {function(settings:{object})}
  */
-function SettingsPanel(props) {
-    console.log('test');
-	const [imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
-		[imageAspectRatio, setImageAspectRatio] = useState(null),
-		[rows, setRows] = useState(defaultSettings.rows),
-		[cols, setCols] = useState(defaultSettings.cols),
+function SettingsPanel({ setImageUrl, setRows, setCols, startGameCallback }) {
+	const
+		// [imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
+		// [imageAspectRatio, setImageAspectRatio] = useState(null),
+		// [rows, setRows] = useState(defaultSettings.rows),
+		// [cols, setCols] = useState(defaultSettings.cols),
 		[isClosing, setIsClosing] = useState(false);
 
 	function handleChangeRows(event) {
@@ -39,18 +41,18 @@ function SettingsPanel(props) {
 		const newUrl = prompt("הכנס כתובת של תמונה");
 		if (newUrl) {
 			setImageUrl(newUrl);
-			setImageAspectRatio(null); // perhaps don't to if it's the same URL as before because it wouldn't onLoad?
+			// setImageAspectRatio(null); // perhaps don't to if it's the same URL as before because it wouldn't onLoad?
 		}
 	}
 
 	function handleStartGame() {
 		setIsClosing(true);
 
-		props.handleStartGame({
-			imageUrl: imageUrl,
-			imageAspectRatio: imageAspectRatio,
-			rows: rows,
-			cols: cols
+		startGameCallback({
+			// imageUrl: imageUrl,
+			// imageAspectRatio: imageAspectRatio,
+			// rows: rows,
+			// cols: cols
 		});
 	}
 
@@ -59,11 +61,11 @@ function SettingsPanel(props) {
 			<form id="controls">
 				<label>
 					שורות:
-					<input type="number" value={rows} onChange={handleChangeRows} />
+					<input type="number" /* value={rows} */ onChange={handleChangeRows} />
 				</label>
 				<label>
 					עמודות:
-					<input type="number" value={cols} onChange={handleChangeCols} />
+					<input type="number" /* value={cols} */ onChange={handleChangeCols} />
 				</label>
 				<button type="button" onClick={handleChangeImage}>
 					החלפת תמונה
@@ -71,7 +73,7 @@ function SettingsPanel(props) {
 				<button
 					type="button"
 					onClick={handleStartGame}
-					disabled={!imageAspectRatio}
+					// disabled={!imageAspectRatio}
 				>
 					צור פאזל
 				</button>
@@ -86,4 +88,4 @@ function SettingsPanel(props) {
 	);
 }
 
-export { defaultSettings, SettingsPanel };
+export { defaultSettings, GlobalSettings, SettingsPanel };
