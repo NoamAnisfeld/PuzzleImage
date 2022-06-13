@@ -9,6 +9,7 @@
 1. 
 
 ## Fix bugs
+- ESLint warnings
 - 
 
 ## Refactor

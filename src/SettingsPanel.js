@@ -76,12 +76,12 @@ function SettingsPanel(props) {
 					צור פאזל
 				</button>
 			</form>
-			<img
+			{/* <img
 				src={imageUrl}
 				onLoad={(e) =>
 					setImageAspectRatio(e.target.naturalWidth / e.target.naturalHeight)
 				}
-			/>
+			/> */}
 		</div>
 	);
 }
