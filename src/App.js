@@ -1,60 +1,39 @@
 import './App.scss';
-import { useState, useEffect, useRef } from 'react';
-import { defaultSettings, GlobalSettings, SettingsPanel } from './SettingsPanel.js';
+import { useState, useRef, createContext, useContext } from 'react';
+import { ControlPanel } from './ControlPanel';
 import { ImagePiece } from './ImagePiece';
+import { debugLog } from './DebugTools'
 
-// ***** Debugging Utilities *****
-const debugConsole = document.getElementById("debug-console");
-
-function debugLog(...args) {
-  const outputArray = args.map((arg) => {
-      if (arg instanceof HTMLElement) {
-        return `<${arg.tagName.toLowerCase()}>`;
-      } else if (arg && typeof arg === "object") {
-        return JSON.stringify(arg);
-      } else {
-        return String(arg);
-      }
-    }),
-    outputStr = outputArray.join(", ");
-
-  debugConsole.textContent = outputStr;
-  console.log(outputStr);
-
-  return args[0];
-
-	// document.body.addEventListener("mousemove", (e) => {
-	// 	debugLog("mousemove", e.target, e.currentTarget, e.clientX, e.clientY);
-	// });
-}
+const
+	defaultSettings = {
+		imageUrl:
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/%D0%A0%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0_%D0%9C%D0%B0%D0%BD%D0%B3%D1%83%D0%BF%D1%96.jpg/750px-%D0%A0%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0_%D0%9C%D0%B0%D0%BD%D0%B3%D1%83%D0%F%D1%96.jpg",
+		imageWidth: Math.max(300, window.innerWidth * 0.5),
+		rows: 3,
+		cols: 2
+	},
+	GlobalSettings = createContext(defaultSettings);
 
 function MainImage() {
+	const settings = useContext(GlobalSettings);
+
 	return (
-		<GlobalSettings.Consumer>
-		{ settings =>
-			<img
-				src={settings.imageUrl}
-				onLoad={(e) =>
-					settings.setImageAspectRatio(
-						e.target.naturalWidth / e.target.naturalHeight
-					)
-				}
-			/>
-		}
-		</GlobalSettings.Consumer>
+		<img
+			src={settings.imageUrl}
+			alt=""
+			onLoad={(e) =>
+				settings.setImageAspectRatio(
+					e.target.naturalWidth / e.target.naturalHeight
+				)
+			}
+		/>
 	);
 }
 
 function GameBoard({ imageWidth, imageHeight, rows, cols, zIndexArray, gameStarted }) {
 	debugLog("<GameBoard> is rendered");
 
-	const
-		// [puzzleFrameRect, setPuzzleFrameRect] = useState(),
-		ref = useRef(null);
-
-	// useEffect(() => {
-	// 	setPuzzleFrameRect(ref.current.getBoundingClientRect());
-	// }, []);
+	const ref = useRef(null);
 
 	function makePieces(container) {
 		const array = [];
@@ -65,6 +44,7 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, zIndexArray, gameStart
 						container={container}
 						width={imageWidth / cols}
 						height={imageHeight / rows}
+						key={`${row/col}`}
 						row={row}
 						col={col}
 						zIndexArray={zIndexArray}
@@ -91,55 +71,53 @@ function App() {
 	debugLog("<App> is rendered");
 
 	const
-		[imageUrl, setImageUrl] = useState(defaultSettings.imageUrl),
-		[imageWidth, setImageWidth] = useState(defaultSettings.imageWidth),
-		[imageAspectRatio, setImageAspectRatio] = useState(1),
+		settings = useContext(GlobalSettings),
+		[imageUrl, setImageUrl] = useState(settings.imageUrl),
+		[imageWidth, /* setImageWidth */] = useState(settings.imageWidth),
+		[imageAspectRatio, setImageAspectRatio] = useState(settings.imageAspectRatio),
 		imageHeight = imageWidth / imageAspectRatio,
-		[rows, setRows] = useState(defaultSettings.rows),
-		[cols, setCols] = useState(defaultSettings.cols),
+		[rows, setRows] = useState(settings.rows),
+		[cols, setCols] = useState(settings.cols),
 		[gameStarted, setGameStarted] = useState(false);
 		
-
 	return (
-		<GlobalSettings.Consumer>{(settings) =>
-			<GlobalSettings.Provider value={{
-				...settings,
-				...{
-					imageUrl,
-					imageAspectRatio,
-					setImageAspectRatio
-				}
-			}}>
-				<div
-					id="app"
-					style={{
-						"--image": `url("${imageUrl}")`,
-						"--width": `${imageWidth}px`,
-						"--height": `${imageHeight}px`,
-						"--rows": rows,
-						"--cols": cols,
-					}}
-				>
-					<SettingsPanel
-						rows={rows}
-						cols={cols}
-						setImageUrl={setImageUrl}
-						setRows={setRows}
-						setCols={setCols}
-						startGameCallback={() => setGameStarted(true)}
-					/>
-					<GameBoard
-						imageUrl={imageUrl}
-						imageWidth={imageWidth}
-						imageHeight={imageHeight}
-						rows={rows}
-						cols={cols}
-						zIndexArray={[]}
-						gameStarted={gameStarted}
-					/>
-				</div>
-			</GlobalSettings.Provider>
-		}</GlobalSettings.Consumer>
+		<GlobalSettings.Provider value={{
+			...settings,
+			...{
+				imageUrl,
+				imageAspectRatio,
+				setImageAspectRatio
+			}
+		}}>
+			<div
+				id="app"
+				style={{
+					"--image": `url("${imageUrl}")`,
+					"--width": `${imageWidth}px`,
+					"--height": `${imageHeight}px`,
+					"--rows": rows,
+					"--cols": cols,
+				}}
+			>
+				<ControlPanel
+					rows={rows}
+					cols={cols}
+					setImageUrl={setImageUrl}
+					setRows={setRows}
+					setCols={setCols}
+					startGameCallback={() => setGameStarted(true)}
+				/>
+				<GameBoard
+					imageUrl={imageUrl}
+					imageWidth={imageWidth}
+					imageHeight={imageHeight}
+					rows={rows}
+					cols={cols}
+					zIndexArray={[]}
+					gameStarted={gameStarted}
+				/>
+			</div>
+		</GlobalSettings.Provider>
 	);
 }
 

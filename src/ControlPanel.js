@@ -1,19 +1,6 @@
-import { createContext, useState } from 'react';
+import { useState } from 'react';
 
-const defaultSettings = {
-    imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/%D0%A0%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0_%D0%9C%D0%B0%D0%BD%D0%B3%D1%83%D0%BF%D1%96.jpg/750px-%D0%A0%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0_%D0%9C%D0%B0%D0%BD%D0%B3%D1%83%D0%F%D1%96.jpg",
-    imageWidth: Math.max(300, window.innerWidth * 0.5),
-    rows: 3,
-    cols: 2
-};
-
-const GlobalSettings = createContext(defaultSettings);
-
-/*
- * @prop startGameCallback {function(settings:{object})}
- */
-function SettingsPanel({
+function ControlPanel({
 	rows,
 	cols,
 	setImageUrl,
@@ -53,7 +40,7 @@ function SettingsPanel({
 	}
 
 	return (
-		<div id="settings-panel" className={isClosing ? "goaway-up" : null}>
+		<div id="control-panel" className={isClosing ? "goaway-up" : null}>
 			<form id="controls">
 				<label>
 					שורות:
@@ -74,14 +61,8 @@ function SettingsPanel({
 					צור פאזל
 				</button>
 			</form>
-			{/* <img
-				src={imageUrl}
-				onLoad={(e) =>
-					setImageAspectRatio(e.target.naturalWidth / e.target.naturalHeight)
-				}
-			/> */}
 		</div>
 	);
 }
 
-export { defaultSettings, GlobalSettings, SettingsPanel };
+export { ControlPanel };
