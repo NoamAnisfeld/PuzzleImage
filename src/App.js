@@ -1,6 +1,7 @@
 import './App.scss';
-import { useState, useRef, createContext, useContext } from 'react';
+import { useState, useRef, createContext, useContext, useEffect } from 'react';
 import { ControlPanel } from './ControlPanel';
+import { setDropZone } from './DropFiles';
 import { ImagePiece } from './ImagePiece';
 import { debugLog } from './DebugTools'
 
@@ -15,10 +16,14 @@ const
 	GlobalSettings = createContext(defaultSettings);
 
 function MainImage() {
-	const settings = useContext(GlobalSettings);
+	const settings = useContext(GlobalSettings),
+		ref = useRef();
+
+	useEffect(() => setDropZone(ref.current), []);
 
 	return (
 		<img
+			ref={ref}
 			src={settings.imageUrl}
 			alt=""
 			onLoad={(e) =>
