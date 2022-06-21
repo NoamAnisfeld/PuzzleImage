@@ -27,11 +27,21 @@ function ControlPanel({
 		}
 	}
 
-	function handleChangeImage() {
+	function handleImageFromUrl() {
 		const newUrl = prompt("הכנס כתובת של תמונה");
 		if (newUrl) {
 			setImageUrl(newUrl);
 		}
+	}
+
+	function handleImageFromFile({ target: { files: [file] } }) {
+		if (!file instanceof File) {
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = (e) => setImageUrl(e.target.result);
+		reader.readAsDataURL(file);
 	}
 
 	function handleStartGame() {
@@ -50,9 +60,17 @@ function ControlPanel({
 					עמודות:
 					<input type="number" value={cols} onChange={handleChangeCols} />
 				</label>
-				<button type="button" onClick={handleChangeImage}>
-					החלפת תמונה
+				<button type="button" className="button" onClick={handleImageFromUrl}>
+					בחירת תמונה מכתובת אינטרנט
 				</button>
+				<label className="button">
+					העלאת תמונה
+					<input
+						className="visually-hidden"
+						type="file"
+						accept="image/*"
+						onChange={handleImageFromFile} />
+				</label>
 				<button
 					type="button"
 					onClick={handleStartGame}

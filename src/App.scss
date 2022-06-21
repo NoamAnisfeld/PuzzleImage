@@ -1,3 +1,11 @@
+.visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px 1px 1px 1px);
+}
+
 :root {
 	direction: rtl;
 	box-sizing: border-box;
@@ -8,9 +16,6 @@
 }
 
 body {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 	background: lightblue;
 }
 
@@ -18,13 +23,8 @@ h1 {
 	text-align: center;
 }
 
-#root {
-	width: 100%;
-}
-
 #app {
 	display: grid;
-	// flex-direction: column;
 	justify-items: center;
 	gap: 1em;
 }
@@ -35,9 +35,20 @@ h1 {
 	grid-column: 1 / span 1;
 }
 
+@keyframes slideFromTop {
+	from {
+		transform: translateY(min(-100%, -100vh));
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+}
+
 #control-panel {
 	z-index: 1;
-	// width: 80%;
 	height: max-content;
 	border: 10px outset;
 	border-radius: 25px;
@@ -48,6 +59,7 @@ h1 {
 	grid-template-columns: 1fr auto;
 	gap: 1em;
 	justify-self: start;
+	animation: slideFromTop 3s;
 }
 
 #controls {
@@ -58,6 +70,18 @@ h1 {
 	& input,
 	& button {
 		padding: 0.5em;
+	}
+
+	.button {
+		padding: 1em;
+		text-align: center;
+		background: lightgray;
+		border: 1px solid black;
+		border-radius: 50%;
+	}
+
+	.button:focus, .button:focus-within {
+		outline: 2px solid;
 	}
 }
 
@@ -79,11 +103,6 @@ h1 {
 			transparent 0 calc(var(--height) / var(--rows) - 1px),
 			blue calc(var(--height) / var(--rows))
 		);
-
-	img {
-		width: 100%;
-		max-height: 100%;
-	}
 }
 
 #puzzle-frame {
@@ -91,6 +110,11 @@ h1 {
 	width: var(--width);
 	height: var(--height);
 	background: linear-gradient(#FFF8 0 0), var(--image) 0 0/100%;
+}
+
+#main-image {
+	animation: fadeIn 4s ease-in;
+	width: var(--width);
 }
 
 .image-piece {

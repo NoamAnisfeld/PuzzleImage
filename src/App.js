@@ -1,5 +1,5 @@
 import './App.scss';
-import { useState, useRef, createContext, useContext, useEffect } from 'react';
+import { useState, useRef, createContext, useContext, useEffect, useMemo } from 'react';
 import { ControlPanel } from './ControlPanel';
 import { setDropZone } from './DropFiles';
 import { ImagePiece } from './ImagePiece';
@@ -9,7 +9,7 @@ const
 	defaultSettings = {
 		imageUrl:
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/%D0%A0%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0_%D0%9C%D0%B0%D0%BD%D0%B3%D1%83%D0%BF%D1%96.jpg/750px-%D0%A0%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0_%D0%9C%D0%B0%D0%BD%D0%B3%D1%83%D0%F%D1%96.jpg",
-		imageWidth: Math.max(300, window.innerWidth * 0.5),
+		imageWidth: window.innerWidth * 0.8,
 		rows: 3,
 		cols: 2
 	},
@@ -23,6 +23,7 @@ function MainImage() {
 
 	return (
 		<img
+			id="main-image"
 			ref={ref}
 			src={settings.imageUrl}
 			alt=""
@@ -78,9 +79,18 @@ function App() {
 	const
 		settings = useContext(GlobalSettings),
 		[imageUrl, setImageUrl] = useState(settings.imageUrl),
-		[imageWidth, /* setImageWidth */] = useState(settings.imageWidth),
 		[imageAspectRatio, setImageAspectRatio] = useState(settings.imageAspectRatio),
-		imageHeight = imageWidth / imageAspectRatio,
+		[imageWidth, imageHeight] = useMemo(() => {
+			const maxWidth = window.innerWidth * 0.8,
+				maxHeight = window.innerHeight * 0.7,
+				adjustedHeight = maxWidth / imageAspectRatio;
+
+			if (adjustedHeight <= maxHeight) {
+				return [maxWidth, adjustedHeight];
+			} else {
+				return [maxHeight * imageAspectRatio, maxHeight]
+			}
+		}, [imageAspectRatio, window.innerWidth, window.innerHeight]),
 		[rows, setRows] = useState(settings.rows),
 		[cols, setCols] = useState(settings.cols),
 		[gameStarted, setGameStarted] = useState(false);
