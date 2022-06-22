@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import msg from './i18n';
 
 function ControlPanel({
 	rows,
@@ -28,7 +29,7 @@ function ControlPanel({
 	}
 
 	function handleImageFromUrl() {
-		const newUrl = prompt("הכנס כתובת של תמונה");
+		const newUrl = prompt(msg.insertURL);
 		if (newUrl) {
 			setImageUrl(newUrl);
 		}
@@ -53,18 +54,18 @@ function ControlPanel({
 		<div id="control-panel" className={isClosing ? "goaway-up" : null}>
 			<form id="controls">
 				<label>
-					שורות:
+					{msg.rows}:
 					<input type="number" value={rows} onChange={handleChangeRows} />
 				</label>
 				<label>
-					עמודות:
+					{msg.columns}:
 					<input type="number" value={cols} onChange={handleChangeCols} />
 				</label>
 				<button type="button" className="button" onClick={handleImageFromUrl}>
-					בחירת תמונה מכתובת אינטרנט
+					{msg.chooseImageFromURL}
 				</button>
 				<label className="button">
-					העלאת תמונה
+					{msg.uploadImage}
 					<input
 						className="visually-hidden"
 						type="file"
@@ -76,7 +77,7 @@ function ControlPanel({
 					onClick={handleStartGame}
 					// disabled={!imageAspectRatio}
 				>
-					צור פאזל
+					{msg.start}
 				</button>
 			</form>
 		</div>
