@@ -90,7 +90,7 @@ function App() {
 			} else {
 				return [maxHeight * imageAspectRatio, maxHeight]
 			}
-		}, [imageAspectRatio, window.innerWidth, window.innerHeight]),
+		}, [imageAspectRatio]),
 		[rows, setRows] = useState(settings.rows),
 		[cols, setCols] = useState(settings.cols),
 		[gameStarted, setGameStarted] = useState(false);

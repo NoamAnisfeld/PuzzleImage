@@ -36,7 +36,7 @@ function ControlPanel({
 	}
 
 	function handleImageFromFile({ target: { files: [file] } }) {
-		if (!file instanceof File) {
+		if (!(file instanceof File)) {
 			return;
 		}
 
