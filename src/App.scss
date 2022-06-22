@@ -109,7 +109,7 @@ h1 {
 	position: relative;
 	width: var(--width);
 	height: var(--height);
-	background: linear-gradient(#FFF8 0 0), var(--image) 0 0/100%;
+	background: linear-gradient(#FFF8 0 0), var(--image) 0 0/100% white;
 }
 
 #main-image {
@@ -120,6 +120,7 @@ h1 {
 .image-piece {
 	position: absolute;
 	left: calc(50% - var(--width) / (2 * var(--cols)));
+	background-color: white;
 	background-image: var(--image);
 	background-size: var(--width);
 	background-origin: border-box;
