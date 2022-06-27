@@ -95,28 +95,13 @@ function makeClipPath(PIECE_WIDTH, PIECE_HEIGHT, BUMPER_WIDTH, BUMPER_HEIGHT) {
         `z"`;
 }
 
-
-/*
- * @prop width {integer}
- * @prop height {integer}
- * @prop row {integer}
- * @prop col {integer}
- * @prop container {HTMLElement}
- * @prop zIndexArray {Element[]}
- */
-function ImagePiece(props) {
-
-	// debugLog(`<ImagePiece> (${props.row}, ${props.col}) is rendered`);
+function ImagePiece({ width, height, row, col, container, zIndexArray }) {
 
 	const [position, setPosition] = useState({
 			x: null,
-			y: -props.height
+			y: -height
 		}),
 		[dragState, setDragState] = useState(false),
-		// [dragPinpoint, setDragPinpoint] = useState({
-		// 	x: 0,
-		// 	y: 0
-		// }),
 		ref = useRef(null);
 
 	function normalizePosition(x, y) {
@@ -128,7 +113,7 @@ function ImagePiece(props) {
 			throw "Bad argument";
 		}
 
-		const rect = props.container.getBoundingClientRect();
+		const rect = container.getBoundingClientRect();
 		return {
 			x: x - rect.x,
 			y: y - rect.y
@@ -136,18 +121,19 @@ function ImagePiece(props) {
 	}
 
 	function startDrag(event) {
-		// debugLog("startDrag");
 
 		event.preventDefault();
 		event.stopPropagation();
 
 		const rect = event.target.getBoundingClientRect(),
-			dragPinpoint = { x: event.clientX - rect.x, y: event.clientY - rect.y };
-		//		setDragPinpoint({ x: event.clientX - rect.x, y: event.clientY - rect.y });
+			dragPinpoint = {
+				x: event.clientX - rect.x,
+				y: event.clientY - rect.y
+			};
 		setDragState(true);
 
 		function globalPointerMoveEvent(event) {
-			const rect = props.container.getBoundingClientRect(),
+			const rect = container.getBoundingClientRect(),
 				newX = event.clientX - dragPinpoint.x - rect.x,
 				newY = event.clientY - dragPinpoint.y - rect.y;
 
@@ -160,7 +146,6 @@ function ImagePiece(props) {
 		document.addEventListener("pointermove", globalPointerMoveEvent);
 
 		function stopDrag(event) {
-			// debugLog("stopDrag", event.type);
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -170,9 +155,9 @@ function ImagePiece(props) {
 
 			let { x, y } = normalizePosition(ref.current.getBoundingClientRect()),
 				nearestXLine =
-					x + props.width / 2 - ((x + props.width / 2) % props.width) - EXTRA_SPACE,
+					x + width / 2 - ((x + width / 2) % width) - EXTRA_SPACE,
 				nearestYLine =
-					y + props.height / 2 - ((y + props.height / 2) % props.height) - EXTRA_SPACE;
+					y + height / 2 - ((y + height / 2) % height) - EXTRA_SPACE;
 
 			if (Math.abs(x - nearestXLine) < 20) {
 				x = nearestXLine;
@@ -196,7 +181,7 @@ function ImagePiece(props) {
 	}
 
 	function makeTop() {
-		const arr = props.zIndexArray;
+		const arr = zIndexArray;
 
 		for (let i = 0; i < arr.length; i++) {
 			if (arr[i] === ref) {
@@ -214,17 +199,17 @@ function ImagePiece(props) {
 			style={{
 				backgroundPosition:
 					`${
-						props.width * -props.col + EXTRA_SPACE}px ${
-						props.height * -props.row + EXTRA_SPACE}px`,
+						width * -col + EXTRA_SPACE}px ${
+						height * -row + EXTRA_SPACE}px`,
 				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
                 '--clip-path': useMemo(
-                    () => makeClipPath(props.width, props.height, EXTRA_SPACE, EXTRA_SPACE),
-                    [props.width, props.height, EXTRA_SPACE]),
-				width: props.width + EXTRA_SPACE * 2,
-				height: props.height + EXTRA_SPACE * 2,
+                    () => makeClipPath(width, height, EXTRA_SPACE, EXTRA_SPACE),
+                    [width, height, EXTRA_SPACE]),
+				width: width + EXTRA_SPACE * 2,
+				height: height + EXTRA_SPACE * 2,
 				left: position.x,
 				top: position.y,
-				zIndex: dragState ? makeTop() : props.zIndexArray.indexOf(ref) + 1 || null
+				zIndex: dragState ? makeTop() : zIndexArray.indexOf(ref) + 1 || null
 			}}
 			onClick={dragState ? null : startDrag}
 		/>

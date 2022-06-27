@@ -6,17 +6,18 @@ import { ImagePiece } from './ImagePiece';
 import { debugLog } from './DebugTools'
 
 const
-	defaultSettings = {
+	initialGlobalState = {
 		imageUrl:
 			"https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
 		imageWidth: window.innerWidth * 0.8,
 		rows: 3,
-		cols: 2
+		cols: 2,
+		zIndexArray: []
 	},
-	GlobalSettings = createContext(defaultSettings);
+	GlobalState = createContext(initialGlobalState);
 
 function MainImage() {
-	const settings = useContext(GlobalSettings),
+	const globalState = useContext(GlobalState),
 		ref = useRef();
 
 	useEffect(() => setDropZone(ref.current), []);
@@ -25,10 +26,10 @@ function MainImage() {
 		<img
 			id="main-image"
 			ref={ref}
-			src={settings.imageUrl}
+			src={globalState.imageUrl}
 			alt=""
 			onLoad={(e) =>
-				settings.setImageAspectRatio(
+				globalState.setImageAspectRatio(
 					e.target.naturalWidth / e.target.naturalHeight
 				)
 			}
@@ -36,7 +37,7 @@ function MainImage() {
 	);
 }
 
-function GameBoard({ imageWidth, imageHeight, rows, cols, zIndexArray, gameStarted }) {
+function GameBoard({ imageWidth, imageHeight, rows, cols, gameStarted }) {
 	debugLog("<GameBoard> is rendered");
 
 	const ref = useRef(null);
@@ -53,7 +54,7 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, zIndexArray, gameStart
 						key={`${row/col}`}
 						row={row}
 						col={col}
-						zIndexArray={zIndexArray}
+						zIndexArray={useContext(GlobalState).zIndexArray}
 					/>
 				);
 			}
@@ -77,9 +78,9 @@ function App() {
 	debugLog("<App> is rendered");
 
 	const
-		settings = useContext(GlobalSettings),
-		[imageUrl, setImageUrl] = useState(settings.imageUrl),
-		[imageAspectRatio, setImageAspectRatio] = useState(settings.imageAspectRatio),
+		globalState = useContext(GlobalState),
+		[imageUrl, setImageUrl] = useState(globalState.imageUrl),
+		[imageAspectRatio, setImageAspectRatio] = useState(globalState.imageAspectRatio),
 		[imageWidth, imageHeight] = useMemo(() => {
 			const maxWidth = window.innerWidth * 0.8,
 				maxHeight = window.innerHeight * 0.7,
@@ -91,13 +92,13 @@ function App() {
 				return [maxHeight * imageAspectRatio, maxHeight]
 			}
 		}, [imageAspectRatio]),
-		[rows, setRows] = useState(settings.rows),
-		[cols, setCols] = useState(settings.cols),
+		[rows, setRows] = useState(globalState.rows),
+		[cols, setCols] = useState(globalState.cols),
 		[gameStarted, setGameStarted] = useState(false);
 		
 	return (
-		<GlobalSettings.Provider value={{
-			...settings,
+		<GlobalState.Provider value={{
+			...globalState,
 			...{
 				imageUrl,
 				imageAspectRatio,
@@ -128,11 +129,10 @@ function App() {
 					imageHeight={imageHeight}
 					rows={rows}
 					cols={cols}
-					zIndexArray={[]}
 					gameStarted={gameStarted}
 				/>
 			</div>
-		</GlobalSettings.Provider>
+		</GlobalState.Provider>
 	);
 }
 
