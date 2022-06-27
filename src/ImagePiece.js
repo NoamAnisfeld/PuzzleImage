@@ -11,7 +11,20 @@ function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 		throw Error('Bad size argument');
 	}
 
-	const bumperMatrix = [
+	if (bumperSize === 0) {
+		switch (bumperDirection) {
+			case 'up':
+			case 'down':
+				return `h${lineLength}`;
+			case 'left':
+			case 'right':
+				return `v${lineLength}`;
+			default:
+				throw Error('Bad direction argument');
+		}
+	}
+
+	const bumperFactorMatrix = [
 			[1, 0.2],
 			[1, 0.9],
 			[1, 1],
@@ -21,7 +34,7 @@ function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 		].map(([x, y]) => ['up', 'down'].includes(bumperDirection) ?
 			[x, y] : [y, x]
 		).flat(),
-		bumperFactorMatrixes = {
+		bumperDirectionMatrixes = {
 			up: [
 				[1, -1],
 				[-1, -1],
@@ -56,7 +69,7 @@ function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 			].flat()
 		};
 
-	if (!(bumperFactorMatrixes.hasOwnProperty(bumperDirection))
+	if (!(bumperDirectionMatrixes.hasOwnProperty(bumperDirection))
 	) {
 		throw Error('Bad direction argument');
 	}
@@ -65,9 +78,9 @@ function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 		'h' : 'v',
 		linePart = `${lineDirection}${lineLength / 2 - bumperSize}`;
 
-	const bumperCurvePath = 'c' + bumperMatrix.map(
+	const bumperCurvePath = 'c' + bumperDirectionMatrixes[bumperDirection].map(
 		(value, index) =>
-			value * bumperFactorMatrixes[bumperDirection][index] * bumperSize
+			value * bumperFactorMatrix[index] * bumperSize
 		).join(' '),
 		path = linePart + bumperCurvePath + linePart;
 
@@ -75,34 +88,50 @@ function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 
 }
 
-function makeClipPath(PIECE_WIDTH, PIECE_HEIGHT, BUMPER_WIDTH, BUMPER_HEIGHT) {
+function pieceClipPath(pieceWidth, pieceHeight, bumperWidth, bumperHeight, plainEdges = []) {
+
+	const edgePaths = {
+		top: plainEdges.includes('top') ?
+			`h${pieceWidth}` :
+			edgeClipPath({
+				lineLength: pieceWidth,
+				bumperSize: bumperWidth,
+				bumperDirection: 'down'
+			}),	
+		right: plainEdges.includes('right') ?
+			`v${pieceHeight}` :
+			edgeClipPath({
+				lineLength: pieceHeight,
+				bumperSize: bumperHeight,
+				bumperDirection: 'right'
+			}),	
+		left: plainEdges.includes('left') ?
+			`v${pieceHeight}` :
+			edgeClipPath({
+				lineLength: pieceHeight,
+				bumperSize: bumperHeight,
+				bumperDirection: 'right'
+			}),	
+		bottom: plainEdges.includes('bottom') ?
+			`h${pieceWidth}` :
+			edgeClipPath({
+				lineLength: pieceWidth,
+				bumperSize: bumperWidth,
+				bumperDirection: 'down'
+			})
+	}
+
     return '"' +
 		`M${EXTRA_SPACE} ${EXTRA_SPACE}` +
-        edgeClipPath({
-            lineLength: PIECE_WIDTH,
-            bumperSize: BUMPER_WIDTH,
-			bumperDirection: 'down'
-        }) +
-        edgeClipPath({
-            lineLength: PIECE_HEIGHT,
-            bumperSize: BUMPER_HEIGHT,
-			bumperDirection: 'right'
-        }) +
+        edgePaths.top +
+        edgePaths.right +
 		`M${EXTRA_SPACE} ${EXTRA_SPACE}` +
-		edgeClipPath({
-            lineLength: PIECE_HEIGHT,
-            bumperSize: BUMPER_HEIGHT,
-			bumperDirection: 'right'
-        }) +
-        edgeClipPath({
-            lineLength: PIECE_WIDTH,
-            bumperSize: BUMPER_WIDTH,
-			bumperDirection: 'down'
-        }) +
+        edgePaths.left +
+        edgePaths.bottom +
 		'"';
 }
 
-function ImagePiece({ width, height, row, col, container, zIndexArray }) {
+function ImagePiece({ width, height, /* 1-based */ row, col, container, zIndexArray }) {
 
 	const [position, setPosition] = useState({
 			x: null,
@@ -113,11 +142,11 @@ function ImagePiece({ width, height, row, col, container, zIndexArray }) {
 
 	function normalizePosition(x, y) {
 		if (typeof x === "object") {
-			[x, y] = [x.x, x.y];
+			({x, y} = x);
 		}
 		
 		if (typeof x !== 'number' || typeof y !== 'number') {
-			throw "Bad argument";
+			throw Error("Bad argument");
 		}
 
 		const rect = container.getBoundingClientRect();
@@ -179,24 +208,31 @@ function ImagePiece({ width, height, row, col, container, zIndexArray }) {
 			});
 		}
 
-		["click" /* , "mouseout", "blur" */].forEach((eventName) => {
-			document.addEventListener(eventName, stopDrag, {
-				capture: true,
-				once: true
-			});
+		document.addEventListener('click', stopDrag, {
+			capture: true,
+			once: true
 		});
 	}
 
 	function makeTop() {
 		const arr = zIndexArray;
 
-		for (let i = 0; i < arr.length; i++) {
+		for (let i of arr) {
 			if (arr[i] === ref) {
 				arr.splice(i, 1);
+				break;
 			}
 		}
 		arr.push(ref);
 		return arr.length;
+	}
+
+	const plainEdges = [];
+	if (row === 1) {
+		plainEdges.push('top');
+	}
+	if (col === 1) {
+		plainEdges.push('left');
 	}
 
 	return (
@@ -206,11 +242,11 @@ function ImagePiece({ width, height, row, col, container, zIndexArray }) {
 			style={{
 				backgroundPosition:
 					`${
-						width * -col + EXTRA_SPACE}px ${
-						height * -row + EXTRA_SPACE}px`,
+						width * -(col - 1) + EXTRA_SPACE}px ${
+						height * -(row - 1) + EXTRA_SPACE}px`,
 				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
                 '--clip-path': useMemo(
-                    () => makeClipPath(width, height, EXTRA_SPACE, EXTRA_SPACE),
+                    () => pieceClipPath(width, height, EXTRA_SPACE, EXTRA_SPACE, plainEdges),
                     [width, height, EXTRA_SPACE]),
 				width: width + EXTRA_SPACE * 2,
 				height: height + EXTRA_SPACE * 2,

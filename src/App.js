@@ -45,8 +45,8 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, gameStarted }) {
 
 	function makePieces(container) {
 		const array = [];
-		for (let row = 0; row < rows; row++) {
-			for (let col = 0; col < cols; col++) {
+		for (let row = 1; row <= rows; row++) {
+			for (let col = 1; col <= cols; col++) {
 				array.push(
 					<ImagePiece
 						container={container}
