@@ -2,97 +2,104 @@ import { useState, useRef, useMemo } from 'react';
 
 const EXTRA_SPACE = 30;
 
-function edgeClipPath({ lineDirection, lineLength, bumpDirection, /*deprecated*/ edge, bumperSize }) {
+function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 
-    if (/* !['up', 'down', 'right', 'left'].includes(lineDirection) ||
-    !['clockwise', 'counterclockwise'].includes(bumpDirection) || */
-    lineLength <= 0 ||
-    bumperSize <= 0 ||
-    bumperSize > lineLength) {
-        throw 'Bad argument';
-    }
+	if (!(lineLength >= 0) ||
+		!(bumperSize >= 0) ||
+		bumperSize >= lineLength
+	) {
+		throw Error('Bad size argument');
+	}
 
-    const factorsMatrix = [
-        [1, -0.2],
-        [-1, -0.9],
-        [1, -1],
-        [2, 0.1],
-        [0, 0.8],
-        [1, 1],
-    ];
+	const bumperMatrix = [
+			[1, 0.2],
+			[1, 0.9],
+			[1, 1],
+			[2, 0.1],
+			[0, 0.8],
+			[1, 1],
+		].map(([x, y]) => ['up', 'down'].includes(bumperDirection) ?
+			[x, y] : [y, x]
+		).flat(),
+		bumperFactorMatrixes = {
+			up: [
+				[1, -1],
+				[-1, -1],
+				[1, -1],
+				[1, 1],
+				[1, 1],
+				[1, 1]
+			].flat(),
+			right: [
+				[1, 1],
+				[1, -1],
+				[1, 1],
+				[-1, 1],
+				[-1, 1],
+				[-1, 1]
+			].flat(),
+			left: [
+				[-1, 1],
+				[-1, -1],
+				[-1, 1],
+				[1, 1],
+				[1, 1],
+				[1, 1]
+			].flat(),
+			down: [
+				[1, -1],
+				[-1, 1],
+				[1, 1],
+				[1, -1],
+				[1, -1],
+				[1, -1]
+			].flat()
+		};
 
-    const pointsMatrix = factorsMatrix.flat().map(n => n * bumperSize);
+	if (!(bumperFactorMatrixes.hasOwnProperty(bumperDirection))
+	) {
+		throw Error('Bad direction argument');
+	}
 
-    let path;
-    
-    if (edge === 'top') {
-        path = `
-            h ${(lineLength - bumperSize * 2) / 2}
-            c ${pointsMatrix.join(' ')}
-            h ${(lineLength - bumperSize * 2) / 2}
-        `;
-    } else if (edge === 'right') {        
-        path = `
-            v ${lineLength / 2 - bumperSize}
-            c   ${bumperSize * 0.2} ${bumperSize}
-                ${bumperSize * 0.9} -${bumperSize}
-                ${bumperSize} ${bumperSize}
-            c   -${bumperSize * 0.1} ${bumperSize * 2}
-                -${bumperSize * 0.8} 0
-                -${bumperSize} ${bumperSize}
-            v ${lineLength / 2 - bumperSize}
-        `;
-    } else if (edge === 'bottom') {
-        path = `
-            h -${(lineLength - bumperSize * 2) / 2}
-            c   -${bumperSize} ${bumperSize * 0.2}
-                ${bumperSize} ${bumperSize * 0.9}
-                -${bumperSize} ${bumperSize}
-            c   -${bumperSize * 2} -${bumperSize * 0.1} 
-                0 -${bumperSize * 0.8}
-                -${bumperSize} -${bumperSize}
-            h -${lineLength / 2 - bumperSize}
-        `;
-    } else if (edge === 'left') {        
-        path = `
-            v ${(lineLength - bumperSize) / 2}
-            c   ${bumperSize * 0.2} ${bumperSize}
-                ${bumperSize * 0.9} -${bumperSize}
-                ${bumperSize} ${bumperSize}
-            c   -${bumperSize * 0.1} ${bumperSize * 2}
-                -${bumperSize * 0.8} 0
-                -${bumperSize} ${bumperSize}
-            v ${lineLength /2 - bumperSize}
-        `;
-    }
+	const lineDirection = ['up', 'down'].includes(bumperDirection) ?
+		'h' : 'v',
+		linePart = `${lineDirection}${lineLength / 2 - bumperSize}`;
 
-    return path.replace(/\s+/g, " ");
+	const bumperCurvePath = 'c' + bumperMatrix.map(
+		(value, index) =>
+			value * bumperFactorMatrixes[bumperDirection][index] * bumperSize
+		).join(' '),
+		path = linePart + bumperCurvePath + linePart;
+
+	return path;
 
 }
 
 function makeClipPath(PIECE_WIDTH, PIECE_HEIGHT, BUMPER_WIDTH, BUMPER_HEIGHT) {
-    return `"M${EXTRA_SPACE} ${EXTRA_SPACE}` +
+    return '"' +
+		`M${EXTRA_SPACE} ${EXTRA_SPACE}` +
         edgeClipPath({
-            edge: 'top',
             lineLength: PIECE_WIDTH,
-            bumperSize: BUMPER_WIDTH
+            bumperSize: BUMPER_WIDTH,
+			bumperDirection: 'down'
         }) +
         edgeClipPath({
-            edge: 'right',
             lineLength: PIECE_HEIGHT,
-            bumperSize: BUMPER_HEIGHT
+            bumperSize: BUMPER_HEIGHT,
+			bumperDirection: 'right'
+        }) +
+		`M${EXTRA_SPACE} ${EXTRA_SPACE}` +
+		edgeClipPath({
+            lineLength: PIECE_HEIGHT,
+            bumperSize: BUMPER_HEIGHT,
+			bumperDirection: 'right'
         }) +
         edgeClipPath({
-            edge: 'bottom',
             lineLength: PIECE_WIDTH,
-            bumperSize: BUMPER_WIDTH
+            bumperSize: BUMPER_WIDTH,
+			bumperDirection: 'down'
         }) +
-        edgeClipPath({
-            edge: 'left',
-            lineLength: PIECE_HEIGHT,
-            bumperSize: BUMPER_HEIGHT
-        }) +
-        `z"`;
+		'"';
 }
 
 function ImagePiece({ width, height, row, col, container, zIndexArray }) {

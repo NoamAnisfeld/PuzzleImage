@@ -40,7 +40,8 @@ function MainImage() {
 function GameBoard({ imageWidth, imageHeight, rows, cols, gameStarted }) {
 	debugLog("<GameBoard> is rendered");
 
-	const ref = useRef(null);
+	const ref = useRef(null),
+		zIndexArray = useContext(GlobalState).zIndexArray;
 
 	function makePieces(container) {
 		const array = [];
@@ -54,7 +55,7 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, gameStarted }) {
 						key={`${row/col}`}
 						row={row}
 						col={col}
-						zIndexArray={useContext(GlobalState).zIndexArray}
+						zIndexArray={zIndexArray}
 					/>
 				);
 			}
