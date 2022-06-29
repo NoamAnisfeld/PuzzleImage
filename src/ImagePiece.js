@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
+import { debugLog } from './DebugTools';
 
 const EXTRA_SPACE = 30;
 
@@ -131,6 +132,25 @@ function pieceClipPath(pieceWidth, pieceHeight, bumperWidth, bumperHeight, plain
 		'"';
 }
 
+function dataUrlShapeFromPath({
+	path,
+	strokeColor = '#FFF',
+	strokeWidth = 1,
+	fill = 'transparent'
+}) {
+	path = path.replace(/"/g, '');
+
+	return `url("data:image/svg+xml,${encodeURIComponent(
+			`<svg xmlns='http://www.w3.org/2000/svg'>
+				<path d='${path}'
+					stroke='${strokeColor}'
+					stroke-width='${strokeWidth}'
+					fill='${fill}'
+				/>
+			</svg>`)
+		}")`;
+}
+
 function ImagePiece({
 	width,
 	height,
@@ -235,19 +255,30 @@ function ImagePiece({
 		return arr.length;
 	}
 
+	const clipPath = useMemo(
+			() => pieceClipPath(
+				width,
+				height, 
+				EXTRA_SPACE,
+				EXTRA_SPACE,
+				plainEdges
+			),
+			[width, height, plainEdges]
+		);
+
 	return (
 		<div
 			ref={ref}
 			className={"image-piece" + (dragState ? " selected" : "")}
 			style={{
-				backgroundPosition:
-					`${
-						width * -(col - 1) + EXTRA_SPACE}px ${
-						height * -(row - 1) + EXTRA_SPACE}px`,
 				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
-                '--clip-path': useMemo(
-                    () => pieceClipPath(width, height, EXTRA_SPACE, EXTRA_SPACE, plainEdges),
-                    [width, height, plainEdges]),
+                '--clip-path': clipPath,
+				backgroundImage:
+					`${dataUrlShapeFromPath({ path: clipPath })}, var(--image)`,
+				backgroundPosition:
+					'0 0, ' +
+					`${width * -(col - 1) + EXTRA_SPACE}px ` +
+					`${height * -(row - 1) + EXTRA_SPACE}px`,
 				width: width + EXTRA_SPACE * 2,
 				height: height + EXTRA_SPACE * 2,
 				left: position.x,

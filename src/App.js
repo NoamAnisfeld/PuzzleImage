@@ -51,7 +51,7 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, gameStarted }) {
 					<ImagePiece
 						width={imageWidth / cols}
 						height={imageHeight / rows}
-						key={`${row/col}`}
+						key={`${row}/${col}`}
 						row={row}
 						col={col}
 						plainEdges = {{
