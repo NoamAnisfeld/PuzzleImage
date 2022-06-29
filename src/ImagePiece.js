@@ -91,28 +91,28 @@ function edgeClipPath({ lineLength, bumperSize, bumperDirection }) {
 function pieceClipPath(pieceWidth, pieceHeight, bumperWidth, bumperHeight, plainEdges = []) {
 
 	const edgePaths = {
-		top: plainEdges.includes('top') ?
+		top: plainEdges.top ?
 			`h${pieceWidth}` :
 			edgeClipPath({
 				lineLength: pieceWidth,
 				bumperSize: bumperWidth,
 				bumperDirection: 'down'
 			}),	
-		right: plainEdges.includes('right') ?
+		right: plainEdges.right ?
 			`v${pieceHeight}` :
 			edgeClipPath({
 				lineLength: pieceHeight,
 				bumperSize: bumperHeight,
 				bumperDirection: 'right'
 			}),	
-		left: plainEdges.includes('left') ?
+		left: plainEdges.left ?
 			`v${pieceHeight}` :
 			edgeClipPath({
 				lineLength: pieceHeight,
 				bumperSize: bumperHeight,
 				bumperDirection: 'right'
 			}),	
-		bottom: plainEdges.includes('bottom') ?
+		bottom: plainEdges.bottom ?
 			`h${pieceWidth}` :
 			edgeClipPath({
 				lineLength: pieceWidth,
@@ -131,7 +131,15 @@ function pieceClipPath(pieceWidth, pieceHeight, bumperWidth, bumperHeight, plain
 		'"';
 }
 
-function ImagePiece({ width, height, /* 1-based */ row, col, container, zIndexArray }) {
+function ImagePiece({
+	width,
+	height,
+	row, /* 1-based */
+	col, /* 1-based */
+	plainEdges,
+	container,
+	zIndexArray
+}) {
 
 	const [position, setPosition] = useState({
 			x: null,
@@ -227,14 +235,6 @@ function ImagePiece({ width, height, /* 1-based */ row, col, container, zIndexAr
 		return arr.length;
 	}
 
-	const plainEdges = [];
-	if (row === 1) {
-		plainEdges.push('top');
-	}
-	if (col === 1) {
-		plainEdges.push('left');
-	}
-
 	return (
 		<div
 			ref={ref}
@@ -247,7 +247,7 @@ function ImagePiece({ width, height, /* 1-based */ row, col, container, zIndexAr
 				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
                 '--clip-path': useMemo(
                     () => pieceClipPath(width, height, EXTRA_SPACE, EXTRA_SPACE, plainEdges),
-                    [width, height, EXTRA_SPACE]),
+                    [width, height, plainEdges]),
 				width: width + EXTRA_SPACE * 2,
 				height: height + EXTRA_SPACE * 2,
 				left: position.x,

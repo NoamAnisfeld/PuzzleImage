@@ -49,12 +49,18 @@ function GameBoard({ imageWidth, imageHeight, rows, cols, gameStarted }) {
 			for (let col = 1; col <= cols; col++) {
 				array.push(
 					<ImagePiece
-						container={container}
 						width={imageWidth / cols}
 						height={imageHeight / rows}
 						key={`${row/col}`}
 						row={row}
 						col={col}
+						plainEdges = {{
+							top: row === 1,
+							left: col === 1,
+							bottom: row === rows,
+							right: col === cols,
+						}}
+						container={container}
 						zIndexArray={zIndexArray}
 					/>
 				);
