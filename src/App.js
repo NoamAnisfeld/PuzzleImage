@@ -9,7 +9,6 @@ const
 	initialGlobalState = {
 		imageUrl:
 			"https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
-		imageWidth: window.innerWidth * 0.8,
 		rows: 3,
 		cols: 2,
 		zIndexArray: []
@@ -89,8 +88,8 @@ function App() {
 		[imageUrl, setImageUrl] = useState(globalState.imageUrl),
 		[imageAspectRatio, setImageAspectRatio] = useState(globalState.imageAspectRatio),
 		[imageWidth, imageHeight] = useMemo(() => {
-			const maxWidth = window.innerWidth * 0.8,
-				maxHeight = window.innerHeight * 0.7,
+			const maxWidth = window.innerWidth * 0.9,
+				maxHeight = window.innerHeight * 0.9,
 				adjustedHeight = maxWidth / imageAspectRatio;
 
 			if (adjustedHeight <= maxHeight) {

@@ -1,5 +1,16 @@
+:root {
+	direction: rtl;
+	box-sizing: border-box;
+}
+
+*, ::before, ::after {
+	box-sizing: inherit;
+}
+
 body {
   margin: 0;
+	background: lightblue;
+  /* create-react-app defaults */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -8,6 +19,7 @@ body {
 }
 
 code {
+  /* create-react-app defaults */
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }

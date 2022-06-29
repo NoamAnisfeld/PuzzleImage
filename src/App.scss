@@ -1,23 +1,4 @@
-.visually-hidden {
-	position: absolute !important;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip: rect(1px 1px 1px 1px);
-}
-
-:root {
-	direction: rtl;
-	box-sizing: border-box;
-}
-
-*, ::before, ::after {
-	box-sizing: inherit;
-}
-
-body {
-	background: lightblue;
-}
+@import './utils.scss';
 
 h1 {
 	text-align: center;
@@ -33,18 +14,6 @@ h1 {
 #game-wrapper {
 	grid-row: 1 / span 1;
 	grid-column: 1 / span 1;
-}
-
-@keyframes slideFromTop {
-	from {
-		transform: translateY(min(-100%, -100vh));
-	}
-}
-
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
 }
 
 #control-panel {
@@ -134,9 +103,4 @@ h1 {
 
 .image-piece.selected {
 	box-shadow: 0 0 10px blue;
-}
-
-.goaway-up {
-	transform: translateY(calc(-100% - 100vh));
-	transition: transform 1s ease-in-out;
 }
