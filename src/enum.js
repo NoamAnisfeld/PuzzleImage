@@ -1,35 +1,33 @@
 class EnumMember {
-    #name
-    #symbol
+    name
+    index
+    ownerEnum
 
-    constructor(value, name) {
-        if (!Number.isInteger(value) || value < 0) {
+    constructor(ownerEnum, index, name = '') {
+        if (!Number.isInteger(index) ||
+            index < 0 ||
+            typeof name !== 'string'
+        ) {
             throw Error('internal error in enum.js; unexpected argument');
         }
 
-        this.#name = name;
-        this.#symbol = Symbol(value);
-    }
-
-    get name() {
-        return this.#name;
-    }
-
-    get value() {
-        return Number(this.#symbol.description);
+        this.name = name;
+        this.index = index;
+        this.ownerEnum = ownerEnum;
+        Object.freeze(this);
     }
 
     valueOf() {
-        return this.value;
+        return this.index;
     }
 
     toString() {
-        return `EnumMember ${this.name}(${this.value})`;
+        return `EnumMember ${this.name}(${this.index})`;
     }
 
     [Symbol.toPrimitive](hint) {
         if (hint === 'number') {
-            return this.value;
+            return this.index;
         } else {
             return this.toString();
         }
@@ -47,14 +45,27 @@ class Enum {
         if (Object.getPrototypeOf(obj) !== Object.prototype ||
             keys.length === 0
         ) {
-            throw Error('argument must be regular object with at least one key');
+            throw Error(
+                'argument must be a regular object with at least one string key'
+            );
         }
 
         keys.forEach( (keyName, keyIndex) => {
-            this[keyName] = Object.freeze(new EnumMember(keyIndex, keyName));
+            this[keyName] = new EnumMember(this, keyIndex, keyName);
         });
 
         Object.freeze(this);
+    }
+
+    static isValidEnumMember(enumObj, member) {
+        if (!(enumObj instanceof Enum)) {
+            throw Error('first argument is not an instance of Enum');
+        }
+
+        if (!(member instanceof EnumMember)) {
+            return false;
+        }
+        return Object.values(enumObj).includes(member);
     }
 }
 

@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
+import { ORIENTATION,CURVE_DIRECTIONS, curvePath, edgePath, dataUrlShapeFromPath } from './puzzleCurvePaths';
 import { debugLog } from './DebugTools';
 
 const EXTRA_SPACE = 30;
@@ -132,25 +133,6 @@ function pieceClipPath(pieceWidth, pieceHeight, bumperWidth, bumperHeight, plain
 		'"';
 }
 
-function dataUrlShapeFromPath({
-	path,
-	strokeColor = '#FFF',
-	strokeWidth = 1,
-	fill = 'transparent'
-}) {
-	path = path.replace(/"/g, '');
-
-	return `url("data:image/svg+xml,${encodeURIComponent(
-			`<svg xmlns='http://www.w3.org/2000/svg'>
-				<path d='${path}'
-					stroke='${strokeColor}'
-					stroke-width='${strokeWidth}'
-					fill='${fill}'
-				/>
-			</svg>`)
-		}")`;
-}
-
 function ImagePiece({
 	width,
 	height,
@@ -274,7 +256,7 @@ function ImagePiece({
 				'--EXTRA_SPACE': `${EXTRA_SPACE}px`,
                 '--clip-path': clipPath,
 				backgroundImage:
-					`${dataUrlShapeFromPath({ path: clipPath })}, var(--image)`,
+					`url("${dataUrlShapeFromPath(clipPath)}"), var(--image)`,
 				backgroundPosition:
 					'0 0, ' +
 					`${width * -(col - 1) + EXTRA_SPACE}px ` +
