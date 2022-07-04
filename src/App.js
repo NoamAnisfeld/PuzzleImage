@@ -105,8 +105,8 @@ function GameBoard({ setImageAspectRatio, gameStarted }) {
 			imageHeight,
 			rows,
 			cols,
-			zIndexArray,
-			curvedPathsMatrixes,
+			// zIndexArray,
+			// curvedPathsMatrixes,
 			curveSize
 		} =
 			useContext(GlobalState),
@@ -116,8 +116,8 @@ function GameBoard({ setImageAspectRatio, gameStarted }) {
 	const curvedPathGrid = useMemo(() => {
 
 			const {
-				horizontalPlain,
-				verticalPlain,
+				// horizontalPlain,
+				// verticalPlain,
 				curvedUp,
 				curvedRight,
 				curvedDown,
@@ -133,7 +133,7 @@ function GameBoard({ setImageAspectRatio, gameStarted }) {
 				rows
 			});
 		},
-			[pieceWidth, pieceHeight, rows, cols]
+			[pieceWidth, pieceHeight, rows, cols, curveSize]
 		);
 
 	const combinedPath = useMemo(() =>
