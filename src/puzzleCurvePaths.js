@@ -4,7 +4,6 @@ const ORIENTATION = Object.freeze({
 });
 
 const CURVE_DIRECTIONS = Object.freeze({
-	// NONE: {},
 	UP: {},
 	RIGHT: {},
 	DOWN: {},
@@ -14,19 +13,18 @@ const CURVE_DIRECTIONS = Object.freeze({
 function curvePath(direction, size) {
 
     if (!Object.values(CURVE_DIRECTIONS).includes(direction) ||
-        // direction === CURVE_DIRECTIONS.NONE ||
         !(size > 0)
     ) {
         throw Error('bad argument');
     }
 
     const factorMatrix1 = [
-            [0.5, 0.1],
-            [0.5, 0.45],
-            [0.5, 0.5],
-            [1, 0.05],
-            [0, 0.4],
-            [0.5, 0.5],
+            [1, 0.2],
+            [1, 0.9],
+            [1, 1],
+            [2, 0.1],
+            [0, 0.8],
+            [1, 1],
         ].map(([x, y]) =>
             [CURVE_DIRECTIONS.UP, CURVE_DIRECTIONS.DOWN].includes(direction) ?
             [x, y] : [y, x]
@@ -81,28 +79,21 @@ function edgePath(orientation, size, curveDirection, curveSize) {
         !(size > 0) ||
         // (curveDirection !== CURVE_DIRECTIONS.NONE && (
             !(curveSize > 0) ||
-            curveSize >= size
+            curveSize >= size / 2
         // ))
     ) {
         throw Error("bad argument");
     }
 
     const lineMark = (orientation === ORIENTATION.HORIZONTAL) ? 'h' : 'v';
-
-    // if (curveDirection === CURVE_DIRECTIONS.NONE) {
-    //     return `${lineMark}${size}`;
-    // } else {
-        const linePart = `${lineMark}${(size - curveSize) / 2}`;
-        return `${linePart}${curvePath(curveDirection, curveSize)}${linePart}`;
-    // }
+    const linePart = `${lineMark}${(size - 2 * curveSize) / 2}`;
+    return `${linePart}${curvePath(curveDirection, curveSize)}${linePart}`;
 }
 
-function edgePaths({ pieceWidth, pieceHeight }) {
+function edgePaths({ pieceWidth, pieceHeight, curveSize }) {
     if (!(pieceWidth > 0 && pieceHeight > 0)) {
         throw Error('bad argument');
     }
-
-    const curveSize = Math.min(pieceWidth, pieceHeight) * 0.5;
 
     return {
         horizontalPlain: `h${pieceWidth}`,
@@ -137,19 +128,37 @@ function edgePaths({ pieceWidth, pieceHeight }) {
 function randomizedCurvedPathGrid({ curvedUp, curvedRight, curvedDown, curvedLeft, cols, rows }) {
 
     return({
-        horizontal: Array(cols).fill().map(() =>
-                Array(rows - 1).fill().map(() =>
+        horizontal: Array.from({length: cols}, () =>
+                Array.from({length: rows - 1}, () =>
                     Math.random() < 0.5 ?
                     curvedUp : curvedDown
                 )
             ),
-        vertical: Array(rows).fill().map(() =>
-                Array(cols - 1).fill().map(() =>
+        vertical: Array.from({length: rows}, () =>
+                Array.from({length: cols - 1}, () =>
                     Math.random() < 0.5 ?
                     curvedRight : curvedLeft
                 )
             )
     });
+}
+
+function piecePath({ row, col, pathGrid, curveSize, pieceWidth, pieceHeight }) {
+
+    const top = (row === 0) ?
+            `h${pieceWidth}` : pathGrid.horizontal[col][row - 1],
+        right = (col === pathGrid.horizontal.length - 1) ?
+            `v${pieceHeight}` : pathGrid.vertical[row][col],
+        left = (col === 0) ?
+            `v${pieceHeight}` : pathGrid.vertical[row][col - 1],
+        bottom = (row === pathGrid.vertical.length - 1) ?
+            `h${pieceWidth}` : pathGrid.horizontal[col][row];
+
+    if (!(top && right && left && bottom)) {
+        console.warn({top, right, left, bottom});
+    }
+
+    return `M${curveSize},${curveSize}${top}${right}M${curveSize},${curveSize}${left}${bottom}`;
 }
 
 function curvedGridCombinedPath({ horizontalPaths, verticalPaths, pieceWidth, pieceHeight }) {
@@ -209,6 +218,7 @@ export {
     edgePath,
     edgePaths,
     randomizedCurvedPathGrid,
+    piecePath,
     curvedGridCombinedPath,
     dataUrlShapeFromPath,
     SVGFromPath

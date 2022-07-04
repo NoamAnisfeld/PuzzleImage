@@ -5,14 +5,15 @@ import { setDropZone } from './DropFiles';
 import { ImagePiece } from './ImagePiece';
 import { debugLog } from './DebugTools'
 import {
-		ORIENTATION,
-		CURVE_DIRECTIONS,
-		curvePath,
-		edgePath,
+		// ORIENTATION,
+		// CURVE_DIRECTIONS,
+		// curvePath,
+		// edgePath,
 		edgePaths, 
 		randomizedCurvedPathGrid,
+		piecePath,
 		curvedGridCombinedPath,
-		dataUrlShapeFromPath,
+		// dataUrlShapeFromPath,
 		SVGFromPath
 	} from './puzzleCurvePaths';
 
@@ -22,21 +23,20 @@ const
 			"https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
 		imageWidth: null,
 		imageHeight: null,
+		curveSize: null,
 		imageAspectRatio : 1,
-		setImageAspectRatio: null,
 		rows: 3,
 		cols: 2,
 		zIndexArray: [],
 		curvedPathsMatrixes: {
 			horizontal: [],
 			vertical: []
-		}
+		},
 	},
 	GlobalState = createContext(initialGlobalState);
 
-function MainImage() {
-	const globalState = useContext(GlobalState),
-		ref = useRef();
+function MainImage({ setImageAspectRatio }) {
+	const ref = useRef();
 
 	useEffect(() => setDropZone(ref.current), []);
 
@@ -44,10 +44,9 @@ function MainImage() {
 		<img
 			id="main-image"
 			ref={ref}
-			src={globalState.imageUrl}
+			src={useContext(GlobalState).imageUrl}
 			alt=""
-			onLoad={(e) =>
-				globalState.setImageAspectRatio(
+			onLoad={(e) => setImageAspectRatio(
 					e.target.naturalWidth / e.target.naturalHeight
 				)
 			}
@@ -55,11 +54,61 @@ function MainImage() {
 	);
 }
 
-function GameBoard({ /* imageWidth, imageHeight, rows, cols, */ gameStarted }) {
+function PieceCollection({ container, curvedPathGrid }) {
+
+	const {
+		imageWidth,
+		imageHeight,
+		rows,
+		cols,
+		curveSize,
+		zIndexArray
+	} = useContext(GlobalState);
+
+	const pieceWidth = imageWidth / cols,
+		pieceHeight = imageHeight / rows;
+
+	return (<>
+		{
+			Array.from({length: rows}, (_, row) =>
+				Array.from({length: cols}, (_, col) =>
+					<ImagePiece
+						width={pieceWidth}
+						height={pieceHeight}
+						key={`${row}/${col}`}
+						row={row}
+						col={col}
+						curveSize={curveSize}
+						path={piecePath({
+							row,
+							col,
+							pathGrid: curvedPathGrid,
+							curveSize,
+							pieceWidth,
+							pieceHeight
+						})}
+						container={container}
+						zIndexArray={zIndexArray}
+					/>
+				) 
+			)
+		}
+	</>);
+}
+
+function GameBoard({ setImageAspectRatio, gameStarted }) {
 	debugLog("<GameBoard> is rendered");
 
 	const ref = useRef(null),
-		{ imageWidth, imageHeight, rows, cols, zIndexArray, curvedPathsMatrixes } =
+		{
+			imageWidth,
+			imageHeight,
+			rows,
+			cols,
+			zIndexArray,
+			curvedPathsMatrixes,
+			curveSize
+		} =
 			useContext(GlobalState),
 		pieceWidth = imageWidth / cols,
 		pieceHeight = imageHeight / rows;
@@ -73,7 +122,7 @@ function GameBoard({ /* imageWidth, imageHeight, rows, cols, */ gameStarted }) {
 				curvedRight,
 				curvedDown,
 				curvedLeft
-			} = edgePaths({ pieceWidth, pieceHeight });
+			} = edgePaths({ pieceWidth, pieceHeight, curveSize });
 
 			return randomizedCurvedPathGrid({
 				curvedUp,
@@ -83,91 +132,8 @@ function GameBoard({ /* imageWidth, imageHeight, rows, cols, */ gameStarted }) {
 				cols,
 				rows
 			});
-			
-			// curveSize = Math.min(pieceWidth, pieceHeight) * 0.5,
-			// 	horizontalPlain = edgePath(
-			// 		ORIENTATION.HORIZONTAL,
-			// 		pieceWidth,
-			// 		CURVE_DIRECTIONS.NONE
-			// 	),
-			// 	verticalPlain = edgePath(
-			// 		ORIENTATION.VERTICAL,
-			// 		pieceHeight,
-			// 		CURVE_DIRECTIONS.NONE
-			// 	),
-			// 	curvedUp = edgePath(
-			// 		ORIENTATION.HORIZONTAL,
-			// 		pieceWidth,
-			// 		CURVE_DIRECTIONS.UP,
-			// 		curveSize
-			// 	),
-			// 	curvedDown = edgePath(
-			// 		ORIENTATION.HORIZONTAL,
-			// 		pieceWidth,
-			// 		CURVE_DIRECTIONS.DOWN,
-			// 		curveSize
-			// 	),
-			// 	curvedRight = edgePath(
-			// 		ORIENTATION.VERTICAL,
-			// 		pieceHeight,
-			// 		CURVE_DIRECTIONS.RIGHT,
-			// 		curveSize
-			// 	),
-			// 	curvedLeft = edgePath(
-			// 		ORIENTATION.VERTICAL,
-			// 		pieceHeight,
-			// 		CURVE_DIRECTIONS.LEFT,
-			// 		curveSize
-			// 	);
-
-			// const horizontalPaths = [];
-			// for (let col = 0; col < cols; col++) {
-			// 	// const x = col * pieceWidth;
-			// 	const columnEdges = [/*  horizontalPlain  */];
-			// 	// let y = pieceHeight;
-			// 	for (let row = 0; row < rows - 1; row++) {
-			// 		columnEdges.push(
-			// 			Math.random() < 0.5 ?
-			// 			curvedUp : curvedDown
-			// 		)
-			// 		// y += pieceHeight;
-			// 	}
-			// 	// columnEdges.push(horizontalPlain);
-
-			// 	horizontalPaths.push(columnEdges);
-			// }
-
-			// const verticalPaths = [];
-			// for (let row = 0; row < rows; row++) {
-			// 	// const y = row * pieceHeight;
-			// 	const rowEdges = [/*  verticalPlain  */];
-			// 	// let x = pieceWidth;
-			// 	for (let col = 0; col < cols - 1; col++) {
-			// 		rowEdges.push(
-			// 			Math.random() < 0.5 ?
-			// 			curvedRight : curvedLeft
-			// 		);
-			// 		// x += pieceWidth;
-			// 	}
-			// 	// rowEdges.push(verticalPlain);
-
-			// 	verticalPaths.push(rowEdges);
-			// }
-
-			// return {
-			// 	horizontal: horizontalPaths,
-			// 	vertical: verticalPaths
-			// }
 		},
 			[pieceWidth, pieceHeight, rows, cols]
-		// ),
-		// curvedGridDataUrl = useMemo(() => {
-		// 	const path = curvedGridPaths.horizontal.flat().join('') +
-		// 		curvedGridPaths.vertical.flat().join('');
-			
-		// 	return dataUrlShapeFromPath(path);
-		// },
-		// 	[pieceWidth, pieceHeight, rows, cols]
 		);
 
 	const combinedPath = useMemo(() =>
@@ -180,38 +146,19 @@ function GameBoard({ /* imageWidth, imageHeight, rows, cols, */ gameStarted }) {
 			[curvedPathGrid, pieceWidth, pieceHeight]
 		);
 
-	function makePieces(container) {
-		const array = [];
-		for (let row = 1; row <= rows; row++) {
-			for (let col = 1; col <= cols; col++) {
-				array.push(
-					<ImagePiece
-						width={pieceWidth}
-						height={pieceHeight}
-						key={`${row}/${col}`}
-						row={row}
-						col={col}
-						plainEdges = {{
-							top: row === 1,
-							left: col === 1,
-							bottom: row === rows,
-							right: col === cols,
-						}}
-						container={container}
-						zIndexArray={zIndexArray}
-					/>
-				);
-			}
-		}
-		return array;
-	}
-
 	return (
 		<div id="game-wrapper">
 			<div id="puzzle-frame" ref={ref}>
 				{ gameStarted ?
-					makePieces(ref.current) :
-					<MainImage />
+					<PieceCollection
+						container={ref.current}
+						curvedPathGrid={curvedPathGrid}
+					/> :
+					<MainImage
+						{...{
+							setImageAspectRatio
+						}}
+					/>
 				}
 				<SVGFromPath
 					className='curves-SVG'
@@ -225,29 +172,6 @@ function GameBoard({ /* imageWidth, imageHeight, rows, cols, */ gameStarted }) {
 					fill="none" stroke="#fff" strokeWidth="5"
 					path={combinedPath}
 				/>
-					{/* {[
-						...curvedGridPaths.horizontal,
-						...curvedGridPaths.vertical
-					].flat().map(path =>
-						<path d={path} />
-					)}
-					{[
-						...(curvedGridPaths.horizontal.map((col, colIndex) =>
-							col.map((path, rowIndex) =>
-								<path
-									d={`M${colIndex * pieceWidth},${rowIndex * pieceHeight}${path}`}
-								/>
-							)
-						).flat()),
-						...(curvedGridPaths.vertical.map((row, rowIndex) =>
-							row.map((path, colIndex) =>
-								<path
-									d={`M${colIndex * pieceWidth},${rowIndex * pieceHeight}${path}`}
-								/>
-							)
-						).flat()),
-					]}
-				</SVGFromPath> */}
 			</div>
 		</div>
 	);
@@ -273,6 +197,8 @@ function App() {
 		}, [imageAspectRatio]),
 		[rows, setRows] = useState(globalState.rows),
 		[cols, setCols] = useState(globalState.cols),
+		[pieceWidth, pieceHeight] = [ imageWidth / cols, imageHeight / rows],
+		curveSize = Math.min(pieceWidth, pieceHeight) * 0.25,
 		[gameStarted, setGameStarted] = useState(false);
 		
 	return (
@@ -281,10 +207,9 @@ function App() {
 			...{
 				imageUrl,
 				imageAspectRatio,
-				// ToDo: Perhaps take out of global state
-				setImageAspectRatio,
 				imageWidth,
-				imageHeight
+				imageHeight,
+				curveSize
 			}
 		}}>
 			<div
@@ -298,20 +223,21 @@ function App() {
 				}}
 			>
 				<ControlPanel
-					rows={rows}
-					cols={cols}
-					setImageUrl={setImageUrl}
-					setRows={setRows}
-					setCols={setCols}
+					{...{
+						rows,
+						cols,
+						setImageUrl,
+						setRows,
+						setCols
+					}}
 					startGameCallback={() => setGameStarted(true)}
 				/>
 				<GameBoard
-					imageUrl={imageUrl}
-					// imageWidth={imageWidth}
-					// imageHeight={imageHeight}
-					// rows={rows}
-					// cols={cols}
-					gameStarted={gameStarted}
+					{...{
+						imageUrl,
+						setImageAspectRatio,
+						gameStarted
+					}}
 				/>
 			</div>
 		</GlobalState.Provider>
