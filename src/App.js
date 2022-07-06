@@ -2,7 +2,7 @@ import './App.scss';
 import { useState, useRef, createContext, useContext, useEffect, useMemo } from 'react';
 import { ControlPanel } from './ControlPanel';
 import { setDropZone } from './DropFiles';
-import { ImagePiece } from './ImagePiece';
+import { ImagePieceCollection } from './ImagePieces';
 import { debugLog } from './DebugTools'
 import {
 		// ORIENTATION,
@@ -11,7 +11,7 @@ import {
 		// edgePath,
 		edgePaths, 
 		randomizedCurvedPathGrid,
-		piecePath,
+		// piecePath,
 		curvedGridCombinedPath,
 		// dataUrlShapeFromPath,
 		SVGFromPath
@@ -27,7 +27,6 @@ const
 		imageAspectRatio : 1,
 		rows: 3,
 		cols: 2,
-		zIndexArray: [],
 		curvedPathsMatrixes: {
 			horizontal: [],
 			vertical: []
@@ -54,48 +53,6 @@ function MainImage({ setImageAspectRatio }) {
 	);
 }
 
-function PieceCollection({ container, curvedPathGrid }) {
-
-	const {
-		imageWidth,
-		imageHeight,
-		rows,
-		cols,
-		curveSize,
-		zIndexArray
-	} = useContext(GlobalState);
-
-	const pieceWidth = imageWidth / cols,
-		pieceHeight = imageHeight / rows;
-
-	return (<>
-		{
-			Array.from({length: rows}, (_, row) =>
-				Array.from({length: cols}, (_, col) =>
-					<ImagePiece
-						width={pieceWidth}
-						height={pieceHeight}
-						key={`${row}/${col}`}
-						row={row}
-						col={col}
-						curveSize={curveSize}
-						path={piecePath({
-							row,
-							col,
-							pathGrid: curvedPathGrid,
-							curveSize,
-							pieceWidth,
-							pieceHeight
-						})}
-						container={container}
-						zIndexArray={zIndexArray}
-					/>
-				) 
-			)
-		}
-	</>);
-}
-
 function GameBoard({ setImageAspectRatio, gameStarted }) {
 	debugLog("<GameBoard> is rendered");
 
@@ -105,8 +62,6 @@ function GameBoard({ setImageAspectRatio, gameStarted }) {
 			imageHeight,
 			rows,
 			cols,
-			// zIndexArray,
-			// curvedPathsMatrixes,
 			curveSize
 		} =
 			useContext(GlobalState),
@@ -150,9 +105,16 @@ function GameBoard({ setImageAspectRatio, gameStarted }) {
 		<div id="game-wrapper">
 			<div id="puzzle-frame" ref={ref}>
 				{ gameStarted ?
-					<PieceCollection
+					<ImagePieceCollection
 						container={ref.current}
 						curvedPathGrid={curvedPathGrid}
+						{...{
+							imageWidth,
+							imageHeight,
+							rows,
+							cols,
+							curveSize
+						}}
 					/> :
 					<MainImage
 						{...{
