@@ -1,9 +1,8 @@
-import React from 'react';
+import './App.scss';
+import GameBoard from './GameBoard';
 
 function App() {
-    return <div>
-        Here is a puzzle application
-    </div>
+    return <GameBoard />
 }
 
 export default App;
