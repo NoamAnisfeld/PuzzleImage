@@ -77,12 +77,6 @@
 	background: linear-gradient(#FFF8 0 0), var(--image) 0 0/100% white;
 }
 
-#main-image {
-	// animation: fadeIn 4s ease-in;
-	width: var(--imageWidth);
-	vertical-align: middle;
-}
-
 .image-piece {
 	position: absolute;
 	left: calc(50% - var(--width) / (2 * var(--cols)));

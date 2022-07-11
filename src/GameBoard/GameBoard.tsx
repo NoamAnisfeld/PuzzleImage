@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import MainImage from "./MainImage";
+import MainImage from "../MainImage/MainImage";
 
 function GameBoard({
     imageUrl,

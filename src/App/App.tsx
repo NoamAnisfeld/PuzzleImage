@@ -1,6 +1,6 @@
 import './App.scss';
 import { useState, useEffect, createContext, useContext } from 'react';
-import GameBoard from './GameBoard';
+import GameBoard from '../GameBoard/GameBoard';
 
 const
     windowDimensions = {

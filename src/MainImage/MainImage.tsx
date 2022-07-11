@@ -1,4 +1,5 @@
 import React from "react";
+import './MainImage.scss';
 
 export default function MainImage({
     imageUrl,
