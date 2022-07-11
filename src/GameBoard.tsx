@@ -1,23 +1,29 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import MainImage from "./MainImage";
 
 function GameBoard({
     imageUrl,
-    imageWidth
+    imageWidth,
+    setImageAspectRatio
 }: {
     imageUrl: string,
-    imageWidth: number
+    imageWidth: number,
+    setImageAspectRatio: (n: number) => void
 }) {
-    const [imageAspectRatio, setImageAspectRatio] = useState(1);
-
-    return <div id="game-wrapper">
-        <MainImage {...{
-            imageUrl,
-            imageWidth,
-            setImageAspectRatio
-        }}
-        />
-    </div>
+    return <div
+            id="game-wrapper"
+            style={
+                {
+                    '--imageWidth': `${imageWidth}px`
+                } as React.CSSProperties & {'--imageWidth': string}
+            }
+        >
+            <MainImage {...{
+                imageUrl,
+                imageWidth,
+                setImageAspectRatio
+            }} />
+        </div>
 }
 
 export default GameBoard;

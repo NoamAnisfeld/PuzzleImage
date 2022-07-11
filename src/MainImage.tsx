@@ -2,12 +2,10 @@ import React from "react";
 
 export default function MainImage({
     imageUrl,
-    imageWidth,
     setImageAspectRatio,
     handleError
 }: {
     imageUrl: string,
-    imageWidth: number,
     setImageAspectRatio: (aspectRatio: number) => void,
     handleError?: () => void
 }) {
@@ -18,8 +16,8 @@ export default function MainImage({
     }
 
     return <img
+        id="main-image"
         src={imageUrl}
-        style={{width: imageWidth}}
         onLoad={handleImageLoad}
         onError={handleError || null}
     />

@@ -1,9 +1,5 @@
 // @import './utils.scss';
 
-h1 {
-	text-align: center;
-}
-
 #app {
 	display: grid;
 	justify-items: center;
@@ -82,8 +78,9 @@ h1 {
 }
 
 #main-image {
-	animation: fadeIn 4s ease-in;
-	width: var(--width);
+	// animation: fadeIn 4s ease-in;
+	width: var(--imageWidth);
+	vertical-align: middle;
 }
 
 .image-piece {
