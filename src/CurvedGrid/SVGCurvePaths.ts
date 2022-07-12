@@ -3,19 +3,62 @@ import { validate } from '../utils';
 type SVGPath = string;
 type Direction = 'up' | 'down' | 'left' | 'right';
 
-// interface LinesGrid<T> {
-//     horizontal: T[][],
-//     vertical: T[][]
-// }
+interface CurveDirectionsGrid {
+    horizontal: ('up' | 'down')[][],
+    vertical: ('right' | 'left')[][]
+}
 
-// const grid: LinesGrid<SVGPath> = {
-//     horizontal: [
-//         []
-//     ],
-//     vertical: [
-//         []
-//     ]
-// }
+function randomizedCurveDirectionsGrid(rows: number, cols: number): CurveDirectionsGrid {
+    return {
+        horizontal: Array.from({ length: cols }, () =>
+            Array.from({ length: rows - 1 }, () =>
+                Math.random() < 0.5 ? 'up' : 'down')),
+
+        vertical: Array.from({ length: rows }, () =>
+            Array.from({ length: cols - 1 }, () =>
+                Math.random() < 0.5 ? 'right' : 'left'))
+    }
+}
+
+const CURVE_COORDINATES: {
+    up: number[],
+    right: number[],
+    down: number[],
+    left: number[]
+} = {
+    up: [
+        1, -0.2, // control point
+        -1, -0.9, // control point
+        1, -1,
+        2, 0.1, // control point
+        0, 0.8, // control point
+        1, 1
+    ],
+    down: [
+        1, 0.2,
+        -1, 0.9,
+        1, 1,
+        2, -0.1,
+        0, -0.8,
+        1, -1
+    ],
+    right: [
+        0.2, 1,
+        0.9, -1,
+        1, 1,
+        -0.1, 2,
+        -0.8, 0,
+        -1, 1
+    ],
+    left: [
+        -0.2, 1,
+        -0.9, -1,
+        -1, 1,
+        0.1, 2,
+        0.8, 0,
+        1, 1
+    ]
+};
 
 function singleCurvedLinePath({
     length,
@@ -32,50 +75,11 @@ function singleCurvedLinePath({
         length > (2 * curveSize)
     );
 
-    const CURVE_COORDINATES: {
-        up: number[],
-        right: number[],
-        down: number[],
-        left: number[]
-    } = {
-        up: [
-            1, -0.2, // control point
-            -1, -0.9, // control point
-            1, -1,
-            2, 0.1, // control point
-            0, 0.8, // control point
-            1, 1
-        ],
-        down: [
-            1, 0.2,
-            -1, 0.9,
-            1, 1,
-            2, -0.1,
-            0, -0.8,
-            1, -1
-        ],
-        right: [
-            0.2, 1,
-            0.9, -1,
-            1, 1,
-            -0.1, 2,
-            -0.8, 0,
-            -1, 1
-        ],
-        left: [
-            -0.2, 1,
-            -0.9, -1,
-            -1, 1,
-            0.1, 2,
-            0.8, 0,
-            1, 1
-        ]
-    };
-
     const curveBasisLength = 2 * curveSize,
-        lineOrientation = curveDirection === 'up' || curveDirection === 'down' ?
-            'h' : 'v',
-        linePartLength = (length - curveBasisLength) / 2;
+        linePartLength = (length - curveBasisLength) / 2,
+        lineOrientation =
+            curveDirection === 'up' || curveDirection === 'down' ?
+            'h' : 'v';
 
     const linePath = lineOrientation + linePartLength,
         curvePath = 'c' + CURVE_COORDINATES[curveDirection].map(
@@ -86,4 +90,8 @@ function singleCurvedLinePath({
 }
 
 export { SVGPath, Direction };
-export { singleCurvedLinePath };
+
+export {
+    randomizedCurveDirectionsGrid,
+    singleCurvedLinePath
+};
