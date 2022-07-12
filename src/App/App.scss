@@ -1,8 +1,4 @@
-@import './utils.scss';
-
-h1 {
-	text-align: center;
-}
+// @import './utils.scss';
 
 #app {
 	display: grid;
@@ -54,36 +50,11 @@ h1 {
 	}
 }
 
-#game-wrapper {
-	margin: 1em auto;
-	width: min-content;
-	height: min-content;
-	border: 20px groove brown;
-	border-style: ridge groove groove ridge;
-	background-image: repeating-linear-gradient(
-			to right,
-			blue 0 1px,
-			transparent 0 calc(var(--width) / var(--cols) - 1px),
-			blue calc(var(--width) / var(--cols))
-		),
-		repeating-linear-gradient(
-			to bottom,
-			blue 0 1px,
-			transparent 0 calc(var(--height) / var(--rows) - 1px),
-			blue calc(var(--height) / var(--rows))
-		);
-}
-
 #puzzle-frame {
 	position: relative;
 	width: var(--width);
 	height: var(--height);
 	background: linear-gradient(#FFF8 0 0), var(--image) 0 0/100% white;
-}
-
-#main-image {
-	animation: fadeIn 4s ease-in;
-	width: var(--width);
 }
 
 .image-piece {

@@ -1,0 +1,20 @@
+#game-wrapper {
+    position: relative;
+	margin: 1em auto;
+	width: min-content;
+	height: min-content;
+	border: 20px groove brown;
+	border-style: ridge groove groove ridge;
+// 	background-image: repeating-linear-gradient(
+// 			to right,
+// 			blue 0 1px,
+// 			transparent 0 calc(var(--width) / var(--cols) - 1px),
+// 			blue calc(var(--width) / var(--cols))
+// 		),
+// 		repeating-linear-gradient(
+// 			to bottom,
+// 			blue 0 1px,
+// 			transparent 0 calc(var(--height) / var(--rows) - 1px),
+// 			blue calc(var(--height) / var(--rows))
+// 		);
+}
