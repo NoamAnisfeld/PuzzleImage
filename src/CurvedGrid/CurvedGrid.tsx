@@ -1,5 +1,5 @@
 import './CurvedGrid.scss';
-import { singleCurvedLinePath } from './SVGCurvePaths';
+import { singleCurvedLinePath } from '../SVGPaths/SVGCurvePaths';
 
 function CurvedGrid({
     imageWidth,
