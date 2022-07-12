@@ -1,13 +1,17 @@
 import React, { useState } from "react";
+import './GameBoard.scss';
 import MainImage from "../MainImage/MainImage";
+import CurvedGrid from "../CurvedGrid/CurvedGrid";
 
 function GameBoard({
     imageUrl,
     imageWidth,
+    imageHeight,
     setImageAspectRatio
 }: {
     imageUrl: string,
     imageWidth: number,
+    imageHeight: number,
     setImageAspectRatio: (n: number) => void
 }) {
     return <div
@@ -20,9 +24,13 @@ function GameBoard({
         >
             <MainImage {...{
                 imageUrl,
-                imageWidth,
+                // imageWidth,
                 setImageAspectRatio
             }} />
+            <CurvedGrid {...{
+                imageWidth,
+                imageHeight
+            }}/>
         </div>
 }
 

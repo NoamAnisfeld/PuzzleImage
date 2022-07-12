@@ -55,6 +55,7 @@ function App() {
     return <GameBoard {...{
         imageUrl,
         imageWidth,
+		imageHeight: imageWidth / imageAspectRatio,
 		setImageAspectRatio
     }}/>
 }
