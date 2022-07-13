@@ -8,6 +8,15 @@ interface CurveDirectionsGrid {
     vertical: ('right' | 'left')[][]
 }
 
+interface SVGPathsGrid {
+    horizontal: SVGPath[][],
+    vertical: SVGPath[][]
+}
+
+function limitPrecision(n: number) {
+    return Math.round(n * 100) / 100;
+}
+
 function randomizedCurveDirectionsGrid(rows: number, cols: number): CurveDirectionsGrid {
     return {
         horizontal: Array.from({ length: cols }, () =>
@@ -76,22 +85,94 @@ function singleCurvedLinePath({
     );
 
     const curveBasisLength = 2 * curveSize,
-        linePartLength = (length - curveBasisLength) / 2,
+        linePartLength = limitPrecision((length - curveBasisLength) / 2),
         lineOrientation =
             curveDirection === 'up' || curveDirection === 'down' ?
             'h' : 'v';
 
     const linePath = lineOrientation + linePartLength,
         curvePath = 'c' + CURVE_COORDINATES[curveDirection].map(
-            n => n * curveSize).join(' '),
+            n => limitPrecision(n * curveSize)).join(' '),
         fullPath = linePath + curvePath + linePath;
 
     return fullPath;
 }
 
-export { SVGPath, Direction };
+function mapCurveDirectionsGridToSVGPathsGrid({
+    directionsGrid,
+    pieceWidth,
+    pieceHeight,
+    curveSize
+}: {
+    directionsGrid: CurveDirectionsGrid,
+    pieceWidth: number,
+    pieceHeight: number,
+    curveSize: number
+}): SVGPathsGrid {
+    validate(
+        [pieceWidth, pieceHeight, curveSize].every(value => value > 0) &&
+        [pieceWidth, pieceHeight].every(value => value > curveSize * 2)
+    );
 
+    const { horizontal, vertical } = directionsGrid;
+
+    return {
+        horizontal: horizontal.map(array =>
+            array.map(value => singleCurvedLinePath({
+                length: pieceWidth,
+                curveSize,
+                curveDirection: value
+            }))
+        ),
+
+        vertical: vertical.map(array =>
+            array.map(value => singleCurvedLinePath({
+                length: pieceHeight,
+                curveSize,
+                curveDirection: value
+            }))
+        )
+    };
+}
+
+function combinedSVGPathFromPathsGrid({
+    grid,
+    pieceWidth,
+    pieceHeight
+}:{
+    grid: SVGPathsGrid,
+    pieceWidth: number,
+    pieceHeight: number
+}) {
+    let path = '';
+
+    for (let col = 0; col < grid.horizontal.length; col++) {
+        const x = limitPrecision(pieceWidth * col);
+
+        for (let row = 0; row < grid.horizontal[col].length; row++) {
+            const y = limitPrecision(pieceHeight * (row + 1));
+
+            path += `M${x},${y}${grid.horizontal[col][row]}`;
+        }
+    }
+
+    for (let row = 0; row < grid.vertical.length; row++) {
+        const y = limitPrecision(pieceHeight * row);
+
+        for (let col = 0; col < grid.vertical[row].length; col++) {
+            const x = limitPrecision(pieceWidth * (col + 1));
+
+            path += `M${x},${y}${grid.vertical[row][col]}`;
+        }
+    }
+
+    return path;
+}
+
+export { SVGPath, Direction };
 export {
     randomizedCurveDirectionsGrid,
-    singleCurvedLinePath
+    singleCurvedLinePath,
+    mapCurveDirectionsGridToSVGPathsGrid,
+    combinedSVGPathFromPathsGrid
 };

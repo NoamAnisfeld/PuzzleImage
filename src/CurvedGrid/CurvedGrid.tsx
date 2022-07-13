@@ -1,5 +1,6 @@
 import './CurvedGrid.scss';
-import { singleCurvedLinePath } from '../SVGPaths/SVGCurvePaths';
+import { useState } from 'react';
+import { combinedSVGPathFromPathsGrid, mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid, singleCurvedLinePath } from '../SVGPaths/SVGCurvePaths';
 
 function CurvedGrid({
     imageWidth,
@@ -8,11 +9,27 @@ function CurvedGrid({
     imageWidth: number,
     imageHeight: number
 }) {
-    const rows = 2,
-        cols = 2,
+    const rows = 3,
+        cols = 3,
         pieceWidth = imageWidth / cols,
         pieceHeight = imageHeight / rows,
         curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
+
+    const [directionsGrid] = useState(
+        () => randomizedCurveDirectionsGrid(rows, cols));
+    
+    const pathsGrid = mapCurveDirectionsGridToSVGPathsGrid({
+        directionsGrid,
+        pieceWidth,
+        pieceHeight,
+        curveSize
+    });
+
+    const combinedPath = combinedSVGPathFromPathsGrid({
+        grid: pathsGrid,
+        pieceWidth,
+        pieceHeight
+    });
 
     return <svg
         id="curved-grid"
@@ -20,7 +37,8 @@ function CurvedGrid({
         strokeWidth="5"
         fill="none"
     >
-        <path d={`M0,${imageHeight / rows} ${singleCurvedLinePath({
+        <path d={combinedPath} />
+        {/* <path d={`M0,${imageHeight / rows} ${singleCurvedLinePath({
             length: imageWidth / cols,
             curveSize, 
             curveDirection: 'up'
@@ -39,7 +57,7 @@ function CurvedGrid({
             length: imageHeight / rows,
             curveSize, 
             curveDirection: 'left'
-        })}`} />
+        })}`} /> */}
     </svg>
 }
 
