@@ -1,6 +1,10 @@
 import './CurvedGrid.scss';
-import { useState } from 'react';
-import { combinedSVGPathFromPathsGrid, mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid, singleCurvedLinePath } from '../SVGPaths/SVGCurvePaths';
+import { useState, useMemo } from 'react';
+import {
+    randomizedCurveDirectionsGrid,
+    mapCurveDirectionsGridToSVGPathsGrid,
+    combinedSVGPathFromPathsGrid
+} from '../SVGPaths/SVGCurvePaths';
 
 function CurvedGrid({
     imageWidth,
@@ -15,21 +19,37 @@ function CurvedGrid({
         pieceHeight = imageHeight / rows,
         curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
 
+    // useState is used here to avoid unwanted re-randomizing
+    // (useMemo is not reliable enough to never recompute)
+    // ToDo: Find a cleaner method
     const [directionsGrid] = useState(
         () => randomizedCurveDirectionsGrid(rows, cols));
     
-    const pathsGrid = mapCurveDirectionsGridToSVGPathsGrid({
+    const pathsGrid = useMemo(() =>
+        mapCurveDirectionsGridToSVGPathsGrid({
+            directionsGrid,
+            pieceWidth,
+            pieceHeight,
+            curveSize
+        }),
+    [
         directionsGrid,
         pieceWidth,
         pieceHeight,
         curveSize
-    });
+    ]);
 
-    const combinedPath = combinedSVGPathFromPathsGrid({
-        grid: pathsGrid,
+    const combinedPath = useMemo(() =>
+        combinedSVGPathFromPathsGrid({
+            grid: pathsGrid,
+            pieceWidth,
+            pieceHeight
+        }
+    ), [
+        pathsGrid,
         pieceWidth,
-        pieceHeight
-    });
+        pieceHeight,
+    ]);
 
     return <svg
         id="curved-grid"
@@ -38,26 +58,6 @@ function CurvedGrid({
         fill="none"
     >
         <path d={combinedPath} />
-        {/* <path d={`M0,${imageHeight / rows} ${singleCurvedLinePath({
-            length: imageWidth / cols,
-            curveSize, 
-            curveDirection: 'up'
-        })}`} />
-        <path d={`M${imageWidth / cols},${imageHeight / rows} ${singleCurvedLinePath({
-            length: imageWidth / cols,
-            curveSize, 
-            curveDirection: 'down'
-        })}`} />
-        <path d={`M${imageWidth / cols},0 ${singleCurvedLinePath({
-            length: imageHeight / rows,
-            curveSize, 
-            curveDirection: 'right'
-        })}`} />
-        <path d={`M${imageWidth / cols},${imageHeight / rows} ${singleCurvedLinePath({
-            length: imageHeight / rows,
-            curveSize, 
-            curveDirection: 'left'
-        })}`} /> */}
     </svg>
 }
 
