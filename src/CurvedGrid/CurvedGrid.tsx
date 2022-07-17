@@ -13,7 +13,7 @@ function CurvedGrid({
     imageWidth: number,
     imageHeight: number
 }) {
-    const rows = 3,
+    const rows = 4,
         cols = 3,
         pieceWidth = imageWidth / cols,
         pieceHeight = imageHeight / rows,
