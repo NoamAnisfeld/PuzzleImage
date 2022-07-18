@@ -1,7 +1,9 @@
 import { validate } from '../utils';
 
 type SVGPath = string;
-type Direction = 'up' | 'down' | 'left' | 'right';
+type HorizontalDirection = 'right' | 'left';
+type VerticalDirection = 'up' | 'down';
+type Direction = HorizontalDirection | VerticalDirection;
 
 interface CurveDirectionsGrid {
     horizontal: ('up' | 'down')[][],
@@ -11,6 +13,13 @@ interface CurveDirectionsGrid {
 interface SVGPathsGrid {
     horizontal: SVGPath[][],
     vertical: SVGPath[][]
+}
+
+interface BoxWithCurvedEdges {
+    top?: Direction,
+    right?: Direction,
+    bottom?: Direction,
+    left?: Direction,
 }
 
 function limitPrecision(n: number) {
@@ -169,6 +178,38 @@ function combinedSVGPathFromPathsGrid({
     return path;
 }
 
+function extractPieceOutlinePath({
+    grid,
+    row,
+    col,
+    pieceWidth,
+    pieceHeight,
+    curveSize
+}: {
+    grid: SVGPathsGrid,
+    row: number,
+    col: number,
+    pieceWidth: number,
+    pieceHeight: number,
+    curveSize: number
+}): SVGPath {
+    const colArray = grid.horizontal[col],
+        rowArray = grid.vertical[row];
+    
+    const
+        top =
+            row === 0 ? `h${pieceWidth}` : colArray[row - 1],
+        bottom =
+            row === colArray.length - 1 ? `h${pieceWidth}` : colArray[row],
+        left = 
+            col === 0 ? `v${pieceHeight}` : rowArray[col],
+        right =
+            col === rowArray.length - 1 ? `v${pieceHeight}` : rowArray[col];
+
+    return `M${curveSize},${curveSize}${top}${right}` +
+        `M${curveSize},${curveSize}${left}${bottom}`;
+}
+
 // types and interfaces
 export { 
     Direction,
@@ -182,5 +223,6 @@ export {
     randomizedCurveDirectionsGrid,
     singleCurvedLinePath,
     mapCurveDirectionsGridToSVGPathsGrid,
-    combinedSVGPathFromPathsGrid
+    combinedSVGPathFromPathsGrid,
+    extractPieceOutlinePath
 };
