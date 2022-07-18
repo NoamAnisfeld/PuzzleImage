@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import './GameBoard.scss';
 import MainImage from "../MainImage/MainImage";
 import CurvedGrid from "../CurvedGrid/CurvedGrid";
+import ImagePiece from "../ImagePiece/ImagePiece";
 
 function GameBoard({
     imageUrl,
@@ -30,6 +31,9 @@ function GameBoard({
             <CurvedGrid {...{
                 imageWidth,
                 imageHeight
+            }}/>
+            <ImagePiece {...{
+                imageUrl,
             }}/>
         </div>
 }
