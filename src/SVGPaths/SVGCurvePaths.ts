@@ -193,18 +193,23 @@ function extractPieceOutlinePath({
     pieceHeight: number,
     curveSize: number
 }): SVGPath {
-    const colArray = grid.horizontal[col],
-        rowArray = grid.vertical[row];
+    const rowsInCol = grid.horizontal[col],
+        colsInRow = grid.vertical[row];
+    
+    validate(
+        rowsInCol instanceof Array &&
+        colsInRow instanceof Array
+    );
     
     const
         top =
-            row === 0 ? `h${pieceWidth}` : colArray[row - 1],
+            row === 0 ? `h${pieceWidth}` : rowsInCol[row - 1],
         bottom =
-            row === colArray.length - 1 ? `h${pieceWidth}` : colArray[row],
+            row === rowsInCol.length ? `h${pieceWidth}` : rowsInCol[row],
         left = 
-            col === 0 ? `v${pieceHeight}` : rowArray[col],
+            col === 0 ? `v${pieceHeight}` : colsInRow[col - 1],
         right =
-            col === rowArray.length - 1 ? `v${pieceHeight}` : rowArray[col];
+            col === colsInRow.length ? `v${pieceHeight}` : colsInRow[col];
 
     return `M${curveSize},${curveSize}${top}${right}` +
         `M${curveSize},${curveSize}${left}${bottom}`;

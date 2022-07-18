@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import './GameBoard.scss';
-import { mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
+import { extractPieceOutlinePath, mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
 import MainImage from "../MainImage/MainImage";
 import DrawCurvedGrid from "../CurvedGrid/CurvedGrid";
 import ImagePiece from "../ImagePiece/ImagePiece";
@@ -58,6 +58,14 @@ function GameBoard({
             }}/>
             <ImagePiece {...{
                 imageUrl,
+                shapePath: extractPieceOutlinePath({
+                    grid: svgPathsGrid,
+                    row: 2,
+                    col: 1,
+                    pieceWidth,
+                    pieceHeight,
+                    curveSize
+                })
             }}/>
         </div>
 }
