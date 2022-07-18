@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import './GameBoard.scss';
+import { mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
 import MainImage from "../MainImage/MainImage";
-import CurvedGrid from "../CurvedGrid/CurvedGrid";
+import DrawCurvedGrid from "../CurvedGrid/CurvedGrid";
 import ImagePiece from "../ImagePiece/ImagePiece";
 
 function GameBoard({
@@ -15,6 +16,28 @@ function GameBoard({
     imageHeight: number,
     setImageAspectRatio: (n: number) => void
 }) {
+    const rows = 4, // temporary value for development demo
+        cols = 3,
+        pieceWidth = imageWidth / cols,
+        pieceHeight = imageHeight / rows,
+        curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
+
+    const
+        [directionsGrid, setDirectionsGrid] =
+            useState(() => randomizedCurveDirectionsGrid(rows, cols)),
+        svgPathsGrid =
+            useMemo(() => mapCurveDirectionsGridToSVGPathsGrid({
+                directionsGrid,
+                pieceWidth,
+                pieceHeight,
+                curveSize
+            }), [
+                directionsGrid,
+                pieceWidth,
+                pieceHeight,
+                curveSize
+            ]);
+
     return <div
             id="game-wrapper"
             style={
@@ -28,9 +51,10 @@ function GameBoard({
                 // imageWidth,
                 setImageAspectRatio
             }} />
-            <CurvedGrid {...{
-                imageWidth,
-                imageHeight
+            <DrawCurvedGrid {...{
+                svgPathsGrid,
+                pieceWidth,
+                pieceHeight
             }}/>
             <ImagePiece {...{
                 imageUrl,

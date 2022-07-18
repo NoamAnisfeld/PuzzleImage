@@ -169,7 +169,15 @@ function combinedSVGPathFromPathsGrid({
     return path;
 }
 
-export { SVGPath, Direction };
+// types and interfaces
+export { 
+    Direction,
+    CurveDirectionsGrid,
+    SVGPath,
+    SVGPathsGrid
+};
+
+// actual objects
 export {
     randomizedCurveDirectionsGrid,
     singleCurvedLinePath,
