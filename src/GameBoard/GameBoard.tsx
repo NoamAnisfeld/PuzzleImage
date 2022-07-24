@@ -38,6 +38,9 @@ function GameBoard({
                 curveSize
             ]);
 
+        const demoRow = 2,
+            demoCol = 1;
+
     return <div
             id="game-wrapper"
             style={
@@ -58,10 +61,15 @@ function GameBoard({
             }}/>
             <ImagePiece {...{
                 imageUrl,
+                imageWidth,
+                imageOffset: {
+                    x: pieceWidth * demoCol,
+                    y: pieceHeight * demoRow
+                },
                 shapePath: extractPieceOutlinePath({
                     grid: svgPathsGrid,
-                    row: 2,
-                    col: 1,
+                    row: demoRow,
+                    col: demoCol,
                     pieceWidth,
                     pieceHeight,
                     curveSize
