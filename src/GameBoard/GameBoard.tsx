@@ -79,6 +79,7 @@ function GameBoard({
             <PieceCollection {...{
                 imageUrl,
                 imageWidth,
+                imageHeight,
                 pieceWidth,
                 pieceHeight,
                 curveSize,

@@ -4,6 +4,7 @@ import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths
 function PieceCollection({
     imageUrl,
     imageWidth,
+    imageHeight,
     pieceWidth,
     pieceHeight,
     curveSize,
@@ -13,6 +14,7 @@ function PieceCollection({
 }: {
     imageUrl: string,
     imageWidth: number,
+    imageHeight: number,
     pieceWidth: number,
     pieceHeight: number,
     curveSize: number,
@@ -21,16 +23,17 @@ function PieceCollection({
     cols: number
 }) {
     return <>
-        {Array.from({ length: cols }, (_, col) =>
-            Array.from({ length: rows}, (_, row) =>
+        {Array.from({ length: rows }, (_, row) =>
+            Array.from({ length: cols}, (_, col) =>
                 <ImagePiece 
                     key="{row}/{col}"            
                     {...{
                         imageUrl,
                         imageWidth,
+                        imageHeight,
                         imageOffset: {
-                            x: pieceWidth * col,
-                            y: pieceHeight * row
+                            x: pieceWidth * col - curveSize,
+                            y: pieceHeight * row - curveSize
                         },
                         shapePath: extractPieceOutlinePath({
                             grid: svgPathsGrid,
@@ -39,7 +42,9 @@ function PieceCollection({
                             pieceWidth,
                             pieceHeight,
                             curveSize
-                        })
+                        }),
+                        row,
+                        col
                     }}
                 />
             )
