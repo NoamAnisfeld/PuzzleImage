@@ -57,24 +57,31 @@ function ImagePiece({
 
     return <svg
         className="image-piece"
-        stroke="green"
         fill="lime"
-        width={imageWidth} // looks like automatic sizing does not work well with SVG
+        width={imageWidth} // automatic sizing does not work well with SVG
         height={imageHeight}
+        clipPath={`url(#clip-path-${row}-${col})`}
         style={{top: position.y, left: position.x}}
+        onClick={makePieceDraggable}
     >
-        <path id={`outline-${row}-${col}`} d={shapePath} />
-        <clipPath id={`clip-path-${row}-${col}`}>
-            <use href={`#outline-${row}-${col}`} />
-        </clipPath>
+        <defs>
+            <path id={`outline-${row}-${col}`} d={shapePath} />
+            <clipPath id={`clip-path-${row}-${col}`}>
+                <use href={`#outline-${row}-${col}`} />
+            </clipPath>
+        </defs>
         <image
             href={imageUrl}
             width={imageWidth}
             height={imageHeight}
             x={- imageOffset.x}
             y={- imageOffset.y}
-            clipPath={`url(#clip-path-${row}-${col})`}
-            onClick={makePieceDraggable}
+        />
+        <use
+            href={`#outline-${row}-${col}`}
+            stroke="green"
+            stroke-width="5"
+            fill="none"
         />
     </svg>
 }
