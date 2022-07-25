@@ -1,17 +1,4 @@
 .image-piece {
 	position: absolute;
-	// left: calc(50% - var(--width) / (2 * var(--cols)));
-	// background-image: var(--image);
-	// background-size: var(--width);
-	// background-origin: border-box;
-	// background-repeat: no-repeat;
-	// min-width: 10px;
-	// min-height: 10px;
 	// touch-action: none;
-	// clip-path: path(var(--clip-path));
-	// border: var(--EXTRA_SPACE) solid #fff8;
 }
-
-// .image-piece.selected {
-// 	box-shadow: 0 0 10px blue;
-// }

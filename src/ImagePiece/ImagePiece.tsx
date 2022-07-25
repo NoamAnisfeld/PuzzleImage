@@ -10,16 +10,22 @@ interface Position {
 function ImagePiece({
     imageUrl,
     imageWidth,
+    imageHeight,
     imageOffset,
     shapePath,
+    row,
+    col
 } :{
     imageUrl: string,
     imageWidth: number,
+    imageHeight: number,
     imageOffset: {
         x: number,
         y: number
     }
     shapePath: SVGPath,
+    row: number,
+    col: number
 }) {
     const [position, setPosition] = useState<Position>({
         x: 0,
@@ -53,18 +59,21 @@ function ImagePiece({
         className="image-piece"
         stroke="green"
         fill="lime"
+        width={imageWidth} // looks like automatic sizing does not work well with SVG
+        height={imageHeight}
         style={{top: position.y, left: position.x}}
     >
-        <path id="outline" d={shapePath} />
-        <clipPath id="clip-path">
-            <use href="#outline" />
+        <path id={`outline-${row}-${col}`} d={shapePath} />
+        <clipPath id={`clip-path-${row}-${col}`}>
+            <use href={`#outline-${row}-${col}`} />
         </clipPath>
         <image
             href={imageUrl}
             width={imageWidth}
+            height={imageHeight}
             x={- imageOffset.x}
             y={- imageOffset.y}
-            clipPath="url(#clip-path)"
+            clipPath={`url(#clip-path-${row}-${col})`}
             onClick={makePieceDraggable}
         />
     </svg>
