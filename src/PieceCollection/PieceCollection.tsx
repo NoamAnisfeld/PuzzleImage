@@ -1,3 +1,4 @@
+import { useReducer } from "react";
 import ImagePiece from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
 
@@ -22,11 +23,24 @@ function PieceCollection({
     rows: number,
     cols: number
 }) {
+    function putPieceOnTopLogic(oldZIndexArray: string[], pieceKey: string): string[] {
+        const newZIndexArray = Array.from(oldZIndexArray);
+        const index = newZIndexArray.indexOf(pieceKey);
+
+        if (index !== -1) {
+            newZIndexArray.splice(index, 1);
+        }
+        newZIndexArray.push(pieceKey);
+
+        return newZIndexArray;
+    }
+
+    const [zIndexArray, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
+
     return <>
         {Array.from({ length: rows }, (_, row) =>
-            Array.from({ length: cols}, (_, col) =>
-                <ImagePiece 
-                    key="{row}/{col}"            
+            Array.from({ length: cols }, (_, col) =>
+                <ImagePiece
                     {...{
                         imageUrl,
                         imageWidth,
@@ -49,6 +63,12 @@ function PieceCollection({
                         row,
                         col
                     }}
+                    key={`${row}/${col}`}
+                    zIndex={
+                        (n => n === -1 ? null : n + 1)
+                            (zIndexArray.indexOf(`${row}/${col}`))
+                    }
+                    putOnTop={() => putPieceOnTop(`${row}/${col}`)}
                 />
             )
         ).flat()}

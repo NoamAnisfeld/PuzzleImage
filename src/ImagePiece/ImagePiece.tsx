@@ -17,8 +17,10 @@ function ImagePiece({
     imageOffset,
     shapePath,
     row,
-    col
-} :{
+    col,
+    zIndex,
+    putOnTop,
+}: {
     imageUrl: string,
     imageWidth: number,
     imageHeight: number,
@@ -31,12 +33,15 @@ function ImagePiece({
     }
     shapePath: SVGPath,
     row: number,
-    col: number
+    col: number,
+    zIndex: number,
+    putOnTop: () => void,
 }) {
     const [position, setPosition] = useState<Position>({
         x: col * pieceWidth - imageWidth,
         y: row * pieceHeight
-    })
+    });
+    const [isDragged, setIsDragged] = useState(false);
 
     function normalizePosition({x, y}: Position) {
         const normalized: Position = {x, y};
@@ -59,7 +64,10 @@ function ImagePiece({
         return normalized;
     }
 
-    function makePieceDraggable(event: React.MouseEvent) {
+    function startDrag(event: React.MouseEvent) {
+        setIsDragged(true);
+        putOnTop();
+
         const originalRelativePosition = {
             x: position.x - event.clientX,
             y: position.y - event.clientY
@@ -93,9 +101,10 @@ function ImagePiece({
         clipPath={`url(#clip-path-${row}-${col})`}
         style={{
             top: position.y - curveSize,
-            left: position.x - curveSize
+            left: position.x - curveSize,
+            zIndex
         }}
-        onClick={makePieceDraggable}
+        onClick={startDrag}
     >
         <defs>
             <path id={`outline-${row}-${col}`} d={shapePath} />
