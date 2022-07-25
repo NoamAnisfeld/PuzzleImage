@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from "react";
 import './GameBoard.scss';
-import { extractPieceOutlinePath, mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
+import { /* extractPieceOutlinePath, */ mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
 import MainImage from "../MainImage/MainImage";
 import DrawCurvedGrid from "../CurvedGrid/CurvedGrid";
-import ImagePiece from "../ImagePiece/ImagePiece";
+// import ImagePiece from "../ImagePiece/ImagePiece";
+import PieceCollection from "../PieceCollection/PieceCollection";
 
 function GameBoard({
     imageUrl,
@@ -38,8 +39,8 @@ function GameBoard({
                 curveSize
             ]);
 
-        const demoRow = 2,
-            demoCol = 1;
+        // const demoRow = 2,
+        //     demoCol = 1;
 
     return <div
             id="game-wrapper"
@@ -59,7 +60,7 @@ function GameBoard({
                 pieceWidth,
                 pieceHeight
             }}/>
-            <ImagePiece {...{
+            {/* <ImagePiece {...{
                 imageUrl,
                 imageWidth,
                 imageOffset: {
@@ -74,7 +75,18 @@ function GameBoard({
                     pieceHeight,
                     curveSize
                 })
-            }}/>
+            }}/> */}
+            <PieceCollection {...{
+                imageUrl,
+                imageWidth,
+                pieceWidth,
+                pieceHeight,
+                curveSize,
+                svgPathsGrid,
+                rows,
+                cols
+            }}
+            />
         </div>
 }
 
