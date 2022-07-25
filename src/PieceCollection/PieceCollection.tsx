@@ -31,6 +31,9 @@ function PieceCollection({
                         imageUrl,
                         imageWidth,
                         imageHeight,
+                        pieceWidth,
+                        pieceHeight,
+                        curveSize,
                         imageOffset: {
                             x: pieceWidth * col - curveSize,
                             y: pieceHeight * row - curveSize

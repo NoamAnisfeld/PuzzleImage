@@ -11,6 +11,9 @@ function ImagePiece({
     imageUrl,
     imageWidth,
     imageHeight,
+    pieceWidth,
+    pieceHeight,
+    curveSize,
     imageOffset,
     shapePath,
     row,
@@ -19,6 +22,9 @@ function ImagePiece({
     imageUrl: string,
     imageWidth: number,
     imageHeight: number,
+    pieceWidth: number,
+    pieceHeight: number,
+    curveSize: number,
     imageOffset: {
         x: number,
         y: number
@@ -28,9 +34,30 @@ function ImagePiece({
     col: number
 }) {
     const [position, setPosition] = useState<Position>({
-        x: 0,
-        y: 0
+        x: col * pieceWidth - imageWidth,
+        y: row * pieceHeight
     })
+
+    function normalizePosition({x, y}: Position) {
+        const normalized: Position = {x, y};
+
+        const remainderX = x % pieceWidth,
+            remainderY = y % pieceHeight;
+        
+        if (remainderX < 20) {
+            normalized.x -= remainderX;
+        } else if (pieceWidth - remainderX < 20) {
+            normalized.x += pieceWidth - remainderX;
+        }
+
+        if (remainderY < 20) {
+            normalized.y -= remainderY;
+        } else if (pieceHeight - remainderY < 20) {
+            normalized.y += pieceHeight - remainderY;
+        }
+
+        return normalized;
+    }
 
     function makePieceDraggable(event: React.MouseEvent) {
         const originalRelativePosition = {
@@ -45,23 +72,29 @@ function ImagePiece({
             })
         }
 
-        function removeHandlers(event: MouseEvent) {
+        function endDrag(event: MouseEvent) {
             event.stopPropagation();
+
+            setPosition(normalizePosition);
+
             window.removeEventListener('mousemove', movePieceHandler);
-            window.removeEventListener('click', removeHandlers, {capture: true});
+            window.removeEventListener('click', endDrag, {capture: true});
         }
         
         window.addEventListener('mousemove', movePieceHandler);
-        window.addEventListener('click', removeHandlers, {capture: true});
+        window.addEventListener('click', endDrag, {capture: true});
     }
-
+    
     return <svg
         className="image-piece"
         fill="lime"
         width={imageWidth} // automatic sizing does not work well with SVG
         height={imageHeight}
         clipPath={`url(#clip-path-${row}-${col})`}
-        style={{top: position.y, left: position.x}}
+        style={{
+            top: position.y - curveSize,
+            left: position.x - curveSize
+        }}
         onClick={makePieceDraggable}
     >
         <defs>
