@@ -1,0 +1,20 @@
+// from MDN, can't find where
+.visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px 1px 1px 1px);
+}
+
+@keyframes slideFromTop {
+	from {
+		transform: translateY(min(-100%, -100vh));
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+}

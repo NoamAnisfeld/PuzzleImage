@@ -18,6 +18,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  display: grid;
+  align-content: center;
+  height: 100vh;
+}
+
 code {
   /* create-react-app defaults */
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
