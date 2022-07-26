@@ -1,63 +1,90 @@
 import './App.scss';
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useReducer, useEffect, createContext, useContext } from 'react';
+import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
 import GameBoard from '../GameBoard/GameBoard';
 
-const
-    windowDimensions = {
-        width: window.innerWidth,
-        height: window.innerHeight
-    },
-	initialGlobalState = {
-		imageUrl:
-			"https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
-		// imageWidth: windowDimensions.width * 0.8,
-		// imageHeight: windowDimensions.height * 0.9,
-		// curveSize: 0,
-		// imageAspectRatio : 1,
-		rows: 3,
-		cols: 2,
-		// curvedPathsMatrixes: {
-		// 	horizontal: [[]],
-		// 	vertical: [[]]
-		// },
-	},
-	GlobalState = createContext(initialGlobalState);
+// const
+    // windowDimensions = {
+    //     width: window.innerWidth,
+    //     height: window.innerHeight
+    // },
+	// initialGlobalState: GlobalStateInterface = {
+	// 	imageUrl:
+	// 		"https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
+	// 	rows: 3,
+	// 	cols: 2,
+	// },
+	// GlobalState = createContext(initialGlobalState);
 
-function listenToWindowResize(callback: () => void) {
-	window.addEventListener('resize', callback);
-}
+// function fetchWindowDimensions() {
+// 	return {
+// 		width: window.innerWidth,
+// 		height: window.innerHeight
+// 	}
+// }
+
+// function listenToWindowResize(callback: () => void) {
+// 	window.addEventListener('resize', callback);
+// }
 
 function App() {
 
-	function fetchWindowDimensions() {
-		return {
-			width: window.innerWidth,
-			height: window.innerHeight
-		}
+	const [globalStateProvider, setGlobalStateProvider] =
+		useReducer(
+			function (
+				oldState: GlobalStateInterface,
+				newState: Partial<GlobalStateInterface>
+			): GlobalStateInterface {
+				return globalStateDoCalculations({...oldState, ...newState});
+			},
+			useContext(GlobalState)
+		);
+
+	function setImageUrl(url: string) {
+		setGlobalStateProvider({ imageUrl: url });
 	}
 
-    const
-		[imageUrl, setImageUrl] = useState(initialGlobalState.imageUrl),
-		[windowDimensions, setWindowDimensions] = useState(
-			fetchWindowDimensions),
-		imageMaxWidth = windowDimensions.width * 0.8,
-		imageMaxHeight = windowDimensions.height * 0.9,
-		[imageAspectRatio, setImageAspectRatio] = useState(1),
-		imageWidth = Math.min(
-			imageMaxWidth, imageMaxHeight * imageAspectRatio
-		);
+	function setImageAspectRatio(aspectRatio: number) {
+		console.log('setImageAspectRatio: ', aspectRatio);
+		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
+	}
+
+	// const
+	// 	[imageUrl, setImageUrl] = useState(initialGlobalState.imageUrl),
+	// 	[windowDimensions, setWindowDimensions] = useState(
+	// 		fetchWindowDimensions),
+	// 	[imageAspectRatio, setImageAspectRatio] = useState(1);
+
+	// const
+	// 	imageMaxWidth = windowDimensions.width * 0.8,
+	// 	imageMaxHeight = windowDimensions.height * 0.9,
+	// 	imageWidth = Math.min(
+	// 		imageMaxWidth, imageMaxHeight * imageAspectRatio
+	// 	);
+
+	// const { imageUrl, imageWidth } = globalStateProvider;
 	
 	useEffect(() =>
-		listenToWindowResize(() =>
-			setWindowDimensions(fetchWindowDimensions))
+		listenToWindowResize(() => 
+			setGlobalStateProvider(globalStateDoCalculations(globalStateProvider)))
 	, []);
 
-    return <GameBoard {...{
-        imageUrl,
-        imageWidth,
-		imageHeight: imageWidth / imageAspectRatio,
-		setImageAspectRatio
-    }}/>
+	// const { // deprecated
+	// 	imageUrl,
+	// 	imageWidth,
+	// 	imageHeight
+	// } = globalStateProvider;
+
+    return <GlobalState.Provider value={{...globalStateProvider}}>
+		<GameBoard
+			{...{
+			// 	imageUrl,
+			// 	imageWidth,
+			// 	imageHeight,
+				setImageAspectRatio
+			}}
+		/>
+	</GlobalState.Provider>
 }
 
 export default App;
