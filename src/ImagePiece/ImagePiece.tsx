@@ -9,12 +9,6 @@ interface Position {
 }
 
 function ImagePiece({
-    // imageUrl,
-    // imageWidth,
-    // imageHeight,
-    // pieceWidth,
-    // pieceHeight,
-    // curveSize,
     imageOffset,
     shapePath,
     row,
@@ -22,12 +16,6 @@ function ImagePiece({
     zIndex,
     putOnTop,
 }: {
-    // imageUrl: string,
-    // imageWidth: number,
-    // imageHeight: number,
-    // pieceWidth: number,
-    // pieceHeight: number,
-    // curveSize: number,
     imageOffset: {
         x: number,
         y: number

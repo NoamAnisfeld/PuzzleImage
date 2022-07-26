@@ -3,11 +3,9 @@ import { GlobalState } from "../GlobalState/GlobalState";
 import './MainImage.scss';
 
 export default function MainImage({
-    // imageUrl,
     setImageAspectRatio,
     handleError
 }: {
-    // imageUrl: string,
     setImageAspectRatio: (aspectRatio: number) => void,
     handleError?: () => void
 }) {

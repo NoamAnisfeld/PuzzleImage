@@ -4,30 +4,11 @@ import ImagePiece from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
 
 function PieceCollection({
-    // imageUrl,
-    // imageWidth,
-    // imageHeight,
-    // pieceWidth,
-    // pieceHeight,
-    // curveSize,
     svgPathsGrid,
-    // rows,
-    // cols
 }: {
-    // imageUrl: string,
-    // imageWidth: number,
-    // imageHeight: number,
-    // pieceWidth: number,
-    // pieceHeight: number,
-    // curveSize: number,
     svgPathsGrid: SVGPathsGrid,
-    // rows: number,
-    // cols: number
 }) {
     const {
-        // imageUrl,
-        // imageWidth,
-        // imageHeight,
         pieceWidth,
         pieceHeight,
         curveSize,
@@ -54,12 +35,6 @@ function PieceCollection({
             Array.from({ length: cols }, (_, col) =>
                 <ImagePiece
                     {...{
-                        // imageUrl,
-                        // imageWidth,
-                        // imageHeight,
-                        // pieceWidth,
-                        // pieceHeight,
-                        // curveSize,
                         imageOffset: {
                             x: pieceWidth * col - curveSize,
                             y: pieceHeight * row - curveSize

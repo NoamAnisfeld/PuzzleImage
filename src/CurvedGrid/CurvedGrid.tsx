@@ -1,5 +1,5 @@
 import './CurvedGrid.scss';
-import {/*  useState, */ useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import {
     SVGPathsGrid,
     combinedSVGPathFromPathsGrid,
@@ -8,12 +8,8 @@ import { GlobalState } from '../GlobalState/GlobalState';
 
 function DrawCurvedGrid({
     svgPathsGrid,    
-    // pieceWidth,
-    // pieceHeight
 }: {
     svgPathsGrid: SVGPathsGrid,    
-    // pieceWidth: number,
-    // pieceHeight: number
 }) {
     const {
         pieceWidth,
