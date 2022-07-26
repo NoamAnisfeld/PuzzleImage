@@ -1,28 +1,21 @@
-import { useReducer } from "react";
+import { useContext, useReducer } from "react";
+import { GlobalState } from "../GlobalState/GlobalState";
 import ImagePiece from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
 
 function PieceCollection({
-    imageUrl,
-    imageWidth,
-    imageHeight,
-    pieceWidth,
-    pieceHeight,
-    curveSize,
     svgPathsGrid,
-    rows,
-    cols
 }: {
-    imageUrl: string,
-    imageWidth: number,
-    imageHeight: number,
-    pieceWidth: number,
-    pieceHeight: number,
-    curveSize: number,
     svgPathsGrid: SVGPathsGrid,
-    rows: number,
-    cols: number
 }) {
+    const {
+        pieceWidth,
+        pieceHeight,
+        curveSize,
+        rows,
+        cols
+    } = useContext(GlobalState);
+
     function putPieceOnTopLogic(oldZIndexArray: string[], pieceKey: string): string[] {
         const newZIndexArray = Array.from(oldZIndexArray);
         const index = newZIndexArray.indexOf(pieceKey);
@@ -42,12 +35,6 @@ function PieceCollection({
             Array.from({ length: cols }, (_, col) =>
                 <ImagePiece
                     {...{
-                        imageUrl,
-                        imageWidth,
-                        imageHeight,
-                        pieceWidth,
-                        pieceHeight,
-                        curveSize,
                         imageOffset: {
                             x: pieceWidth * col - curveSize,
                             y: pieceHeight * row - curveSize

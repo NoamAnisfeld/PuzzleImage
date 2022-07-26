@@ -1,6 +1,7 @@
 import './ImagePiece.scss';
+import { useContext, useState } from 'react';
+import { GlobalState } from '../GlobalState/GlobalState';
 import { SVGPath } from '../SVGPaths/SVGCurvePaths';
-import { useState } from 'react';
 
 interface Position {
     x: number,
@@ -8,12 +9,6 @@ interface Position {
 }
 
 function ImagePiece({
-    imageUrl,
-    imageWidth,
-    imageHeight,
-    pieceWidth,
-    pieceHeight,
-    curveSize,
     imageOffset,
     shapePath,
     row,
@@ -21,12 +16,6 @@ function ImagePiece({
     zIndex,
     putOnTop,
 }: {
-    imageUrl: string,
-    imageWidth: number,
-    imageHeight: number,
-    pieceWidth: number,
-    pieceHeight: number,
-    curveSize: number,
     imageOffset: {
         x: number,
         y: number
@@ -37,6 +26,15 @@ function ImagePiece({
     zIndex: number,
     putOnTop: () => void,
 }) {
+    const {
+        imageUrl,
+        imageWidth,
+        imageHeight,
+        pieceWidth,
+        pieceHeight,
+        curveSize,
+    } = useContext(GlobalState);
+
     const [position, setPosition] = useState<Position>({
         x: col * pieceWidth - imageWidth,
         y: row * pieceHeight
