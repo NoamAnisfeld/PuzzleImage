@@ -31,6 +31,7 @@ function App() {
 	, []);
 
     return <GlobalState.Provider value={{...globalStateProvider}}>
+		{globalStateProvider.developmentMode && "Development mode"}
 		<GameBoard
 			{...{
 				setImageAspectRatio

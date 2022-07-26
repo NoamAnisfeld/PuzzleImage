@@ -11,25 +11,35 @@ function listenToWindowResize(callback: () => void) {
 	window.addEventListener('resize', callback);
 }
 
+const DEVELOPMENT_MODE_STORAGE_KEY = 'development-mode';
+
 const initialGlobalState = {
+    developmentMode: localStorage.getItem(DEVELOPMENT_MODE_STORAGE_KEY) === 'true',
+    imageLoaded: false,
 	imageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
 	rows: 4,
 	cols: 3,
-    imageLoaded: false,
 }
 
 type GlobalStateInterface = typeof initialGlobalState & Partial<{
-	imageWidth: number,
-	imageHeight: number,
-	imageAspectRatio: number,
-    pieceWidth: number,
-    pieceHeight: number,
-	curveSize: number,
 	windowDimensions: {
 		width: number,
 		height: number
 	}
+	imageAspectRatio: number,
+	imageWidth: number,
+	imageHeight: number,
+    pieceWidth: number,
+    pieceHeight: number,
+	curveSize: number,
 }>
+
+window.addEventListener('keyup', event => {
+    if (event.code === 'KeyD' && event.ctrlKey && event.altKey) {
+        localStorage.setItem(DEVELOPMENT_MODE_STORAGE_KEY,
+            localStorage.getItem(DEVELOPMENT_MODE_STORAGE_KEY) === 'true' ? 'false' : 'true');
+    }
+})
 
 function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateInterface {
     const { imageAspectRatio, rows, cols } = oldState;
@@ -51,17 +61,18 @@ function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateI
         curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
 
     return {
+        developmentMode: oldState.developmentMode,
         imageLoaded: true,
         imageUrl: oldState.imageUrl,
-        imageWidth,
-        imageHeight,
-        imageAspectRatio,
         rows,
         cols,
+        windowDimensions,
+        imageAspectRatio,
+        imageWidth,
+        imageHeight,
         pieceWidth,
         pieceHeight,
         curveSize,
-        windowDimensions,
     };
 }
 
