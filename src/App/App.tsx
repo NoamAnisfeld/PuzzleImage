@@ -2,6 +2,7 @@ import './App.scss';
 import { useReducer, useEffect, useContext } from 'react';
 import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
 import GameBoard from '../GameBoard/GameBoard';
+import UploadImageButton from '../components/UploadImageButton';
 
 function App() {
 
@@ -31,12 +32,21 @@ function App() {
 	, []);
 
     return <GlobalState.Provider value={{...globalStateProvider}}>
-		{globalStateProvider.developmentMode && "Development mode"}
+		{globalStateProvider.developmentMode &&
+			<span style={{
+				position: "fixed",
+				top: 0,
+				right: 0
+			}}>Development mode</span>
+		}
 		<GameBoard
 			{...{
 				setImageAspectRatio
 			}}
 		/>
+		<UploadImageButton {...{
+			setImageUrl
+		}}/>
 	</GlobalState.Provider>
 }
 
