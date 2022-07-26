@@ -7,16 +7,8 @@ import DrawCurvedGrid from "../CurvedGrid/CurvedGrid";
 import PieceCollection from "../PieceCollection/PieceCollection";
 
 function GameBoard({
-    // imageUrl,
-    // imageWidth,
-    // imageHeight,
-    // imageAspectRatio,
     setImageAspectRatio
 }: {
-    // imageUrl: string,
-    // imageWidth: number,
-    // imageHeight: number,
-    // imageAspectRatio?: number,
     setImageAspectRatio: (n: number) => void
 }) {
     const {
@@ -32,12 +24,6 @@ function GameBoard({
         curveSize,
     } = useContext(GlobalState);
 
-    // const rows = 4, // temporary value for development demo
-    //     cols = 3,
-    //     pieceWidth = imageWidth / cols,
-    //     pieceHeight = imageHeight / rows,
-    //     curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
-
     const
         [directionsGrid, setDirectionsGrid] =
             useState(() => randomizedCurveDirectionsGrid(rows, cols)),
@@ -48,7 +34,7 @@ function GameBoard({
                 pieceHeight,
                 curveSize
             }), [ // dependencies
-                imageAspectRatio,
+                imageLoaded,
                 directionsGrid,
                 pieceWidth,
                 pieceHeight,
@@ -65,7 +51,6 @@ function GameBoard({
         >
             <MainImage {...{
                 imageUrl,
-                // imageWidth,
                 setImageAspectRatio
             }} />
             {imageLoaded && <DrawCurvedGrid {...{
