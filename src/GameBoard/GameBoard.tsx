@@ -20,6 +20,7 @@ function GameBoard({
     setImageAspectRatio: (n: number) => void
 }) {
     const {
+        imageLoaded,
         imageUrl,
         imageWidth,
         imageHeight,
@@ -41,7 +42,7 @@ function GameBoard({
         [directionsGrid, setDirectionsGrid] =
             useState(() => randomizedCurveDirectionsGrid(rows, cols)),
         svgPathsGrid =
-            useMemo(() => imageAspectRatio && mapCurveDirectionsGridToSVGPathsGrid({
+            useMemo(() => imageLoaded && mapCurveDirectionsGridToSVGPathsGrid({
                 directionsGrid,
                 pieceWidth,
                 pieceHeight,
@@ -67,24 +68,22 @@ function GameBoard({
                 // imageWidth,
                 setImageAspectRatio
             }} />
-            {svgPathsGrid && [
-                <DrawCurvedGrid {...{
-                    svgPathsGrid,
-                    pieceWidth,
-                    pieceHeight
-                }}/>,
-                <PieceCollection {...{
-                    imageUrl,
-                    imageWidth,
-                    imageHeight,
-                    pieceWidth,
-                    pieceHeight,
-                    curveSize,
-                    svgPathsGrid,
-                    rows,
-                    cols
-                }}/>
-            ]}
+            {imageLoaded && <DrawCurvedGrid {...{
+                svgPathsGrid,
+                pieceWidth,
+                pieceHeight
+            }}/>}
+            {imageLoaded && <PieceCollection {...{
+                imageUrl,
+                imageWidth,
+                imageHeight,
+                pieceWidth,
+                pieceHeight,
+                curveSize,
+                svgPathsGrid,
+                rows,
+                cols
+            }}/>}
         </div>
 }
 

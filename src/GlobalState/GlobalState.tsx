@@ -15,7 +15,7 @@ const initialGlobalState = {
 	imageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
 	rows: 4,
 	cols: 3,
-    // imageAspectRatio: 1
+    imageLoaded: false,
 }
 
 type GlobalStateInterface = typeof initialGlobalState & Partial<{
@@ -51,6 +51,7 @@ function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateI
         curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
 
     return {
+        imageLoaded: true,
         imageUrl: oldState.imageUrl,
         imageWidth,
         imageHeight,
