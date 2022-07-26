@@ -16,7 +16,7 @@ function GameBoard({
         imageUrl,
         imageWidth,
         imageHeight,
-        imageAspectRatio,
+        // imageAspectRatio,
         rows,
         cols,
         pieceWidth,
@@ -50,24 +50,24 @@ function GameBoard({
             }
         >
             <MainImage {...{
-                imageUrl,
+                // imageUrl,
                 setImageAspectRatio
             }} />
             {imageLoaded && <DrawCurvedGrid {...{
                 svgPathsGrid,
-                pieceWidth,
-                pieceHeight
+                // pieceWidth,
+                // pieceHeight
             }}/>}
             {imageLoaded && <PieceCollection {...{
-                imageUrl,
-                imageWidth,
-                imageHeight,
-                pieceWidth,
-                pieceHeight,
-                curveSize,
+                // imageUrl,
+                // imageWidth,
+                // imageHeight,
+                // pieceWidth,
+                // pieceHeight,
+                // curveSize,
                 svgPathsGrid,
-                rows,
-                cols
+                // rows,
+                // cols
             }}/>}
         </div>
 }
