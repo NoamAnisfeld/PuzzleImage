@@ -1,7 +1,54 @@
 import { useContext, useReducer } from "react";
 import { GlobalState } from "../GlobalState/GlobalState";
-import ImagePiece from "../ImagePiece/ImagePiece";
+import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
+
+interface PieceInfo {
+    row: number,
+    col: number,
+    correctPosition: Position,
+    position: Position,
+}
+
+interface PieceMapping {
+    [key: string]: PieceInfo
+}
+
+function createPieceMapping({
+    rows,
+    cols,
+    pieceWidth,
+    pieceHeight,
+}: {
+    rows: number,
+    cols: number,
+    pieceWidth: number,
+    pieceHeight: number,
+}): PieceMapping {
+    const mapping: PieceMapping = {};
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const key = `${row}/${col}`;
+
+            mapping[key] = {
+                row,
+                col,
+                correctPosition: {
+                    x: col * pieceWidth,
+                    y: row * pieceHeight
+                },
+                // ToDo: randomize initial position
+                position: {
+                    x: -(col * pieceWidth),
+                    y: row * pieceHeight
+                }
+            }
+        }
+    }
+
+    return mapping;
+}
 
 function PieceCollection({
     svgPathsGrid,

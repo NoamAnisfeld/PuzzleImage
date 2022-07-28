@@ -120,10 +120,11 @@ function ImagePiece({
         <use
             href={`#outline-${row}-${col}`}
             stroke="green"
-            stroke-width="5"
+            strokeWidth="5"
             fill="none"
         />
     </svg>
 }
 
 export default ImagePiece;
+export { Position };
