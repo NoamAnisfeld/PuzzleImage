@@ -110,3 +110,7 @@ function PieceCollection({
 }
 
 export default PieceCollection;
+
+export const exportedForTesting = {
+    createPieceMapping
+};
