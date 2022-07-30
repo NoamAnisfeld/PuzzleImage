@@ -38,7 +38,8 @@ function GameBoard({
                 pieceWidth,
                 pieceHeight,
                 curveSize
-            ]);
+            ]),
+        [isImageCompleted, setIsImageCompleted] = useState(false);
 
     return <div
             id="game-wrapper"
@@ -49,14 +50,17 @@ function GameBoard({
             }
         >
             <MainImage {...{
+                isImageCompleted,
                 setImageAspectRatio
             }} />
-            {imageLoaded && <DrawCurvedGrid {...{
+            {/* {imageLoaded && <DrawCurvedGrid {...{
                 svgPathsGrid,
-            }}/>}
-            {imageLoaded && <PieceCollection {...{
-                svgPathsGrid,
-            }}/>}
+            }}/>} */}
+            {imageLoaded && !isImageCompleted && <PieceCollection {...{
+                    svgPathsGrid,
+                }}
+                imageCompleted={() => setIsImageCompleted(true)}
+            />}
         </div>
 }
 

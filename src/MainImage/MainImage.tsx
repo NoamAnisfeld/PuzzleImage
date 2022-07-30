@@ -3,9 +3,11 @@ import { GlobalState } from "../GlobalState/GlobalState";
 import './MainImage.scss';
 
 export default function MainImage({
+    isImageCompleted,
     setImageAspectRatio,
     handleError
 }: {
+    isImageCompleted: boolean,
     setImageAspectRatio: (aspectRatio: number) => void,
     handleError?: () => void
 }) {
@@ -19,6 +21,7 @@ export default function MainImage({
 
     return <img
         id="main-image"
+        className={isImageCompleted && 'completed'}
         src={imageUrl}
         onLoad={handleImageLoad}
         onError={handleError || null}

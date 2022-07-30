@@ -52,8 +52,10 @@ function createPieceMapping({
 
 function PieceCollection({
     svgPathsGrid,
+    imageCompleted,
 }: {
     svgPathsGrid: SVGPathsGrid,
+    imageCompleted: () => void,
 }) {
     const {
         pieceWidth,
@@ -97,6 +99,14 @@ function PieceCollection({
     }
 
     const [zIndexArray, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
+
+    if (Object.keys(pieceMapping).every(key => {
+        const { position, correctPosition } = pieceMapping[key];
+
+        return position.x === correctPosition.x && position.y === correctPosition.y;
+    })) {
+        imageCompleted();
+    }
 
     return <>
         {Object.keys(pieceMapping).map(key => {
