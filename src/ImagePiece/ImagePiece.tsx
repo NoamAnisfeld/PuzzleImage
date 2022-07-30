@@ -43,7 +43,9 @@ function ImagePiece({
     //     x: col * pieceWidth - imageWidth,
     //     y: row * pieceHeight
     // });
-    const [isDragged, setIsDragged] = useState(false);
+    const [isDragged, setIsDragged] = useState(false),
+        [positionDuringDrag, setPositionDuringDrag] = useState<Position>(),
+        relevantPosition = isDragged ? positionDuringDrag : position;
 
     function normalizePosition({x, y}: Position) {
         const normalized: Position = {x, y};
@@ -68,6 +70,7 @@ function ImagePiece({
 
     function startDrag(event: React.MouseEvent) {
         setIsDragged(true);
+        setPositionDuringDrag(position);
         putOnTop();
 
         const originalRelativePosition = {
@@ -75,10 +78,8 @@ function ImagePiece({
             y: position.y - event.clientY
         };
 
-        // ToDo: Optimize this as it rerenders the entire collection with
-        // every mouse move
         function movePieceHandler(event: MouseEvent) {
-            updatePosition({
+            setPositionDuringDrag({
                 x: originalRelativePosition.x + event.clientX,
                 y: originalRelativePosition.y + event.clientY
             })
@@ -86,6 +87,7 @@ function ImagePiece({
 
         function endDrag(event: MouseEvent) {
             event.stopPropagation();
+            setIsDragged(false);
 
             updatePosition(normalizePosition({
                 x: originalRelativePosition.x + event.clientX,
@@ -107,8 +109,8 @@ function ImagePiece({
         height={imageHeight}
         clipPath={`url(#clip-path-${row}-${col})`}
         style={{
-            top: position.y - curveSize,
-            left: position.x - curveSize,
+            top: relevantPosition.y - curveSize,
+            left: relevantPosition.x - curveSize,
             zIndex
         }}
         onClick={startDrag}
