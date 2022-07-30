@@ -1,4 +1,4 @@
-import { useContext, useReducer } from "react";
+import { useContext, useState, useReducer } from "react";
 import { GlobalState } from "../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
@@ -63,6 +63,13 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
+    const [pieceMapping, setPieceMapping] = useState(createPieceMapping({
+        rows,
+        cols,
+        pieceWidth,
+        pieceHeight
+    }));
+
     function putPieceOnTopLogic(oldZIndexArray: string[], pieceKey: string): string[] {
         const newZIndexArray = Array.from(oldZIndexArray);
         const index = newZIndexArray.indexOf(pieceKey);
@@ -78,34 +85,34 @@ function PieceCollection({
     const [zIndexArray, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
     return <>
-        {Array.from({ length: rows }, (_, row) =>
-            Array.from({ length: cols }, (_, col) =>
-                <ImagePiece
-                    {...{
-                        imageOffset: {
-                            x: pieceWidth * col - curveSize,
-                            y: pieceHeight * row - curveSize
-                        },
-                        shapePath: extractPieceOutlinePath({
-                            grid: svgPathsGrid,
-                            row,
-                            col,
-                            pieceWidth,
-                            pieceHeight,
-                            curveSize
-                        }),
+        {Object.keys(pieceMapping).map(key => {
+            const { row, col } = pieceMapping[key];
+
+            return <ImagePiece
+                {...{
+                    imageOffset: {
+                        x: pieceWidth * col - curveSize,
+                        y: pieceHeight * row - curveSize
+                    },
+                    shapePath: extractPieceOutlinePath({
+                        grid: svgPathsGrid,
                         row,
-                        col
-                    }}
-                    key={`${row}/${col}`}
-                    zIndex={
-                        (n => n === -1 ? null : n + 1)
-                            (zIndexArray.indexOf(`${row}/${col}`))
-                    }
-                    putOnTop={() => putPieceOnTop(`${row}/${col}`)}
-                />
-            )
-        ).flat()}
+                        col,
+                        pieceWidth,
+                        pieceHeight,
+                        curveSize
+                    }),
+                    row,
+                    col,
+                    key
+                }}
+                zIndex={
+                    (n => n === -1 ? null : n + 1)
+                        (zIndexArray.indexOf(key))
+                }
+                putOnTop={() => putPieceOnTop(key)}
+            />
+        })}
     </>
 }
 
