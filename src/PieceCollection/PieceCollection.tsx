@@ -70,6 +70,20 @@ function PieceCollection({
         pieceHeight
     }));
 
+    function updatePiecePosition(pieceKey: string, newPosition: Position) {
+        if (!pieceMapping.hasOwnProperty(pieceKey)) {
+            throw Error("invalid piece key");
+        }
+
+        setPieceMapping(oldPieceMapping => ({
+            ...oldPieceMapping,
+            [pieceKey]: {
+                ...oldPieceMapping[pieceKey],
+                position: newPosition
+            }
+        }));
+    }
+
     function putPieceOnTopLogic(oldZIndexArray: string[], pieceKey: string): string[] {
         const newZIndexArray = Array.from(oldZIndexArray);
         const index = newZIndexArray.indexOf(pieceKey);
@@ -86,10 +100,11 @@ function PieceCollection({
 
     return <>
         {Object.keys(pieceMapping).map(key => {
-            const { row, col } = pieceMapping[key];
+            const { row, col, position } = pieceMapping[key];
 
             return <ImagePiece
                 {...{
+                    key,
                     imageOffset: {
                         x: pieceWidth * col - curveSize,
                         y: pieceHeight * row - curveSize
@@ -104,8 +119,9 @@ function PieceCollection({
                     }),
                     row,
                     col,
-                    key
+                    position
                 }}
+                updatePosition={(newPosition: Position) => updatePiecePosition(key, newPosition)}
                 zIndex={
                     (n => n === -1 ? null : n + 1)
                         (zIndexArray.indexOf(key))

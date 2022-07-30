@@ -13,6 +13,8 @@ function ImagePiece({
     shapePath,
     row,
     col,
+    position,
+    updatePosition,
     zIndex,
     putOnTop,
 }: {
@@ -23,6 +25,8 @@ function ImagePiece({
     shapePath: SVGPath,
     row: number,
     col: number,
+    position: Position,
+    updatePosition: (newPosition: Position) => void,
     zIndex: number,
     putOnTop: () => void,
 }) {
@@ -35,10 +39,10 @@ function ImagePiece({
         curveSize,
     } = useContext(GlobalState);
 
-    const [position, setPosition] = useState<Position>({
-        x: col * pieceWidth - imageWidth,
-        y: row * pieceHeight
-    });
+    // const [position, setPosition] = useState<Position>({
+    //     x: col * pieceWidth - imageWidth,
+    //     y: row * pieceHeight
+    // });
     const [isDragged, setIsDragged] = useState(false);
 
     function normalizePosition({x, y}: Position) {
@@ -71,8 +75,10 @@ function ImagePiece({
             y: position.y - event.clientY
         };
 
+        // ToDo: Optimize this as it rerenders the entire collection with
+        // every mouse move
         function movePieceHandler(event: MouseEvent) {
-            setPosition({
+            updatePosition({
                 x: originalRelativePosition.x + event.clientX,
                 y: originalRelativePosition.y + event.clientY
             })
@@ -81,7 +87,10 @@ function ImagePiece({
         function endDrag(event: MouseEvent) {
             event.stopPropagation();
 
-            setPosition(normalizePosition);
+            updatePosition(normalizePosition({
+                x: originalRelativePosition.x + event.clientX,
+                y: originalRelativePosition.y + event.clientY
+            }));
 
             window.removeEventListener('mousemove', movePieceHandler);
             window.removeEventListener('click', endDrag, {capture: true});
