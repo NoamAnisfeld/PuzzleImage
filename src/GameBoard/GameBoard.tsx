@@ -12,7 +12,6 @@ function GameBoard({
 }) {
     const {
         imageLoaded,
-        imageWidth,
         rows,
         cols,
         pieceWidth,
@@ -45,9 +44,6 @@ function GameBoard({
                 isImageCompleted,
                 setImageAspectRatio
             }} />
-            {/* {imageLoaded && <DrawCurvedGrid {...{
-                svgPathsGrid,
-            }}/>} */}
             {imageLoaded && !isImageCompleted && <PieceCollection {...{
                     svgPathsGrid,
                 }}
