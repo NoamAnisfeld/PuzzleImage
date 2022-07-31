@@ -9,22 +9,20 @@ interface Position {
 }
 
 function ImagePiece({
+    uniqueId,
     imageOffset,
     shapePath,
-    row,
-    col,
     position,
     updatePosition,
     zIndex,
     putOnTop,
 }: {
+    uniqueId: string,
     imageOffset: {
         x: number,
         y: number
     }
     shapePath: SVGPath,
-    row: number,
-    col: number,
     position: Position,
     updatePosition: (newPosition: Position) => void,
     zIndex: number,
@@ -39,10 +37,6 @@ function ImagePiece({
         curveSize,
     } = useContext(GlobalState);
 
-    // const [position, setPosition] = useState<Position>({
-    //     x: col * pieceWidth - imageWidth,
-    //     y: row * pieceHeight
-    // });
     const [isDragged, setIsDragged] = useState(false),
         [positionDuringDrag, setPositionDuringDrag] = useState<Position>(),
         relevantPosition = isDragged ? positionDuringDrag : position;
@@ -74,14 +68,14 @@ function ImagePiece({
         putOnTop();
 
         const originalRelativePosition = {
-            x: position.x - event.clientX,
-            y: position.y - event.clientY
+            x: position.x - event.pageX,
+            y: position.y - event.pageY
         };
 
         function movePieceHandler(event: MouseEvent) {
             setPositionDuringDrag({
-                x: originalRelativePosition.x + event.clientX,
-                y: originalRelativePosition.y + event.clientY
+                x: originalRelativePosition.x + event.pageX,
+                y: originalRelativePosition.y + event.pageY
             })
         }
 
@@ -90,8 +84,8 @@ function ImagePiece({
             setIsDragged(false);
 
             updatePosition(normalizePosition({
-                x: originalRelativePosition.x + event.clientX,
-                y: originalRelativePosition.y + event.clientY
+                x: originalRelativePosition.x + event.pageX,
+                y: originalRelativePosition.y + event.pageY
             }));
 
             window.removeEventListener('mousemove', movePieceHandler);
@@ -105,9 +99,9 @@ function ImagePiece({
     return <svg
         className="image-piece"
         fill="lime"
-        width={imageWidth} // automatic sizing does not work well with SVG
-        height={imageHeight}
-        clipPath={`url(#clip-path-${row}-${col})`}
+        width={pieceWidth + curveSize * 2}
+        height={pieceHeight + curveSize * 2}
+        clipPath={`url(#clip-path-${uniqueId})`}
         style={{
             top: relevantPosition.y - curveSize,
             left: relevantPosition.x - curveSize,
@@ -116,9 +110,9 @@ function ImagePiece({
         onClick={startDrag}
     >
         <defs>
-            <path id={`outline-${row}-${col}`} d={shapePath} />
-            <clipPath id={`clip-path-${row}-${col}`}>
-                <use href={`#outline-${row}-${col}`} />
+            <path id={`outline-${uniqueId}`} d={shapePath} />
+            <clipPath id={`clip-path-${uniqueId}`}>
+                <use href={`#outline-${uniqueId}`} />
             </clipPath>
         </defs>
         <image
@@ -129,7 +123,7 @@ function ImagePiece({
             y={- imageOffset.y}
         />
         <use
-            href={`#outline-${row}-${col}`}
+            href={`#outline-${uniqueId}`}
             stroke="green"
             strokeWidth="5"
             fill="none"

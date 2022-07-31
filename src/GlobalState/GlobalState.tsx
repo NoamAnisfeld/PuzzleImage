@@ -14,9 +14,11 @@ function listenToWindowResize(callback: () => void) {
 const DEVELOPMENT_MODE_STORAGE_KEY = 'development-mode';
 
 const initialGlobalState = {
-    developmentMode: localStorage.getItem(DEVELOPMENT_MODE_STORAGE_KEY) === 'true',
+    developmentMode:
+        localStorage.getItem(DEVELOPMENT_MODE_STORAGE_KEY) === 'true',
     imageLoaded: false,
-	imageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
+	imageUrl:
+        "https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
 	rows: 4,
 	cols: 3,
 }

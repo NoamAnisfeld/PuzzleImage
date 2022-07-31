@@ -86,19 +86,19 @@ function PieceCollection({
         }));
     }
 
-    function putPieceOnTopLogic(oldZIndexArray: string[], pieceKey: string): string[] {
-        const newZIndexArray = Array.from(oldZIndexArray);
-        const index = newZIndexArray.indexOf(pieceKey);
+    function putPieceOnTopLogic(oldZIndexSorter: string[], pieceKey: string): string[] {
+        const newZIndexSorter = Array.from(oldZIndexSorter);
+        const index = newZIndexSorter.indexOf(pieceKey);
 
         if (index !== -1) {
-            newZIndexArray.splice(index, 1);
+            newZIndexSorter.splice(index, 1);
         }
-        newZIndexArray.push(pieceKey);
+        newZIndexSorter.push(pieceKey);
 
-        return newZIndexArray;
+        return newZIndexSorter;
     }
 
-    const [zIndexArray, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
+    const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
     if (Object.keys(pieceMapping).every(key => {
         const { position, correctPosition } = pieceMapping[key];
@@ -115,6 +115,7 @@ function PieceCollection({
             return <ImagePiece
                 {...{
                     key,
+                    uniqueId: key,
                     imageOffset: {
                         x: pieceWidth * col - curveSize,
                         y: pieceHeight * row - curveSize
@@ -134,7 +135,7 @@ function PieceCollection({
                 updatePosition={(newPosition: Position) => updatePiecePosition(key, newPosition)}
                 zIndex={
                     (n => n === -1 ? null : n + 1)
-                        (zIndexArray.indexOf(key))
+                        (zIndexSorter.indexOf(key))
                 }
                 putOnTop={() => putPieceOnTop(key)}
             />

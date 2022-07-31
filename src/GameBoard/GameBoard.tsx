@@ -3,7 +3,6 @@ import './GameBoard.scss';
 import { GlobalState } from "../GlobalState/GlobalState";
 import { mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
 import MainImage from "../MainImage/MainImage";
-import DrawCurvedGrid from "../CurvedGrid/CurvedGrid";
 import PieceCollection from "../PieceCollection/PieceCollection";
 
 function GameBoard({
@@ -13,9 +12,7 @@ function GameBoard({
 }) {
     const {
         imageLoaded,
-        imageUrl,
         imageWidth,
-        imageHeight,
         rows,
         cols,
         pieceWidth,
@@ -43,11 +40,6 @@ function GameBoard({
 
     return <div
             id="game-wrapper"
-            style={
-                {
-                    '--imageWidth': `${imageWidth}px`
-                } as React.CSSProperties & {'--imageWidth': string}
-            }
         >
             <MainImage {...{
                 isImageCompleted,

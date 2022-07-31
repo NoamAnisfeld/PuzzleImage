@@ -11,19 +11,22 @@ export default function MainImage({
     setImageAspectRatio: (aspectRatio: number) => void,
     handleError?: () => void
 }) {
-    const { imageUrl } = useContext(GlobalState);
+    const { imageUrl, imageWidth, imageHeight } = useContext(GlobalState);
 
     function handleImageLoad(event: React.SyntheticEvent<HTMLImageElement>) {
         const target = event.currentTarget;
         setImageAspectRatio(
-            target.naturalWidth / target.naturalHeight);
+            target.naturalWidth / target.naturalHeight
+        );
     }
 
     return <img
         id="main-image"
-        className={isImageCompleted && 'completed'}
+        className={isImageCompleted ? 'completed' : undefined}
         src={imageUrl}
+        width={imageWidth}
+        height={imageHeight}
         onLoad={handleImageLoad}
-        onError={handleError || null}
+        onError={handleError}
     />
 };

@@ -1,4 +1,4 @@
-import './CurvedGrid.scss';
+import './DrawCurvedGrid.scss';
 import { useContext, useMemo } from 'react';
 import {
     SVGPathsGrid,
