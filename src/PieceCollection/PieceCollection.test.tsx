@@ -18,12 +18,12 @@ test('createPieceInfoArray', () => {
     expect(array.length).toBe(12);
 
     expect(array[11]).toMatchObject ({
-        uniqueId: `${mock.rows - 1}/${mock.cols - 1}`,
-        row: mock.rows - 1,
-        col: mock.cols - 1,
+        uniqueId: '3/2',
+        row: 3,
+        col: 2,
         correctPosition: {
-            x: (mock.cols - 1) * mock.pieceWidth,
-            y: (mock.rows - 1) * mock.pieceHeight
+            x: 200,
+            y: 150
         }
     });
 })
