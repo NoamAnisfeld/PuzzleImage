@@ -4,17 +4,14 @@ import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
 
 interface PieceInfo {
+    uniqueId: string,
     row: number,
     col: number,
     correctPosition: Position,
     position: Position,
 }
 
-interface PieceMapping {
-    [key: string]: PieceInfo
-}
-
-function createPieceMapping({
+function createPieceInfoArray({
     rows,
     cols,
     pieceWidth,
@@ -24,14 +21,15 @@ function createPieceMapping({
     cols: number,
     pieceWidth: number,
     pieceHeight: number,
-}): PieceMapping {
-    const mapping: PieceMapping = {};
+}): PieceInfo[] {
+    const array: PieceInfo[] = [];
 
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-            const key = `${row}/${col}`;
+            const uniqueId = `${row}/${col}`;
 
-            mapping[key] = {
+            array.push({
+                uniqueId,
                 row,
                 col,
                 correctPosition: {
@@ -43,11 +41,11 @@ function createPieceMapping({
                     x: -(col * pieceWidth),
                     y: row * pieceHeight
                 }
-            }
+            })
         }
     }
 
-    return mapping;
+    return array;
 }
 
 function PieceCollection({
@@ -65,25 +63,24 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
-    const [pieceMapping, setPieceMapping] = useState(createPieceMapping({
-        rows,
-        cols,
-        pieceWidth,
-        pieceHeight
-    }));
-
-    function updatePiecePosition(pieceKey: string, newPosition: Position) {
-        if (!pieceMapping.hasOwnProperty(pieceKey)) {
-            throw Error("invalid piece key");
-        }
-
-        setPieceMapping(oldPieceMapping => ({
-            ...oldPieceMapping,
-            [pieceKey]: {
-                ...oldPieceMapping[pieceKey],
-                position: newPosition
-            }
+    const [pieceInfoArray, setPieceInfoArray] = useState(
+            createPieceInfoArray({
+            rows,
+            cols,
+            pieceWidth,
+            pieceHeight
         }));
+
+    function updatePiecePosition(uniqueId: string, newPosition: Position) {
+        const newArray = [...pieceInfoArray];        
+        const piece = newArray.find(value => value.uniqueId === uniqueId);
+        if (!piece) {
+            console.warn('Unexpected uniqueId');
+            return;
+        }
+        piece.position = newPosition;
+
+        setPieceInfoArray(newArray);
     }
 
     function putPieceOnTopLogic(oldZIndexSorter: string[], pieceKey: string): string[] {
@@ -100,8 +97,8 @@ function PieceCollection({
 
     const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
-    if (Object.keys(pieceMapping).every(key => {
-        const { position, correctPosition } = pieceMapping[key];
+    if (pieceInfoArray.every(value => {
+        const { position, correctPosition } = value;
 
         return position.x === correctPosition.x && position.y === correctPosition.y;
     })) {
@@ -109,13 +106,13 @@ function PieceCollection({
     }
 
     return <>
-        {Object.keys(pieceMapping).map(key => {
-            const { row, col, position } = pieceMapping[key];
+        {pieceInfoArray.map(pieceInfo => {
+            const { uniqueId, row, col, position } = pieceInfo;
 
             return <ImagePiece
                 {...{
-                    key,
-                    uniqueId: key,
+                    uniqueId,
+                    key: uniqueId,
                     imageOffset: {
                         x: pieceWidth * col - curveSize,
                         y: pieceHeight * row - curveSize
@@ -132,12 +129,13 @@ function PieceCollection({
                     col,
                     position
                 }}
-                updatePosition={(newPosition: Position) => updatePiecePosition(key, newPosition)}
+                updatePosition={(newPosition: Position) =>
+                    updatePiecePosition(uniqueId, newPosition)}
                 zIndex={
                     (n => n === -1 ? null : n + 1)
-                        (zIndexSorter.indexOf(key))
+                        (zIndexSorter.indexOf(uniqueId))
                 }
-                putOnTop={() => putPieceOnTop(key)}
+                putOnTop={() => putPieceOnTop(uniqueId)}
             />
         })}
     </>
@@ -146,5 +144,5 @@ function PieceCollection({
 export default PieceCollection;
 
 export const exportedForTesting = {
-    createPieceMapping
+    createPieceInfoArray
 };

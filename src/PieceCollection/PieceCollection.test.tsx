@@ -2,10 +2,10 @@ import { ModuleDetectionKind } from "typescript";
 import { exportedForTesting } from "./PieceCollection";
 
 const {
-    createPieceMapping
+    createPieceInfoArray
 } = exportedForTesting;
 
-test('createPieceMapping', () => {
+test('createPieceInfoArray', () => {
     const mock = {
         rows: 4,
         cols: 3,
@@ -13,12 +13,12 @@ test('createPieceMapping', () => {
         pieceHeight: 50
     }
 
-    const mapping = createPieceMapping(mock);
+    const array = createPieceInfoArray(mock);
     
-    expect(Object.keys(mapping).length).toBe(mock.rows * mock.cols);
+    expect(array.length).toBe(12);
 
-    const expectedLastKey = `${mock.rows - 1}/${mock.cols - 1}`;
-    expect(mapping[expectedLastKey]).toMatchObject ({
+    expect(array[11]).toMatchObject ({
+        uniqueId: `${mock.rows - 1}/${mock.cols - 1}`,
         row: mock.rows - 1,
         col: mock.cols - 1,
         correctPosition: {
