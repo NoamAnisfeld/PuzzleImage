@@ -17,7 +17,13 @@ function validate(condition: boolean) {
     }
 }
 
+// same functionality as Jest's expect(a).toBeCloseTo(b)
+function isCloseTo(a: number, b: number): boolean {
+    return Math.abs(a - b) < 0.005;
+}
+
 export {
     allowCSSCustomProperties,
-    validate
+    validate,
+    isCloseTo
 };

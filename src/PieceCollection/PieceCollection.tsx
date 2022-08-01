@@ -1,43 +1,77 @@
-import { useContext, useState, useReducer } from "react";
+import { useContext, useState, useReducer, useEffect } from "react";
+import { isClassStaticBlockDeclaration } from "typescript";
 import { GlobalState } from "../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
+import { isCloseTo } from '../utils';
 
 interface PieceInfo {
     uniqueId: string,
     row: number,
     col: number,
+    fractionalPosition: Position,
     correctPosition: Position,
-    position: Position,
 }
 
 function calculatePieceCorrectPosition({
     row,
     col,
-    pieceWidth,
-    pieceHeight
+    rows,
+    cols
 }: {
     row: number,
     col: number,
-    pieceWidth: number,
-    pieceHeight: number
+    rows: number,
+    cols: number
 }): Position {
     return {
-        x: col * pieceWidth,
-        y: row * pieceHeight
+        x: col / cols,
+        y: row / rows
+    }
+}
+
+function fractionalToAbsolutePosition(
+    fractionalPosition: Position,
+    {
+        imageWidth,
+        imageHeight,
+    }: {
+        imageWidth: number,
+        imageHeight: number,
+    }
+): Position {
+    return {
+        x: imageWidth * fractionalPosition.x,
+        y: imageHeight * fractionalPosition.y
+    }
+}
+
+function absoluteToFractionalPosition(
+    absolutePosition: Position,
+    {
+        imageWidth,
+        imageHeight,
+    }: {
+        imageWidth: number,
+        imageHeight: number,
+    }
+): Position {
+    return {
+        x: absolutePosition.x / imageWidth,
+        y: absolutePosition.y / imageHeight
     }
 }
 
 function createPieceInfoArray({
     rows,
     cols,
-    pieceWidth,
-    pieceHeight,
+    // pieceWidth,
+    // pieceHeight,
 }: {
     rows: number,
     cols: number,
-    pieceWidth: number,
-    pieceHeight: number,
+    // pieceWidth: number,
+    // pieceHeight: number,
 }): PieceInfo[] {
     const array: PieceInfo[] = [];
 
@@ -49,22 +83,49 @@ function createPieceInfoArray({
                 uniqueId,
                 row,
                 col,
+                // ToDo: randomize initial position
+                fractionalPosition: {
+                    x: -col / cols,
+                    y: row / rows
+                },
                 correctPosition: calculatePieceCorrectPosition({
                     row,
                     col,
-                    pieceWidth,
-                    pieceHeight
+                    rows,
+                    cols,
                 }),
-                // ToDo: randomize initial position
-                position: {
-                    x: -(col * pieceWidth),
-                    y: row * pieceHeight
-                }
             })
         }
     }
 
     return array;
+}
+
+// function updatePieceInfoArrayOnResize(
+//     array: PieceInfo[],
+//     { pieceWidth, pieceHeight }: { pieceWidth: number, pieceHeight: number }
+// ): PieceInfo[] {
+//     return array.map(pieceInfo =>
+//         ({
+//             ...pieceInfo,
+//             correctPosition: calculatePieceCorrectPosition({
+//                 row: pieceInfo.row,
+//                 col: pieceInfo.col,
+//                 pieceWidth,
+//                 pieceHeight
+//             })
+//         })
+//     );
+// }
+
+function isPositionCorrect(
+    {
+        fractionalPosition,
+        correctPosition
+    }: PieceInfo
+): boolean {
+    return isCloseTo(fractionalPosition.x, correctPosition.x) &&
+        isCloseTo(fractionalPosition.y, correctPosition.y);
 }
 
 function PieceCollection({
@@ -75,6 +136,8 @@ function PieceCollection({
     imageCompleted: () => void,
 }) {
     const {
+        imageWidth,
+        imageHeight,
         pieceWidth,
         pieceHeight,
         curveSize,
@@ -86,19 +149,32 @@ function PieceCollection({
             createPieceInfoArray({
                 rows,
                 cols,
-                pieceWidth,
-                pieceHeight
+                // pieceWidth,
+                // pieceHeight
             })
         );
+    
+    // useEffect(() => {
+    //     setPieceInfoArray(updatePieceInfoArrayOnResize(
+    //         pieceInfoArray,
+    //         { pieceWidth, pieceHeight }
+    //     ));
+    // }, [ pieceWidth, pieceHeight ])
 
-    function updatePiecePosition(uniqueId: string, newPosition: Position) {
+    function updatePiecePosition(uniqueId: string, newAbsolutePosition: Position) {
         const newArray = [...pieceInfoArray];        
         const piece = newArray.find(value => value.uniqueId === uniqueId);
         if (!piece) {
             console.warn('Unexpected uniqueId');
             return;
         }
-        piece.position = newPosition;
+        piece.fractionalPosition = absoluteToFractionalPosition(
+            newAbsolutePosition,
+            {
+                imageWidth,
+                imageHeight
+            }
+        );
 
         setPieceInfoArray(newArray);
     }
@@ -117,17 +193,13 @@ function PieceCollection({
 
     const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
-    if (pieceInfoArray.every(value => {
-        const { position, correctPosition } = value;
-
-        return position.x === correctPosition.x && position.y === correctPosition.y;
-    })) {
+    if (pieceInfoArray.every(isPositionCorrect)) {
         imageCompleted();
     }
 
     return <>
         {pieceInfoArray.map(pieceInfo => {
-            const { uniqueId, row, col, position } = pieceInfo;
+            const { uniqueId, row, col, fractionalPosition } = pieceInfo;
 
             return <ImagePiece
                 {...{
@@ -147,10 +219,16 @@ function PieceCollection({
                     }),
                     row,
                     col,
-                    position
+                    position: fractionalToAbsolutePosition(
+                        fractionalPosition,
+                        {
+                            imageWidth,
+                            imageHeight
+                        }
+                    )
                 }}
-                updatePosition={(newPosition: Position) =>
-                    updatePiecePosition(uniqueId, newPosition)}
+                updatePosition={(newAbsolutePosition: Position) =>
+                    updatePiecePosition(uniqueId, newAbsolutePosition)}
                 zIndex={
                     (n => n === -1 ? null : n + 1)
                         (zIndexSorter.indexOf(uniqueId))
