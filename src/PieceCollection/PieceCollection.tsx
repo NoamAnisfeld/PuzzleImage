@@ -1,12 +1,59 @@
-import { useContext, useReducer } from "react";
+import { useContext, useState, useReducer } from "react";
 import { GlobalState } from "../GlobalState/GlobalState";
-import ImagePiece from "../ImagePiece/ImagePiece";
+import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
+
+interface PieceInfo {
+    uniqueId: string,
+    row: number,
+    col: number,
+    correctPosition: Position,
+    position: Position,
+}
+
+function createPieceInfoArray({
+    rows,
+    cols,
+    pieceWidth,
+    pieceHeight,
+}: {
+    rows: number,
+    cols: number,
+    pieceWidth: number,
+    pieceHeight: number,
+}): PieceInfo[] {
+    const array: PieceInfo[] = [];
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const uniqueId = `${row}/${col}`;
+
+            array.push({
+                uniqueId,
+                row,
+                col,
+                correctPosition: {
+                    x: col * pieceWidth,
+                    y: row * pieceHeight
+                },
+                // ToDo: randomize initial position
+                position: {
+                    x: -(col * pieceWidth),
+                    y: row * pieceHeight
+                }
+            })
+        }
+    }
+
+    return array;
+}
 
 function PieceCollection({
     svgPathsGrid,
+    imageCompleted,
 }: {
     svgPathsGrid: SVGPathsGrid,
+    imageCompleted: () => void,
 }) {
     const {
         pieceWidth,
@@ -16,50 +63,86 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
-    function putPieceOnTopLogic(oldZIndexArray: string[], pieceKey: string): string[] {
-        const newZIndexArray = Array.from(oldZIndexArray);
-        const index = newZIndexArray.indexOf(pieceKey);
+    const [pieceInfoArray, setPieceInfoArray] = useState(
+            createPieceInfoArray({
+            rows,
+            cols,
+            pieceWidth,
+            pieceHeight
+        }));
 
-        if (index !== -1) {
-            newZIndexArray.splice(index, 1);
+    function updatePiecePosition(uniqueId: string, newPosition: Position) {
+        const newArray = [...pieceInfoArray];        
+        const piece = newArray.find(value => value.uniqueId === uniqueId);
+        if (!piece) {
+            console.warn('Unexpected uniqueId');
+            return;
         }
-        newZIndexArray.push(pieceKey);
+        piece.position = newPosition;
 
-        return newZIndexArray;
+        setPieceInfoArray(newArray);
     }
 
-    const [zIndexArray, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
+    function putPieceOnTopLogic(oldZIndexSorter: string[], pieceKey: string): string[] {
+        const newZIndexSorter = Array.from(oldZIndexSorter);
+        const index = newZIndexSorter.indexOf(pieceKey);
+
+        if (index !== -1) {
+            newZIndexSorter.splice(index, 1);
+        }
+        newZIndexSorter.push(pieceKey);
+
+        return newZIndexSorter;
+    }
+
+    const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
+
+    if (pieceInfoArray.every(value => {
+        const { position, correctPosition } = value;
+
+        return position.x === correctPosition.x && position.y === correctPosition.y;
+    })) {
+        imageCompleted();
+    }
 
     return <>
-        {Array.from({ length: rows }, (_, row) =>
-            Array.from({ length: cols }, (_, col) =>
-                <ImagePiece
-                    {...{
-                        imageOffset: {
-                            x: pieceWidth * col - curveSize,
-                            y: pieceHeight * row - curveSize
-                        },
-                        shapePath: extractPieceOutlinePath({
-                            grid: svgPathsGrid,
-                            row,
-                            col,
-                            pieceWidth,
-                            pieceHeight,
-                            curveSize
-                        }),
+        {pieceInfoArray.map(pieceInfo => {
+            const { uniqueId, row, col, position } = pieceInfo;
+
+            return <ImagePiece
+                {...{
+                    uniqueId,
+                    key: uniqueId,
+                    imageOffset: {
+                        x: pieceWidth * col - curveSize,
+                        y: pieceHeight * row - curveSize
+                    },
+                    shapePath: extractPieceOutlinePath({
+                        grid: svgPathsGrid,
                         row,
-                        col
-                    }}
-                    key={`${row}/${col}`}
-                    zIndex={
-                        (n => n === -1 ? null : n + 1)
-                            (zIndexArray.indexOf(`${row}/${col}`))
-                    }
-                    putOnTop={() => putPieceOnTop(`${row}/${col}`)}
-                />
-            )
-        ).flat()}
+                        col,
+                        pieceWidth,
+                        pieceHeight,
+                        curveSize
+                    }),
+                    row,
+                    col,
+                    position
+                }}
+                updatePosition={(newPosition: Position) =>
+                    updatePiecePosition(uniqueId, newPosition)}
+                zIndex={
+                    (n => n === -1 ? null : n + 1)
+                        (zIndexSorter.indexOf(uniqueId))
+                }
+                putOnTop={() => putPieceOnTop(uniqueId)}
+            />
+        })}
     </>
 }
 
 export default PieceCollection;
+
+export const exportedForTesting = {
+    createPieceInfoArray
+};

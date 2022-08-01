@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useContext } from "react";
+import React, { useState, useMemo, useContext, CSSProperties } from "react";
 import './GameBoard.scss';
 import { GlobalState } from "../GlobalState/GlobalState";
 import { mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
 import MainImage from "../MainImage/MainImage";
-import DrawCurvedGrid from "../CurvedGrid/CurvedGrid";
 import PieceCollection from "../PieceCollection/PieceCollection";
+import { allowCSSCustomProperties } from "../utils";
 
 function GameBoard({
     setImageAspectRatio
@@ -13,9 +13,6 @@ function GameBoard({
 }) {
     const {
         imageLoaded,
-        imageUrl,
-        imageWidth,
-        imageHeight,
         rows,
         cols,
         pieceWidth,
@@ -39,24 +36,44 @@ function GameBoard({
                 pieceHeight,
                 curveSize
             ]);
+    
+    const
+        COMPLETION_EFFECT_TIME = 5000,
+        [isImageCompleted, setIsImageCompleted] = useState(false),
+        [
+            isImageCompletedAndEffectEnded,
+            setIsImageCompletedAndEffectEnded
+        ] = useState(false);
+
+    function handleImageCompleted() {
+        setIsImageCompleted(true);
+        setTimeout(
+            () => setIsImageCompletedAndEffectEnded(true),
+            COMPLETION_EFFECT_TIME
+        );
+    }
 
     return <div
             id="game-wrapper"
-            style={
-                {
-                    '--imageWidth': `${imageWidth}px`
-                } as React.CSSProperties & {'--imageWidth': string}
+            className={
+                isImageCompleted && !isImageCompletedAndEffectEnded ?
+                    'completion-effect' : undefined
             }
+            style={allowCSSCustomProperties({
+                '--completion-effect-time': `${COMPLETION_EFFECT_TIME}ms`,
+            })}
         >
             <MainImage {...{
+                isImageCompleted,
                 setImageAspectRatio
             }} />
-            {imageLoaded && <DrawCurvedGrid {...{
-                svgPathsGrid,
-            }}/>}
-            {imageLoaded && <PieceCollection {...{
-                svgPathsGrid,
-            }}/>}
+            {imageLoaded &&
+            !isImageCompletedAndEffectEnded &&
+            <PieceCollection {...{
+                    svgPathsGrid,
+                }}
+                imageCompleted={handleImageCompleted}
+            />}
         </div>
 }
 

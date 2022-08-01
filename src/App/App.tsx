@@ -22,14 +22,14 @@ function App() {
 	}
 
 	function setImageAspectRatio(aspectRatio: number) {
-		console.log('setImageAspectRatio: ', aspectRatio);
 		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
 	}
 	
 	useEffect(() =>
 		listenToWindowResize(() => 
-			setGlobalStateProvider(globalStateDoCalculations(globalStateProvider)))
-	, []);
+			setGlobalStateProvider(globalStateDoCalculations(globalStateProvider))
+		), []
+	);
 
     return <GlobalState.Provider value={{...globalStateProvider}}>
 		{globalStateProvider.developmentMode &&
@@ -44,9 +44,11 @@ function App() {
 				setImageAspectRatio
 			}}
 		/>
-		<UploadImageButton {...{
-			setImageUrl
-		}}/>
+		<UploadImageButton
+			{...{
+				setImageUrl
+			}}
+		/>
 	</GlobalState.Provider>
 }
 

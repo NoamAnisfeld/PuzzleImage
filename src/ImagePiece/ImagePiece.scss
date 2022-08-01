@@ -1,5 +1,15 @@
 .image-piece {
 	position: absolute;
 	background: white;
-	// touch-action: none;
+	touch-action: none;
+}
+
+.completion-effect .image-piece {
+	animation: vanish-curved-lines var(--completion-effect-time);
+}
+
+@keyframes vanish-curved-lines {
+	to {
+		stroke-width: 0;
+	}
 }

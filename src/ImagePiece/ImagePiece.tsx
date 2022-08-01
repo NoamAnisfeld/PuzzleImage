@@ -9,20 +9,22 @@ interface Position {
 }
 
 function ImagePiece({
+    uniqueId,
     imageOffset,
     shapePath,
-    row,
-    col,
+    position,
+    updatePosition,
     zIndex,
     putOnTop,
 }: {
+    uniqueId: string,
     imageOffset: {
         x: number,
         y: number
     }
     shapePath: SVGPath,
-    row: number,
-    col: number,
+    position: Position,
+    updatePosition: (newPosition: Position) => void,
     zIndex: number,
     putOnTop: () => void,
 }) {
@@ -35,11 +37,9 @@ function ImagePiece({
         curveSize,
     } = useContext(GlobalState);
 
-    const [position, setPosition] = useState<Position>({
-        x: col * pieceWidth - imageWidth,
-        y: row * pieceHeight
-    });
-    const [isDragged, setIsDragged] = useState(false);
+    const [isDragged, setIsDragged] = useState(false),
+        [positionDuringDrag, setPositionDuringDrag] = useState<Position>(),
+        relevantPosition = isDragged ? positionDuringDrag : position;
 
     function normalizePosition({x, y}: Position) {
         const normalized: Position = {x, y};
@@ -64,24 +64,29 @@ function ImagePiece({
 
     function startDrag(event: React.MouseEvent) {
         setIsDragged(true);
+        setPositionDuringDrag(position);
         putOnTop();
 
         const originalRelativePosition = {
-            x: position.x - event.clientX,
-            y: position.y - event.clientY
+            x: position.x - event.pageX,
+            y: position.y - event.pageY
         };
 
         function movePieceHandler(event: MouseEvent) {
-            setPosition({
-                x: originalRelativePosition.x + event.clientX,
-                y: originalRelativePosition.y + event.clientY
+            setPositionDuringDrag({
+                x: originalRelativePosition.x + event.pageX,
+                y: originalRelativePosition.y + event.pageY
             })
         }
 
         function endDrag(event: MouseEvent) {
             event.stopPropagation();
+            setIsDragged(false);
 
-            setPosition(normalizePosition);
+            updatePosition(normalizePosition({
+                x: originalRelativePosition.x + event.pageX,
+                y: originalRelativePosition.y + event.pageY
+            }));
 
             window.removeEventListener('mousemove', movePieceHandler);
             window.removeEventListener('click', endDrag, {capture: true});
@@ -94,20 +99,21 @@ function ImagePiece({
     return <svg
         className="image-piece"
         fill="lime"
-        width={imageWidth} // automatic sizing does not work well with SVG
-        height={imageHeight}
-        clipPath={`url(#clip-path-${row}-${col})`}
+        strokeWidth="5"
+        width={pieceWidth + curveSize * 2}
+        height={pieceHeight + curveSize * 2}
+        clipPath={`url(#clip-path-${uniqueId})`}
         style={{
-            top: position.y - curveSize,
-            left: position.x - curveSize,
+            top: relevantPosition.y - curveSize,
+            left: relevantPosition.x - curveSize,
             zIndex
         }}
         onClick={startDrag}
     >
         <defs>
-            <path id={`outline-${row}-${col}`} d={shapePath} />
-            <clipPath id={`clip-path-${row}-${col}`}>
-                <use href={`#outline-${row}-${col}`} />
+            <path id={`outline-${uniqueId}`} d={shapePath} />
+            <clipPath id={`clip-path-${uniqueId}`}>
+                <use href={`#outline-${uniqueId}`} />
             </clipPath>
         </defs>
         <image
@@ -118,12 +124,12 @@ function ImagePiece({
             y={- imageOffset.y}
         />
         <use
-            href={`#outline-${row}-${col}`}
+            href={`#outline-${uniqueId}`}
             stroke="green"
-            stroke-width="5"
             fill="none"
         />
     </svg>
 }
 
 export default ImagePiece;
+export { Position };

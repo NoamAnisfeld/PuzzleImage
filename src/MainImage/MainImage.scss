@@ -1,5 +1,7 @@
 #main-image {
-	width: var(--imageWidth);
 	vertical-align: middle;
+}
+
+#main-image:not(.completed) {
 	opacity: 0.5;
 }
