@@ -11,6 +11,23 @@ interface PieceInfo {
     position: Position,
 }
 
+function calculatePieceCorrectPosition({
+    row,
+    col,
+    pieceWidth,
+    pieceHeight
+}: {
+    row: number,
+    col: number,
+    pieceWidth: number,
+    pieceHeight: number
+}): Position {
+    return {
+        x: col * pieceWidth,
+        y: row * pieceHeight
+    }
+}
+
 function createPieceInfoArray({
     rows,
     cols,
@@ -32,10 +49,12 @@ function createPieceInfoArray({
                 uniqueId,
                 row,
                 col,
-                correctPosition: {
-                    x: col * pieceWidth,
-                    y: row * pieceHeight
-                },
+                correctPosition: calculatePieceCorrectPosition({
+                    row,
+                    col,
+                    pieceWidth,
+                    pieceHeight
+                }),
                 // ToDo: randomize initial position
                 position: {
                     x: -(col * pieceWidth),
@@ -63,13 +82,14 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
-    const [pieceInfoArray, setPieceInfoArray] = useState(
+    const [pieceInfoArray, setPieceInfoArray] = useState(() =>
             createPieceInfoArray({
-            rows,
-            cols,
-            pieceWidth,
-            pieceHeight
-        }));
+                rows,
+                cols,
+                pieceWidth,
+                pieceHeight
+            })
+        );
 
     function updatePiecePosition(uniqueId: string, newPosition: Position) {
         const newArray = [...pieceInfoArray];        
