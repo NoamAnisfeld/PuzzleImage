@@ -65,13 +65,9 @@ function absoluteToFractionalPosition(
 function createPieceInfoArray({
     rows,
     cols,
-    // pieceWidth,
-    // pieceHeight,
 }: {
     rows: number,
     cols: number,
-    // pieceWidth: number,
-    // pieceHeight: number,
 }): PieceInfo[] {
     const array: PieceInfo[] = [];
 
@@ -100,23 +96,6 @@ function createPieceInfoArray({
 
     return array;
 }
-
-// function updatePieceInfoArrayOnResize(
-//     array: PieceInfo[],
-//     { pieceWidth, pieceHeight }: { pieceWidth: number, pieceHeight: number }
-// ): PieceInfo[] {
-//     return array.map(pieceInfo =>
-//         ({
-//             ...pieceInfo,
-//             correctPosition: calculatePieceCorrectPosition({
-//                 row: pieceInfo.row,
-//                 col: pieceInfo.col,
-//                 pieceWidth,
-//                 pieceHeight
-//             })
-//         })
-//     );
-// }
 
 function isPositionCorrect(
     {
@@ -154,13 +133,6 @@ function PieceCollection({
             })
         );
     
-    // useEffect(() => {
-    //     setPieceInfoArray(updatePieceInfoArrayOnResize(
-    //         pieceInfoArray,
-    //         { pieceWidth, pieceHeight }
-    //     ));
-    // }, [ pieceWidth, pieceHeight ])
-
     function updatePiecePosition(uniqueId: string, newAbsolutePosition: Position) {
         const newArray = [...pieceInfoArray];        
         const piece = newArray.find(value => value.uniqueId === uniqueId);
