@@ -44,18 +44,29 @@ function ImagePiece({
     function normalizePosition({x, y}: Position) {
         const normalized: Position = {x, y};
 
-        const remainderX = x % pieceWidth,
-            remainderY = y % pieceHeight;
+        // don't normalize if it's out of the image border
+        if (x < -(pieceWidth + 2 * curveSize) ||
+            x > (imageWidth - curveSize) ||
+            y < -(pieceHeight + 2 * curveSize) ||
+            y > (imageHeight - curveSize)
+        ) {
+            return normalized;
+        }
+
+        const DISTANCE_FOR_NORMALIZATION = 20;
+
+        const remainderX = Math.abs(x % pieceWidth),
+            remainderY = Math.abs(y % pieceHeight);
         
-        if (remainderX < 20) {
+        if (remainderX < DISTANCE_FOR_NORMALIZATION) {
             normalized.x -= remainderX;
-        } else if (pieceWidth - remainderX < 20) {
+        } else if (pieceWidth - remainderX < DISTANCE_FOR_NORMALIZATION) {
             normalized.x += pieceWidth - remainderX;
         }
 
-        if (remainderY < 20) {
+        if (remainderY < DISTANCE_FOR_NORMALIZATION) {
             normalized.y -= remainderY;
-        } else if (pieceHeight - remainderY < 20) {
+        } else if (pieceHeight - remainderY < DISTANCE_FOR_NORMALIZATION) {
             normalized.y += pieceHeight - remainderY;
         }
 

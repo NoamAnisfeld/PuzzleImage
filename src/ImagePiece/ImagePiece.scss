@@ -5,7 +5,7 @@
 }
 
 .completion-effect .image-piece {
-	animation: vanish-curved-lines var(--completion-effect-time);
+	animation: vanish-curved-lines var(--completion-effect-duration);
 }
 
 @keyframes vanish-curved-lines {

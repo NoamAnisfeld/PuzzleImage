@@ -1,5 +1,5 @@
 import './App.scss';
-import { useReducer, useEffect, useContext } from 'react';
+import { useReducer, useEffect, useContext, useRef } from 'react';
 import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
 import GameBoard from '../GameBoard/GameBoard';
 import UploadImageButton from '../components/UploadImageButton';
@@ -25,9 +25,13 @@ function App() {
 		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
 	}
 	
+	const globalStateProviderRef = useRef<GlobalStateInterface>();
+	globalStateProviderRef.current = globalStateProvider;
 	useEffect(() =>
 		listenToWindowResize(() => 
-			setGlobalStateProvider(globalStateDoCalculations(globalStateProvider))
+			setGlobalStateProvider(
+				globalStateDoCalculations(globalStateProviderRef.current)
+			)
 		), []
 	);
 

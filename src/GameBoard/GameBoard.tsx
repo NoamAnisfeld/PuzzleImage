@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext, CSSProperties } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import './GameBoard.scss';
 import { GlobalState } from "../GlobalState/GlobalState";
 import { mapCurveDirectionsGridToSVGPathsGrid, randomizedCurveDirectionsGrid } from "../SVGPaths/SVGCurvePaths";
@@ -6,11 +6,7 @@ import MainImage from "../MainImage/MainImage";
 import PieceCollection from "../PieceCollection/PieceCollection";
 import { allowCSSCustomProperties } from "../utils";
 
-function GameBoard({
-    setImageAspectRatio
-}: {
-    setImageAspectRatio: (n: number) => void
-}) {
+function useGameInitialization(reinitialize = false) {
     const {
         imageLoaded,
         rows,
@@ -20,10 +16,18 @@ function GameBoard({
         curveSize,
     } = useContext(GlobalState);
 
-    const
-        [directionsGrid, setDirectionsGrid] =
-            useState(() => randomizedCurveDirectionsGrid(rows, cols)),
-        svgPathsGrid =
+    function generateDirectionsGrid() {
+        return randomizedCurveDirectionsGrid(rows, cols)
+    }
+
+    const [directionsGrid, setDirectionsGrid] =
+            useState(generateDirectionsGrid);
+
+    if (reinitialize) {
+        setDirectionsGrid(generateDirectionsGrid);
+    }
+
+    const svgPathsGrid =
             useMemo(() => imageLoaded && mapCurveDirectionsGridToSVGPathsGrid({
                 directionsGrid,
                 pieceWidth,
@@ -36,9 +40,27 @@ function GameBoard({
                 pieceHeight,
                 curveSize
             ]);
+            
+        return {
+            svgPathsGrid
+        }
+}
+
+function GameBoard({
+    setImageAspectRatio
+}: {
+    setImageAspectRatio: (n: number) => void
+}) {
+    const {
+        imageLoaded,
+    } = useContext(GlobalState);
+
+    const {
+        svgPathsGrid
+    } = useGameInitialization();
     
     const
-        COMPLETION_EFFECT_TIME = 5000,
+        COMPLETION_EFFECT_DURATION = 5000,
         [isImageCompleted, setIsImageCompleted] = useState(false),
         [
             isImageCompletedAndEffectEnded,
@@ -49,7 +71,7 @@ function GameBoard({
         setIsImageCompleted(true);
         setTimeout(
             () => setIsImageCompletedAndEffectEnded(true),
-            COMPLETION_EFFECT_TIME
+            COMPLETION_EFFECT_DURATION
         );
     }
 
@@ -60,7 +82,7 @@ function GameBoard({
                     'completion-effect' : undefined
             }
             style={allowCSSCustomProperties({
-                '--completion-effect-time': `${COMPLETION_EFFECT_TIME}ms`,
+                '--completion-effect-duration': `${COMPLETION_EFFECT_DURATION}ms`,
             })}
         >
             <MainImage {...{
