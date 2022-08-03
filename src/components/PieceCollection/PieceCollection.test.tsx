@@ -9,8 +9,6 @@ test('createPieceInfoArray', () => {
     const mock = {
         rows: 4,
         cols: 3,
-        pieceWidth: 100,
-        pieceHeight: 50
     }
 
     const array = createPieceInfoArray(mock);
@@ -22,8 +20,8 @@ test('createPieceInfoArray', () => {
         row: 3,
         col: 2,
         correctPosition: {
-            x: 200,
-            y: 150
+            x: 2 / 3,
+            y: 3 / 4
         }
     });
 })
