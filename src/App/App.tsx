@@ -1,8 +1,12 @@
 import './App.scss';
-import { useReducer, useEffect, useContext, useRef } from 'react';
-import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
+import { useReducer, useEffect, useContext, useRef, useState } from 'react';
+import {
+	GlobalStateInterface,
+	GlobalState,
+	listenToWindowResize,
+	globalStateDoCalculations
+} from '../GlobalState/GlobalState';
 import GameBoard from '../components/GameBoard/GameBoard';
-import UploadImageButton from '../components/ControlPanel/UploadImageButton/UploadImageButton';
 import ControlPanel from '../components/ControlPanel/ControlPanel';
 
 function App() {
@@ -17,6 +21,11 @@ function App() {
 			},
 			useContext(GlobalState)
 		);
+	
+	const [isRestarting, setIsRestarting] = useState(true);
+	useEffect(() => {
+		setIsRestarting(false);
+	})
 
 	function setImageUrl(url: string) {
 		setGlobalStateProvider({ imageUrl: url });
@@ -27,7 +36,7 @@ function App() {
 	}
 
 	function triggerRestart() {
-		alert('Restart functionality is not implementd yet. Reload the page to restart.')
+		setIsRestarting(true);
 	}
 	
 	const globalStateProviderRef = useRef<GlobalStateInterface>();
@@ -50,7 +59,9 @@ function App() {
 		}
 		<GameBoard
 			{...{
-				setImageAspectRatio
+				setImageAspectRatio,
+				isRestarting,
+				afterRestartCallback: () => setIsRestarting(false)
 			}}
 		/>
 		<ControlPanel

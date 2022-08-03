@@ -3,7 +3,7 @@ import { isClassStaticBlockDeclaration } from "typescript";
 import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
-import { isCloseTo } from '../../utils/utils';
+import { isCloseTo, useResetableState } from '../../utils/utils';
 
 interface PieceInfo {
     uniqueId: string,
@@ -110,9 +110,11 @@ function isPositionCorrect(
 function PieceCollection({
     svgPathsGrid,
     imageCompleted,
+    isRestarting,
 }: {
     svgPathsGrid: SVGPathsGrid,
     imageCompleted: () => void,
+    isRestarting: boolean,
 }) {
     const {
         imageWidth,
@@ -124,13 +126,13 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
-    const [pieceInfoArray, setPieceInfoArray] = useState(() =>
+    debugger;
+    const [pieceInfoArray, setPieceInfoArray] = useResetableState(() =>
             createPieceInfoArray({
                 rows,
                 cols,
-                // pieceWidth,
-                // pieceHeight
-            })
+            }),
+            isRestarting
         );
     
     function updatePiecePosition(uniqueId: string, newAbsolutePosition: Position) {
