@@ -1,11 +1,13 @@
 .image-piece {
-	position: absolute;
+	position: absolute !important;
 	background: white;
 	touch-action: none;
 }
 
 .completion-effect .image-piece {
-	animation: vanish-curved-lines var(--completion-effect-duration);
+	animation-name: vanish-curved-lines;
+	animation-duration: var(--completion-effect-duration);
+	animation-fill-mode: forwards;
 }
 
 @keyframes vanish-curved-lines {

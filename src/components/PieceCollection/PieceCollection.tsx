@@ -1,5 +1,4 @@
-import { useContext, useState, useReducer, useEffect } from "react";
-import { isClassStaticBlockDeclaration } from "typescript";
+import { useContext, useReducer } from "react";
 import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
@@ -126,7 +125,6 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
-    debugger;
     const [pieceInfoArray, setPieceInfoArray] = useResetableState(() =>
             createPieceInfoArray({
                 rows,

@@ -1,13 +1,12 @@
-import React, { useState, useMemo, useContext, useEffect, useRef } from "react";
+import { useState, useMemo, useContext } from "react";
 import './GameBoard.scss';
 import { GlobalState } from "../../GlobalState/GlobalState";
 import MainImage from "../MainImage/MainImage";
 import PieceCollection from "../PieceCollection/PieceCollection";
 import {
-    CurveDirectionsGrid,
     mapCurveDirectionsGridToSVGPathsGrid,
     randomizedCurveDirectionsGrid
-    } from "../../utils/SVGCurvePaths";
+} from "../../utils/SVGCurvePaths";
 import {
     allowCSSCustomProperties,
     useResetable,

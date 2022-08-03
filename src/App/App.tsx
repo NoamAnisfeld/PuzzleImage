@@ -3,8 +3,8 @@ import { useReducer, useEffect, useContext, useRef, useState } from 'react';
 import {
 	GlobalStateInterface,
 	GlobalState,
+	globalStateDoCalculations,
 	listenToWindowResize,
-	globalStateDoCalculations
 } from '../GlobalState/GlobalState';
 import GameBoard from '../components/GameBoard/GameBoard';
 import ControlPanel from '../components/ControlPanel/ControlPanel';
@@ -25,7 +25,7 @@ function App() {
 	const [isRestarting, setIsRestarting] = useState(true);
 	useEffect(() => {
 		setIsRestarting(false);
-	})
+	}, [isRestarting])
 
 	function setImageUrl(url: string) {
 		setGlobalStateProvider({ imageUrl: url });
