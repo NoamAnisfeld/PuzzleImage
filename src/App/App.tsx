@@ -2,7 +2,8 @@ import './App.scss';
 import { useReducer, useEffect, useContext, useRef } from 'react';
 import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
 import GameBoard from '../components/CurvedGrid/GameBoard/GameBoard';
-import UploadImageButton from '../components/UploadImageButton/UploadImageButton';
+import UploadImageButton from '../components/ControlPanel/UploadImageButton/UploadImageButton';
+import ControlPanel from '../components/ControlPanel/ControlPanel';
 
 function App() {
 
@@ -48,7 +49,7 @@ function App() {
 				setImageAspectRatio
 			}}
 		/>
-		<UploadImageButton
+		<ControlPanel
 			{...{
 				setImageUrl
 			}}
