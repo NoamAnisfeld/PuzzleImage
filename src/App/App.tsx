@@ -25,6 +25,10 @@ function App() {
 	function setImageAspectRatio(aspectRatio: number) {
 		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
 	}
+
+	function triggerRestart() {
+		alert('Restart functionality is not implementd yet. Reload the page to restart.')
+	}
 	
 	const globalStateProviderRef = useRef<GlobalStateInterface>();
 	globalStateProviderRef.current = globalStateProvider;
@@ -51,7 +55,8 @@ function App() {
 		/>
 		<ControlPanel
 			{...{
-				setImageUrl
+				setImageUrl,
+				triggerRestart,
 			}}
 		/>
 	</GlobalState.Provider>
