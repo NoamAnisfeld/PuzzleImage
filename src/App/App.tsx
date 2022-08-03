@@ -1,7 +1,7 @@
 import './App.scss';
 import { useReducer, useEffect, useContext, useRef } from 'react';
 import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
-import GameBoard from '../components/CurvedGrid/GameBoard/GameBoard';
+import GameBoard from '../components/GameBoard/GameBoard';
 import UploadImageButton from '../components/ControlPanel/UploadImageButton/UploadImageButton';
 import ControlPanel from '../components/ControlPanel/ControlPanel';
 

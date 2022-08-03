@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useContext } from "react";
 import './GameBoard.scss';
-import { GlobalState } from "../../../GlobalState/GlobalState";
-import MainImage from "../../MainImage/MainImage";
-import PieceCollection from "../../PieceCollection/PieceCollection";
+import { GlobalState } from "../../GlobalState/GlobalState";
+import MainImage from "../MainImage/MainImage";
+import PieceCollection from "../PieceCollection/PieceCollection";
 import {
     mapCurveDirectionsGridToSVGPathsGrid,
     randomizedCurveDirectionsGrid
-    } from "../../../utils/SVGCurvePaths";
-import { allowCSSCustomProperties } from "../../../utils/utils";
+    } from "../../utils/SVGCurvePaths";
+import { allowCSSCustomProperties } from "../../utils/utils";
 
 function useGameInitialization(reinitialize = false) {
     const {
