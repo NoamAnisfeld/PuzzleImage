@@ -1,9 +1,9 @@
 import { useContext, useState, useReducer, useEffect } from "react";
 import { isClassStaticBlockDeclaration } from "typescript";
-import { GlobalState } from "../GlobalState/GlobalState";
+import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
-import { extractPieceOutlinePath, SVGPathsGrid } from '../SVGPaths/SVGCurvePaths';
-import { isCloseTo } from '../utils';
+import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
+import { isCloseTo } from '../../utils/utils';
 
 interface PieceInfo {
     uniqueId: string,

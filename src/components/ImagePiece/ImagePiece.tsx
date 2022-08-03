@@ -1,7 +1,7 @@
 import './ImagePiece.scss';
 import { useContext, useState } from 'react';
-import { GlobalState } from '../GlobalState/GlobalState';
-import { SVGPath } from '../SVGPaths/SVGCurvePaths';
+import { GlobalState } from '../../GlobalState/GlobalState';
+import { SVGPath } from '../../utils/SVGCurvePaths';
 
 interface Position {
     x: number,

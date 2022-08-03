@@ -3,8 +3,8 @@ import { useContext, useMemo } from 'react';
 import {
     SVGPathsGrid,
     combinedSVGPathFromPathsGrid,
-} from '../SVGPaths/SVGCurvePaths';
-import { GlobalState } from '../GlobalState/GlobalState';
+} from '../../utils/SVGCurvePaths';
+import { GlobalState } from '../../GlobalState/GlobalState';
 
 function DrawCurvedGrid({
     svgPathsGrid,    

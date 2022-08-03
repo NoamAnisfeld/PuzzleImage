@@ -1,4 +1,4 @@
-import { validate } from '../utils';
+import { validate } from './utils';
 
 type SVGPath = string;
 type HorizontalDirection = 'right' | 'left';

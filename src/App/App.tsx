@@ -1,8 +1,8 @@
 import './App.scss';
 import { useReducer, useEffect, useContext, useRef } from 'react';
 import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
-import GameBoard from '../GameBoard/GameBoard';
-import UploadImageButton from '../components/UploadImageButton';
+import GameBoard from '../components/CurvedGrid/GameBoard/GameBoard';
+import UploadImageButton from '../components/UploadImageButton/UploadImageButton';
 
 function App() {
 
