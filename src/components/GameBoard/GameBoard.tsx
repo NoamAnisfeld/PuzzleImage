@@ -10,6 +10,7 @@ import {
 import {
     allowCSSCustomProperties,
     useResetable,
+    useResetableState,
 } from "../../utils/utils";
 
 function useGameInitialization(randomizeNewGrid: boolean) {
@@ -64,11 +65,11 @@ function GameBoard({
     
     const
         COMPLETION_EFFECT_DURATION = 5000,
-        [isImageCompleted, setIsImageCompleted] = useState(false),
+        [isImageCompleted, setIsImageCompleted] = useResetableState(false, isRestarting),
         [
             isImageCompletedAndEffectEnded,
             setIsImageCompletedAndEffectEnded
-        ] = useState(false);
+        ] = useResetableState(false, isRestarting);
 
     function handleImageCompleted() {
         setIsImageCompleted(true);

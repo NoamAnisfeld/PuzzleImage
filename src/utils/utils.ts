@@ -47,16 +47,18 @@ function useResetable<T>(func: () => T, reset = false): T {
 // the actual initialization of the state - calls setState() with the function
 // to reinitialize the value. Then setState() is suspended for one render to
 // prevent an infinite loop
-function useResetableState<S>(func: () => S, reset = false):
+function useResetableState<S>(initialState: S | (() => S), reset = false):
     // for some reason "ReturnType<typeof useState<S>>" throws an error
     [S, Dispatch<SetStateAction<S>>] {
 
-    const [state, setState] = useState(func);
+    const [state, setState] = useState(initialState);
 
-    const suspend = useRef(true);
+    const savedInitialState = useRef(initialState).current,
+        suspend = useRef(true);
+
     if (reset && !suspend.current) {
         suspend.current = true;
-        setState(func);
+        setState(savedInitialState);
     } else {
         suspend.current = false;
     }
