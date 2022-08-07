@@ -22,23 +22,6 @@ function App() {
 			useContext(GlobalState)
 		);
 	
-	const [isRestarting, setIsRestarting] = useState(true);
-	useEffect(() => {
-		setIsRestarting(false);
-	}, [isRestarting])
-
-	function setImageUrl(url: string) {
-		setGlobalStateProvider({ imageUrl: url });
-	}
-
-	function setImageAspectRatio(aspectRatio: number) {
-		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
-	}
-
-	function triggerRestart() {
-		setIsRestarting(true);
-	}
-	
 	const globalStateProviderRef = useRef<GlobalStateInterface>();
 	globalStateProviderRef.current = globalStateProvider;
 	useEffect(() =>
@@ -48,6 +31,23 @@ function App() {
 			)
 		), []
 	);
+	
+	function setImageUrl(url: string) {
+		setGlobalStateProvider({ imageUrl: url });
+	}
+
+	function setImageAspectRatio(aspectRatio: number) {
+		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
+	}
+	
+	const [isRestarting, setIsRestarting] = useState(true);
+	useEffect(() => {
+		setIsRestarting(false);
+	}, [isRestarting])
+
+	function triggerRestart() {
+		setIsRestarting(true);
+	}
 
     return <GlobalState.Provider value={{...globalStateProvider}}>
 		{globalStateProvider.developmentMode &&
@@ -61,7 +61,6 @@ function App() {
 			{...{
 				setImageAspectRatio,
 				isRestarting,
-				afterRestartCallback: () => setIsRestarting(false)
 			}}
 		/>
 		<ControlPanel
