@@ -1,4 +1,4 @@
-import { useContext, useReducer } from "react";
+import { useContext, useEffect, useReducer } from "react";
 import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
@@ -165,9 +165,11 @@ function PieceCollection({
 
     const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
-    if (pieceInfoArray.every(isPositionCorrect)) {
-        imageCompleted();
-    }
+    useEffect(() => {
+        if (pieceInfoArray.every(isPositionCorrect)) {
+            imageCompleted();
+        }
+    });
 
     return <>
         {pieceInfoArray.map(pieceInfo => {
