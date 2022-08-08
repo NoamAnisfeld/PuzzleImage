@@ -2,7 +2,7 @@ import { useContext, useEffect, useReducer } from "react";
 import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
-import { isCloseTo, useResetableState } from '../../utils/utils';
+import { ArrayUtils, isCloseTo, useResetableState } from '../../utils/utils';
 
 interface PieceInfo {
     uniqueId: string,
@@ -93,7 +93,7 @@ function createPieceInfoArray({
         }
     }
 
-    return array;
+    return ArrayUtils.shuffle(array);
 }
 
 function isPositionCorrect(
