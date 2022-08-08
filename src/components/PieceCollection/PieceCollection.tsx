@@ -70,6 +70,18 @@ function createPieceInfoArray({
 }): PieceInfo[] {
     const array: PieceInfo[] = [];
 
+    let positions: Position[] = [];
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            positions.push({
+                x: col / cols,
+                y: row / rows
+            })
+        }
+    }
+    positions = ArrayUtils.shuffle(positions);
+
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             const uniqueId = `${row}/${col}`;
@@ -78,11 +90,7 @@ function createPieceInfoArray({
                 uniqueId,
                 row,
                 col,
-                // ToDo: randomize initial position
-                fractionalPosition: {
-                    x: -col / cols,
-                    y: row / rows
-                },
+                fractionalPosition: positions.pop(),
                 correctPosition: calculatePieceCorrectPosition({
                     row,
                     col,
