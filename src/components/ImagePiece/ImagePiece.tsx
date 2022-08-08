@@ -16,6 +16,7 @@ function ImagePiece({
     updatePosition,
     zIndex,
     putOnTop,
+    isImageCompleted = false,
 }: {
     uniqueId: string,
     imageOffset: {
@@ -27,6 +28,7 @@ function ImagePiece({
     updatePosition: (newPosition: Position) => void,
     zIndex: number,
     putOnTop: () => void,
+    isImageCompleted?: boolean,
 }) {
     const {
         imageUrl,
@@ -119,7 +121,7 @@ function ImagePiece({
             left: relevantPosition.x - curveSize,
             zIndex
         }}
-        onClick={startDrag}
+        onClick={isImageCompleted ? undefined : startDrag}
     >
         <defs>
             <path id={`outline-${uniqueId}`} d={shapePath} />

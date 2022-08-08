@@ -1,8 +1,13 @@
 import './App.scss';
-import { useReducer, useEffect, useContext, useRef } from 'react';
-import { GlobalStateInterface, GlobalState, listenToWindowResize, globalStateDoCalculations } from '../GlobalState/GlobalState';
-import GameBoard from '../components/CurvedGrid/GameBoard/GameBoard';
-import UploadImageButton from '../components/UploadImageButton/UploadImageButton';
+import { useReducer, useEffect, useContext, useRef, useState } from 'react';
+import {
+	GlobalStateInterface,
+	GlobalState,
+	globalStateDoCalculations,
+	listenToWindowResize,
+} from '../GlobalState/GlobalState';
+import GameBoard from '../components/GameBoard/GameBoard';
+import ControlPanel from '../components/ControlPanel/ControlPanel';
 
 function App() {
 
@@ -16,14 +21,6 @@ function App() {
 			},
 			useContext(GlobalState)
 		);
-
-	function setImageUrl(url: string) {
-		setGlobalStateProvider({ imageUrl: url });
-	}
-
-	function setImageAspectRatio(aspectRatio: number) {
-		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
-	}
 	
 	const globalStateProviderRef = useRef<GlobalStateInterface>();
 	globalStateProviderRef.current = globalStateProvider;
@@ -34,6 +31,23 @@ function App() {
 			)
 		), []
 	);
+	
+	function setImageUrl(url: string) {
+		setGlobalStateProvider({ imageUrl: url });
+	}
+
+	function setImageAspectRatio(aspectRatio: number) {
+		setGlobalStateProvider({ imageAspectRatio: aspectRatio });
+	}
+	
+	const [isRestarting, setIsRestarting] = useState(true);
+	useEffect(() => {
+		setIsRestarting(false);
+	}, [isRestarting])
+
+	function triggerRestart() {
+		setIsRestarting(true);
+	}
 
     return <GlobalState.Provider value={{...globalStateProvider}}>
 		{globalStateProvider.developmentMode &&
@@ -45,12 +59,14 @@ function App() {
 		}
 		<GameBoard
 			{...{
-				setImageAspectRatio
+				setImageAspectRatio,
+				isRestarting,
 			}}
 		/>
-		<UploadImageButton
+		<ControlPanel
 			{...{
-				setImageUrl
+				setImageUrl,
+				triggerRestart,
 			}}
 		/>
 	</GlobalState.Provider>

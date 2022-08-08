@@ -1,9 +1,8 @@
-import { useContext, useState, useReducer, useEffect } from "react";
-import { isClassStaticBlockDeclaration } from "typescript";
+import { useContext, useEffect, useReducer } from "react";
 import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
-import { isCloseTo } from '../../utils/utils';
+import { isCloseTo, useResetableState } from '../../utils/utils';
 
 interface PieceInfo {
     uniqueId: string,
@@ -109,10 +108,12 @@ function isPositionCorrect(
 
 function PieceCollection({
     svgPathsGrid,
-    imageCompleted,
+    imageCompletedCallback,
+    isRestarting,
 }: {
     svgPathsGrid: SVGPathsGrid,
-    imageCompleted: () => void,
+    imageCompletedCallback: () => void,
+    isRestarting: boolean,
 }) {
     const {
         imageWidth,
@@ -124,13 +125,12 @@ function PieceCollection({
         cols
     } = useContext(GlobalState);
 
-    const [pieceInfoArray, setPieceInfoArray] = useState(() =>
+    const [pieceInfoArray, setPieceInfoArray] = useResetableState(() =>
             createPieceInfoArray({
                 rows,
                 cols,
-                // pieceWidth,
-                // pieceHeight
-            })
+            }),
+            isRestarting
         );
     
     function updatePiecePosition(uniqueId: string, newAbsolutePosition: Position) {
@@ -165,9 +165,17 @@ function PieceCollection({
 
     const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
-    if (pieceInfoArray.every(isPositionCorrect)) {
-        imageCompleted();
+    const [isImageCompleted, setIsImageCompleted] =
+        useResetableState(false, isRestarting);
+    if (!isImageCompleted && pieceInfoArray.every(isPositionCorrect)) {
+        setIsImageCompleted(true);
     }
+
+    useEffect(() => {
+        if (isImageCompleted) {
+            imageCompletedCallback();
+        }
+    }, [isImageCompleted]);
 
     return <>
         {pieceInfoArray.map(pieceInfo => {
@@ -197,7 +205,8 @@ function PieceCollection({
                             imageWidth,
                             imageHeight
                         }
-                    )
+                    ),
+                    isImageCompleted,
                 }}
                 updatePosition={(newAbsolutePosition: Position) =>
                     updatePiecePosition(uniqueId, newAbsolutePosition)}

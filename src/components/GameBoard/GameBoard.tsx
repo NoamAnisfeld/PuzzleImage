@@ -1,15 +1,19 @@
-import React, { useState, useMemo, useContext } from "react";
+import { useState, useMemo, useContext } from "react";
 import './GameBoard.scss';
-import { GlobalState } from "../../../GlobalState/GlobalState";
-import MainImage from "../../MainImage/MainImage";
-import PieceCollection from "../../PieceCollection/PieceCollection";
+import { GlobalState } from "../../GlobalState/GlobalState";
+import MainImage from "../MainImage/MainImage";
+import PieceCollection from "../PieceCollection/PieceCollection";
 import {
     mapCurveDirectionsGridToSVGPathsGrid,
     randomizedCurveDirectionsGrid
-    } from "../../../utils/SVGCurvePaths";
-import { allowCSSCustomProperties } from "../../../utils/utils";
+} from "../../utils/SVGCurvePaths";
+import {
+    allowCSSCustomProperties,
+    useResetable,
+    useResetableState,
+} from "../../utils/utils";
 
-function useGameInitialization(reinitialize = false) {
+function useGameInitialization(randomizeNewGrid: boolean) {
     const {
         imageLoaded,
         rows,
@@ -23,12 +27,7 @@ function useGameInitialization(reinitialize = false) {
         return randomizedCurveDirectionsGrid(rows, cols)
     }
 
-    const [directionsGrid, setDirectionsGrid] =
-            useState(generateDirectionsGrid);
-
-    if (reinitialize) {
-        setDirectionsGrid(generateDirectionsGrid);
-    }
+    const directionsGrid = useResetable(generateDirectionsGrid, randomizeNewGrid);
 
     const svgPathsGrid =
             useMemo(() => imageLoaded && mapCurveDirectionsGridToSVGPathsGrid({
@@ -50,9 +49,11 @@ function useGameInitialization(reinitialize = false) {
 }
 
 function GameBoard({
-    setImageAspectRatio
+    setImageAspectRatio,
+    isRestarting,
 }: {
-    setImageAspectRatio: (n: number) => void
+    setImageAspectRatio: (n: number) => void,
+    isRestarting: boolean,
 }) {
     const {
         imageLoaded,
@@ -60,15 +61,15 @@ function GameBoard({
 
     const {
         svgPathsGrid
-    } = useGameInitialization();
+    } = useGameInitialization(isRestarting);
     
     const
         COMPLETION_EFFECT_DURATION = 5000,
-        [isImageCompleted, setIsImageCompleted] = useState(false),
+        [isImageCompleted, setIsImageCompleted] = useResetableState(false, isRestarting),
         [
             isImageCompletedAndEffectEnded,
             setIsImageCompletedAndEffectEnded
-        ] = useState(false);
+        ] = useResetableState(false, isRestarting);
 
     function handleImageCompleted() {
         setIsImageCompleted(true);
@@ -96,8 +97,9 @@ function GameBoard({
             !isImageCompletedAndEffectEnded &&
             <PieceCollection {...{
                     svgPathsGrid,
+                    isRestarting,
                 }}
-                imageCompleted={handleImageCompleted}
+                imageCompletedCallback={handleImageCompleted}
             />}
         </div>
 }

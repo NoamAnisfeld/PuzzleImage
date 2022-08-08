@@ -63,13 +63,9 @@ function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateI
         curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
 
     return {
-        developmentMode: oldState.developmentMode,
+        ...oldState,
         imageLoaded: true,
-        imageUrl: oldState.imageUrl,
-        rows,
-        cols,
         windowDimensions,
-        imageAspectRatio,
         imageWidth,
         imageHeight,
         pieceWidth,
