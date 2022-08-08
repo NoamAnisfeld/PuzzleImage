@@ -108,11 +108,11 @@ function isPositionCorrect(
 
 function PieceCollection({
     svgPathsGrid,
-    imageCompleted,
+    imageCompletedCallback,
     isRestarting,
 }: {
     svgPathsGrid: SVGPathsGrid,
-    imageCompleted: () => void,
+    imageCompletedCallback: () => void,
     isRestarting: boolean,
 }) {
     const {
@@ -165,11 +165,17 @@ function PieceCollection({
 
     const [zIndexSorter, putPieceOnTop] = useReducer(putPieceOnTopLogic, []);
 
+    const [isImageCompleted, setIsImageCompleted] =
+        useResetableState(false, isRestarting);
+    if (!isImageCompleted && pieceInfoArray.every(isPositionCorrect)) {
+        setIsImageCompleted(true);
+    }
+
     useEffect(() => {
-        if (pieceInfoArray.every(isPositionCorrect)) {
-            imageCompleted();
+        if (isImageCompleted) {
+            imageCompletedCallback();
         }
-    });
+    }, [isImageCompleted]);
 
     return <>
         {pieceInfoArray.map(pieceInfo => {
@@ -199,7 +205,8 @@ function PieceCollection({
                             imageWidth,
                             imageHeight
                         }
-                    )
+                    ),
+                    isImageCompleted,
                 }}
                 updatePosition={(newAbsolutePosition: Position) =>
                     updatePiecePosition(uniqueId, newAbsolutePosition)}

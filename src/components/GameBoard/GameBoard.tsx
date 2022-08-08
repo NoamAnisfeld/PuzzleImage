@@ -99,7 +99,7 @@ function GameBoard({
                     svgPathsGrid,
                     isRestarting,
                 }}
-                imageCompleted={handleImageCompleted}
+                imageCompletedCallback={handleImageCompleted}
             />}
         </div>
 }
