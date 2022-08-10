@@ -11,6 +11,8 @@ function allowCSSCustomProperties(
     return styles;
 }
 
+type Orientation = "horizontal" | "vertical";
+
 function validate(condition: boolean) {
     if (!condition) {
         throw Error();
@@ -65,10 +67,19 @@ function useResetableState<S>(initialState: S | (() => S), reset: boolean):
     return [state, setState];
 }
 
+export type {
+    Orientation,
+}
+
+// util functions
 export {
     allowCSSCustomProperties,
     validate,
     isCloseTo,
+}
+
+// util custom hooks
+export {
     useResetable,
     useResetableState,
-};
+}
