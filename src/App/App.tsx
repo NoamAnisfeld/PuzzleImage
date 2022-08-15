@@ -57,18 +57,26 @@ function App() {
 				right: 0
 			}}>Development mode</span>
 		}
-		<GameBoard
-			{...{
-				setImageAspectRatio,
-				isRestarting,
-			}}
-		/>
-		<ControlPanel
-			{...{
-				setImageUrl,
-				triggerRestart,
-			}}
-		/>
+		<div id="app"
+			className={
+				globalStateProvider.roomInWindow === 'horizontal' ?
+				"horizontal-layout" :
+				"vertical-layout"
+			}
+		>
+			<ControlPanel
+				{...{
+					setImageUrl,
+					triggerRestart,
+				}}
+			/>
+			<GameBoard
+				{...{
+					setImageAspectRatio,
+					isRestarting,
+				}}
+			/>
+		</div>
 	</GlobalState.Provider>
 }
 

@@ -1,6 +1,7 @@
 import './ControlPanel.scss';
 import UploadImageButton from './UploadImageButton/UploadImageButton';
 import RestartButton from './RestartButton/RestartButton';
+import PiecesBox from './PiecesBox/PiecesBox';
 
 function ControlPanel({
     setImageUrl,
@@ -17,6 +18,7 @@ function ControlPanel({
         <RestartButton {...{
             triggerRestart
         }} />
+        <PiecesBox />
     </div>
 }
 
