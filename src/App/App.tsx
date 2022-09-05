@@ -8,6 +8,7 @@ import {
 } from '../GlobalState/GlobalState';
 import GameBoard from '../components/GameBoard/GameBoard';
 import ControlPanel from '../components/ControlPanel/ControlPanel';
+import type { Position } from '../components/ImagePiece/ImagePiece';
 
 function App() {
 
@@ -68,6 +69,8 @@ function App() {
 				{...{
 					setImageUrl,
 					triggerRestart,
+					pickPiece: (position: Position) =>
+						alert('Pick a piece: ' + JSON.stringify(position)),
 				}}
 			/>
 			<GameBoard
