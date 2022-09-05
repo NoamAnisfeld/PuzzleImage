@@ -55,6 +55,20 @@ function PieceCollection({
         setPieceInfoArray(newArray);
     }
 
+    function unhideFirstInvisiblePiece() {
+        setPieceInfoArray(oldArray => {
+            const newArray = [...oldArray];
+            for (let piece of newArray) {
+                if (!piece.visible) {
+                    piece.visible = true;
+                    break;
+                }
+            }
+
+            return newArray;
+        });
+    }
+
     function putPieceOnTopLogic(oldZIndexSorter: string[], pieceKey: string): string[] {
         const newZIndexSorter = Array.from(oldZIndexSorter);
         const index = newZIndexSorter.indexOf(pieceKey);
