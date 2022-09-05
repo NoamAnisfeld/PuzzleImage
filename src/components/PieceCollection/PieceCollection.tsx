@@ -90,6 +90,19 @@ function PieceCollection({
     }
 
     useEffect(() => {
+        window.addEventListener('click', event => {
+            const { target } = event;
+            if (!(target instanceof HTMLElement)) {
+                return;
+            }
+
+            if (target.id === "pieces-box") {
+                unhideFirstInvisiblePiece();
+            }
+        })
+    }, []);
+
+    useEffect(() => {
         if (isImageCompleted) {
             imageCompletedCallback();
         }
