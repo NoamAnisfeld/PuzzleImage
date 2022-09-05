@@ -10,6 +10,7 @@ interface PieceInfo {
     col: number,
     fractionalPosition: Position,
     correctPosition: Position,
+    visible: boolean
 }
 
 function calculatePieceCorrectPosition({
@@ -89,6 +90,7 @@ function createPieceInfoArray({
                     rows,
                     cols,
                 }),
+                visible: false,
             })
         }
     }
@@ -179,9 +181,9 @@ function PieceCollection({
 
     return <>
         {pieceInfoArray.map(pieceInfo => {
-            const { uniqueId, row, col, fractionalPosition } = pieceInfo;
+            const { uniqueId, row, col, fractionalPosition, visible } = pieceInfo;
 
-            return <ImagePiece
+            return visible ? <ImagePiece
                 {...{
                     uniqueId,
                     key: uniqueId,
@@ -215,7 +217,7 @@ function PieceCollection({
                         (zIndexSorter.indexOf(uniqueId))
                 }
                 putOnTop={() => putPieceOnTop(uniqueId)}
-            />
+            /> : undefined
         })}
     </>
 }
