@@ -57,9 +57,12 @@ function PieceCollection({
 
     function unhideFirstInvisiblePiece() {
         setPieceInfoArray(oldArray => {
-            console.log("entering unhide function");
-            const newArray = cloneArrayOfObjects(oldArray);
-            newArray.find(piece => !piece.visible).visible = true;
+            const newArray = cloneArrayOfObjects(oldArray),
+                firstInvisiblePiece = newArray.find(piece => !piece.visible);
+
+            if (firstInvisiblePiece) {
+                firstInvisiblePiece.visible = true;
+            }
 
             return newArray;
         });
