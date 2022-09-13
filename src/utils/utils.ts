@@ -24,6 +24,10 @@ function isCloseTo(a: number, b: number): boolean {
     return Math.abs(a - b) < 0.005;
 }
 
+function cloneArrayOfObjects<T>(array: T[]): T[] {
+    return array.map(item => (item && typeof item === 'object') ? {...item} : item);
+}
+
 // React custom hook
 //
 // Returns a value that remains stable across renders (using useState)
@@ -76,6 +80,7 @@ export {
     allowCSSCustomProperties,
     validate,
     isCloseTo,
+    cloneArrayOfObjects,
 }
 
 // util custom hooks
