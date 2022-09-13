@@ -59,15 +59,8 @@ function PieceCollection({
         setPieceInfoArray(oldArray => {
             console.log("entering unhide function");
             const newArray = cloneArrayOfObjects(oldArray);
-            for (let piece of newArray) {
-                if (!piece.visible) {
-                    console.log("performing unhide");
-                    piece.visible = true;
-                    break;
-                }
-            }
+            newArray.find(piece => !piece.visible).visible = true;
 
-            console.log("exiting unhide function");
             return newArray;
         });
     }
