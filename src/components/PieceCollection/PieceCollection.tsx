@@ -8,7 +8,7 @@ import {
     isPositionCorrect
 } from "./PieceCollection.utils";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
-import { useResetableState } from '../../utils/utils';
+import { cloneArrayOfObjects, useResetableState } from '../../utils/utils';
 
 function PieceCollection({
     svgPathsGrid,
@@ -38,7 +38,7 @@ function PieceCollection({
         );
     
     function updatePiecePosition(uniqueId: string, newAbsolutePosition: Position) {
-        const newArray = [...pieceInfoArray];        
+        const newArray = cloneArrayOfObjects(pieceInfoArray);        
         const piece = newArray.find(value => value.uniqueId === uniqueId);
         if (!piece) {
             console.warn('Unexpected uniqueId');
@@ -57,14 +57,17 @@ function PieceCollection({
 
     function unhideFirstInvisiblePiece() {
         setPieceInfoArray(oldArray => {
-            const newArray = [...oldArray];
+            console.log("entering unhide function");
+            const newArray = cloneArrayOfObjects(oldArray);
             for (let piece of newArray) {
                 if (!piece.visible) {
+                    console.log("performing unhide");
                     piece.visible = true;
                     break;
                 }
             }
 
+            console.log("exiting unhide function");
             return newArray;
         });
     }
@@ -90,10 +93,16 @@ function PieceCollection({
     }
 
     useEffect(() => {
-        document.getElementById("pieces-box").addEventListener('click',
-            () => unhideFirstInvisiblePiece()
-        );
-    }, []);
+        const box = document.getElementById("pieces-box"),
+            listener = () => {
+                unhideFirstInvisiblePiece();
+            };
+
+        box.addEventListener('click', listener);
+        return () => {
+            box.removeEventListener('click', listener)
+        };
+    }, [unhideFirstInvisiblePiece]);
 
     useEffect(() => {
         if (isImageCompleted) {
