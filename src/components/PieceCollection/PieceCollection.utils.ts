@@ -76,10 +76,9 @@ function createPieceInfoArray({
                 uniqueId,
                 row,
                 col,
-                // ToDo: randomize initial position
                 fractionalPosition: {
-                    x: -col / cols,
-                    y: row / rows
+                    x: -2 / cols,
+                    y: 1 / rows
                 },
                 correctPosition: calculatePieceCorrectPosition({
                     row,
