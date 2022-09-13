@@ -112,7 +112,7 @@ function ImagePiece({
     return <svg
         className="image-piece"
         fill="lime"
-        strokeWidth="5"
+        strokeWidth="3"
         width={pieceWidth + curveSize * 2}
         height={pieceHeight + curveSize * 2}
         clipPath={`url(#clip-path-${uniqueId})`}
@@ -138,7 +138,7 @@ function ImagePiece({
         />
         <use
             href={`#outline-${uniqueId}`}
-            stroke="white"
+            stroke="black"
             fill="none"
         />
     </svg>
