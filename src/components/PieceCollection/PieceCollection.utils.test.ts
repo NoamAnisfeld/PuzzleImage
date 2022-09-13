@@ -1,9 +1,4 @@
-import { ModuleDetectionKind } from "typescript";
-import { exportedForTesting } from "./PieceCollection";
-
-const {
-    createPieceInfoArray
-} = exportedForTesting;
+import { createPieceInfoArray } from "./PieceCollection.utils";
 
 test('createPieceInfoArray', () => {
     const mock = {

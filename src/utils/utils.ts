@@ -11,6 +11,8 @@ function allowCSSCustomProperties(
     return styles;
 }
 
+type Orientation = "horizontal" | "vertical";
+
 function validate(condition: boolean) {
     if (!condition) {
         throw Error();
@@ -20,6 +22,10 @@ function validate(condition: boolean) {
 // same functionality as Jest's expect(a).toBeCloseTo(b)
 function isCloseTo(a: number, b: number): boolean {
     return Math.abs(a - b) < 0.005;
+}
+
+function cloneArrayOfObjects<T>(array: T[]): T[] {
+    return array.map(item => (item && typeof item === 'object') ? {...item} : item);
 }
 
 // React custom hook
@@ -65,10 +71,20 @@ function useResetableState<S>(initialState: S | (() => S), reset: boolean):
     return [state, setState];
 }
 
+export type {
+    Orientation,
+}
+
+// util functions
 export {
     allowCSSCustomProperties,
     validate,
     isCloseTo,
+    cloneArrayOfObjects,
+}
+
+// util custom hooks
+export {
     useResetable,
     useResetableState,
-};
+}

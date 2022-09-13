@@ -8,6 +8,7 @@ import {
 } from '../GlobalState/GlobalState';
 import GameBoard from '../components/GameBoard/GameBoard';
 import ControlPanel from '../components/ControlPanel/ControlPanel';
+import type { Position } from '../components/ImagePiece/ImagePiece';
 
 function App() {
 
@@ -57,18 +58,28 @@ function App() {
 				right: 0
 			}}>Development mode</span>
 		}
-		<GameBoard
-			{...{
-				setImageAspectRatio,
-				isRestarting,
-			}}
-		/>
-		<ControlPanel
-			{...{
-				setImageUrl,
-				triggerRestart,
-			}}
-		/>
+		<div id="app"
+			className={
+				globalStateProvider.roomInWindow === 'horizontal' ?
+				"horizontal-layout" :
+				"vertical-layout"
+			}
+		>
+			<ControlPanel
+				{...{
+					setImageUrl,
+					triggerRestart,
+					pickPiece: (position: Position) =>
+						alert('Pick a piece: ' + JSON.stringify(position)),
+				}}
+			/>
+			<GameBoard
+				{...{
+					setImageAspectRatio,
+					isRestarting,
+				}}
+			/>
+		</div>
 	</GlobalState.Provider>
 }
 

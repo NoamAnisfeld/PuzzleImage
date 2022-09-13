@@ -1,11 +1,14 @@
 #control-panel {
-    position: fixed;
-    bottom: 0;
-    right: 0;
+    // position: fixed;
+    // bottom: 0;
+    // right: 0;
     margin: 1em;
+
+    height: fit-content;
 
     display: flex;
     flex-direction: column;
+    align-items: center;
 
     background: violet;
     padding: 1em;

@@ -1,110 +1,14 @@
 import { useContext, useEffect, useReducer } from "react";
 import { GlobalState } from "../../GlobalState/GlobalState";
 import ImagePiece, { Position } from "../ImagePiece/ImagePiece";
+import {
+    fractionalToAbsolutePosition,
+    absoluteToFractionalPosition,
+    createPieceInfoArray,
+    isPositionCorrect
+} from "./PieceCollection.utils";
 import { extractPieceOutlinePath, SVGPathsGrid } from '../../utils/SVGCurvePaths';
-import { isCloseTo, useResetableState } from '../../utils/utils';
-
-interface PieceInfo {
-    uniqueId: string,
-    row: number,
-    col: number,
-    fractionalPosition: Position,
-    correctPosition: Position,
-}
-
-function calculatePieceCorrectPosition({
-    row,
-    col,
-    rows,
-    cols
-}: {
-    row: number,
-    col: number,
-    rows: number,
-    cols: number
-}): Position {
-    return {
-        x: col / cols,
-        y: row / rows
-    }
-}
-
-function fractionalToAbsolutePosition(
-    fractionalPosition: Position,
-    {
-        imageWidth,
-        imageHeight,
-    }: {
-        imageWidth: number,
-        imageHeight: number,
-    }
-): Position {
-    return {
-        x: imageWidth * fractionalPosition.x,
-        y: imageHeight * fractionalPosition.y
-    }
-}
-
-function absoluteToFractionalPosition(
-    absolutePosition: Position,
-    {
-        imageWidth,
-        imageHeight,
-    }: {
-        imageWidth: number,
-        imageHeight: number,
-    }
-): Position {
-    return {
-        x: absolutePosition.x / imageWidth,
-        y: absolutePosition.y / imageHeight
-    }
-}
-
-function createPieceInfoArray({
-    rows,
-    cols,
-}: {
-    rows: number,
-    cols: number,
-}): PieceInfo[] {
-    const array: PieceInfo[] = [];
-
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            const uniqueId = `${row}/${col}`;
-
-            array.push({
-                uniqueId,
-                row,
-                col,
-                // ToDo: randomize initial position
-                fractionalPosition: {
-                    x: -col / cols,
-                    y: row / rows
-                },
-                correctPosition: calculatePieceCorrectPosition({
-                    row,
-                    col,
-                    rows,
-                    cols,
-                }),
-            })
-        }
-    }
-
-    return array;
-}
-
-function isPositionCorrect(
-    {
-        fractionalPosition,
-        correctPosition
-    }: PieceInfo
-): boolean {
-    return isCloseTo(fractionalPosition.x, correctPosition.x) &&
-        isCloseTo(fractionalPosition.y, correctPosition.y);
-}
+import { cloneArrayOfObjects, useResetableState } from '../../utils/utils';
 
 function PieceCollection({
     svgPathsGrid,
@@ -134,7 +38,7 @@ function PieceCollection({
         );
     
     function updatePiecePosition(uniqueId: string, newAbsolutePosition: Position) {
-        const newArray = [...pieceInfoArray];        
+        const newArray = cloneArrayOfObjects(pieceInfoArray);        
         const piece = newArray.find(value => value.uniqueId === uniqueId);
         if (!piece) {
             console.warn('Unexpected uniqueId');
@@ -149,6 +53,19 @@ function PieceCollection({
         );
 
         setPieceInfoArray(newArray);
+    }
+
+    function unhideFirstInvisiblePiece() {
+        setPieceInfoArray(oldArray => {
+            const newArray = cloneArrayOfObjects(oldArray),
+                firstInvisiblePiece = newArray.find(piece => !piece.visible);
+
+            if (firstInvisiblePiece) {
+                firstInvisiblePiece.visible = true;
+            }
+
+            return newArray;
+        });
     }
 
     function putPieceOnTopLogic(oldZIndexSorter: string[], pieceKey: string): string[] {
@@ -172,6 +89,18 @@ function PieceCollection({
     }
 
     useEffect(() => {
+        const box = document.getElementById("pieces-box"),
+            listener = () => {
+                unhideFirstInvisiblePiece();
+            };
+
+        box.addEventListener('click', listener);
+        return () => {
+            box.removeEventListener('click', listener)
+        };
+    }, [unhideFirstInvisiblePiece]);
+
+    useEffect(() => {
         if (isImageCompleted) {
             imageCompletedCallback();
         }
@@ -179,9 +108,9 @@ function PieceCollection({
 
     return <>
         {pieceInfoArray.map(pieceInfo => {
-            const { uniqueId, row, col, fractionalPosition } = pieceInfo;
+            const { uniqueId, row, col, fractionalPosition, visible } = pieceInfo;
 
-            return <ImagePiece
+            return visible ? <ImagePiece
                 {...{
                     uniqueId,
                     key: uniqueId,
@@ -215,13 +144,9 @@ function PieceCollection({
                         (zIndexSorter.indexOf(uniqueId))
                 }
                 putOnTop={() => putPieceOnTop(uniqueId)}
-            />
+            /> : undefined
         })}
     </>
 }
 
 export default PieceCollection;
-
-export const exportedForTesting = {
-    createPieceInfoArray
-};

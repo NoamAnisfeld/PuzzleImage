@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { Orientation } from '../utils/utils';
 
 function fetchWindowDimensions() {
 	return {
@@ -31,6 +32,7 @@ type GlobalStateInterface = typeof initialGlobalState & Partial<{
 	imageAspectRatio: number,
 	imageWidth: number,
 	imageHeight: number,
+    roomInWindow: Orientation,
     pieceWidth: number,
     pieceHeight: number,
 	curveSize: number,
@@ -43,6 +45,67 @@ window.addEventListener('keyup', event => {
     }
 })
 
+function imageDimensionsLogic({
+    windowDimensions,
+    imageAspectRatio
+}: Pick<GlobalStateInterface,
+    "windowDimensions" |
+    "imageAspectRatio"
+>): Pick<GlobalStateInterface,
+    "imageWidth" |
+    "imageHeight" |
+    "roomInWindow"
+> {
+    const
+        BORDER_WIDTH = 20,
+        BORDERS_WIDTH = BORDER_WIDTH * 2,
+        MIN_EXTRA_ROOM = 200;
+
+    const
+        maxImageWidth = windowDimensions.width - BORDERS_WIDTH,
+        maxImageHeight = windowDimensions.height - BORDERS_WIDTH,
+        preferredImageWidth = Math.min(
+            maxImageWidth, maxImageHeight * imageAspectRatio
+        ),
+        preferredImageHeight = preferredImageWidth / imageAspectRatio,
+        widthExtraRoom = windowDimensions.width - BORDERS_WIDTH -
+            preferredImageWidth,
+        heightExtraRoom = windowDimensions.height - BORDERS_WIDTH -
+            preferredImageHeight;
+
+    if (widthExtraRoom >= MIN_EXTRA_ROOM) {
+        return {
+            imageWidth: preferredImageWidth,
+            imageHeight: preferredImageHeight,
+            roomInWindow: "horizontal"
+        }
+    } else if (heightExtraRoom >= MIN_EXTRA_ROOM) {
+        return {
+            imageWidth: preferredImageWidth,
+            imageHeight: preferredImageHeight,
+            roomInWindow: "vertical"
+        }
+    } else if (widthExtraRoom >= heightExtraRoom) {
+        const reducedImageWidth = windowDimensions.width - MIN_EXTRA_ROOM,
+            reducedImageHeight = reducedImageWidth / imageAspectRatio;
+        
+        return {
+            imageWidth: reducedImageWidth,
+            imageHeight: reducedImageHeight,
+            roomInWindow: "horizontal"
+        }
+    } else {
+        const reducedImageHeight = windowDimensions.height - MIN_EXTRA_ROOM,
+            reducedImageWidth = reducedImageHeight * imageAspectRatio;
+
+        return {
+            imageWidth: reducedImageWidth,
+            imageHeight: reducedImageHeight,
+            roomInWindow: "vertical"
+        }
+    }
+}
+
 function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateInterface {
     const { imageAspectRatio, rows, cols } = oldState;
 
@@ -52,12 +115,14 @@ function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateI
 
     const
         windowDimensions = fetchWindowDimensions(),
-        imageMaxWidth = windowDimensions.width * 0.8,
-        imageMaxHeight = windowDimensions.height * 0.9,
-        imageWidth = Math.min(
-            imageMaxWidth, imageMaxHeight * imageAspectRatio
-        ),
-        imageHeight = imageWidth / imageAspectRatio,
+        {
+            imageWidth,
+            imageHeight,
+            roomInWindow
+        } = imageDimensionsLogic({
+            windowDimensions,
+            imageAspectRatio
+        }),
         pieceWidth = imageWidth / cols,
         pieceHeight = imageHeight / rows,
         curveSize = Math.min(pieceWidth, pieceHeight) * 0.2;
@@ -68,6 +133,7 @@ function globalStateDoCalculations(oldState: GlobalStateInterface): GlobalStateI
         windowDimensions,
         imageWidth,
         imageHeight,
+        roomInWindow,
         pieceWidth,
         pieceHeight,
         curveSize,
