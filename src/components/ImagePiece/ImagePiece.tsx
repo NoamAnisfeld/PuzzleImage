@@ -138,7 +138,7 @@ function ImagePiece({
         />
         <use
             href={`#outline-${uniqueId}`}
-            stroke="green"
+            stroke="white"
             fill="none"
         />
     </svg>
