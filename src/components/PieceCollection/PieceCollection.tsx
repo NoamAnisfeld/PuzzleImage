@@ -62,6 +62,7 @@ function PieceCollection({
 
             if (firstInvisiblePiece) {
                 firstInvisiblePiece.visible = true;
+                putPieceOnTop(firstInvisiblePiece.uniqueId);
             }
 
             return newArray;
