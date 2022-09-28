@@ -28,6 +28,16 @@ function cloneArrayOfObjects<T>(array: T[]): T[] {
     return array.map(item => (item && typeof item === 'object') ? {...item} : item);
 }
 
+class ArrayUtils {
+    // forked from
+    // https://gist.github.com/guilhermepontes/17ae0cc71fa2b13ea8c20c94c5c35dc4
+    static shuffle<T>(array: T[]): T[] {
+        return array.map(item => ({ random: Math.random(), item }) )
+            .sort((a, b) => a.random - b.random)
+            .map(a => a.item);        
+    }
+}
+
 // React custom hook
 //
 // Returns a value that remains stable across renders (using useState)
@@ -71,6 +81,7 @@ function useResetableState<S>(initialState: S | (() => S), reset: boolean):
     return [state, setState];
 }
 
+// util types
 export type {
     Orientation,
 }
@@ -81,6 +92,7 @@ export {
     validate,
     isCloseTo,
     cloneArrayOfObjects,
+    ArrayUtils,
 }
 
 // util custom hooks

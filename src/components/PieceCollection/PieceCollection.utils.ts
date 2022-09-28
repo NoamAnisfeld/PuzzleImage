@@ -1,5 +1,5 @@
 import type { Position } from "../ImagePiece/ImagePiece";
-import { isCloseTo } from '../../utils/utils';
+import { isCloseTo, ArrayUtils } from '../../utils/utils';
 
 interface PieceInfo {
     uniqueId: string,
@@ -7,7 +7,7 @@ interface PieceInfo {
     col: number,
     fractionalPosition: Position,
     correctPosition: Position,
-    visible: boolean
+    visible: boolean,
 }
 
 function calculatePieceCorrectPosition({
@@ -77,7 +77,7 @@ function createPieceInfoArray({
                 row,
                 col,
                 fractionalPosition: {
-                    x: -2 / cols,
+                    x: 1 / cols,
                     y: 1 / rows
                 },
                 correctPosition: calculatePieceCorrectPosition({
@@ -91,7 +91,7 @@ function createPieceInfoArray({
         }
     }
 
-    return array;
+    return ArrayUtils.shuffle(array);
 }
 
 function isPositionCorrect(
