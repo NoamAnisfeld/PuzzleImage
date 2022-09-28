@@ -55,11 +55,15 @@ function ImagePiece({
             return normalized;
         }
 
-        const DISTANCE_FOR_NORMALIZATION = 20;
-
         const remainderX = Math.abs(x % pieceWidth),
             remainderY = Math.abs(y % pieceHeight);
         
+        const DISTANCE_FOR_NORMALIZATION = Math.min(
+            pieceWidth / 4,
+            pieceHeight / 4,
+            20
+        );
+
         if (remainderX < DISTANCE_FOR_NORMALIZATION) {
             normalized.x -= remainderX;
         } else if (pieceWidth - remainderX < DISTANCE_FOR_NORMALIZATION) {
