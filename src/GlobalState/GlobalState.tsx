@@ -19,7 +19,8 @@ const initialGlobalState = {
         localStorage.getItem(DEVELOPMENT_MODE_STORAGE_KEY) === 'true',
     imageLoaded: false,
 	imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
+        // "https://upload.wikimedia.org/wikipedia/commons/5/53/Liocrno_%28opera_propria%29.jpg",
+        "PuzzleImage/Animated Minions.webp",
 	rows: 4,
 	cols: 3,
 }
