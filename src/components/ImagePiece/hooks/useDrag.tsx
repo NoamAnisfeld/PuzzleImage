@@ -28,7 +28,6 @@ export default function useDrag({
         [position, setPosition] = useState<Position>();
 
     function normalizeRestPosition({ x, y }: Position) {
-        const normalized: Position = { x, y };
 
         // don't normalize if it's out of the image border
         if (x < -(pieceWidth + 2 * curveSize) ||
@@ -36,7 +35,7 @@ export default function useDrag({
             y < -(pieceHeight + 2 * curveSize) ||
             y > (imageHeight - curveSize)
         ) {
-            return normalized;
+            return { x, y };
         }
 
         const remainderX = Math.abs(x % pieceWidth),
@@ -48,19 +47,23 @@ export default function useDrag({
             20
         );
 
-        if (remainderX < DISTANCE_FOR_NORMALIZATION) {
-            normalized.x -= remainderX;
-        } else if (pieceWidth - remainderX < DISTANCE_FOR_NORMALIZATION) {
-            normalized.x += pieceWidth - remainderX;
-        }
+        return {
+            x: 
+                remainderX < DISTANCE_FOR_NORMALIZATION ?
+                    x - remainderX
+                : pieceWidth - remainderX < DISTANCE_FOR_NORMALIZATION ?
+                    x + pieceWidth - remainderX
+                :
+                    x,
 
-        if (remainderY < DISTANCE_FOR_NORMALIZATION) {
-            normalized.y -= remainderY;
-        } else if (pieceHeight - remainderY < DISTANCE_FOR_NORMALIZATION) {
-            normalized.y += pieceHeight - remainderY;
+            y:
+                remainderY < DISTANCE_FOR_NORMALIZATION ?
+                    y - remainderY
+                : pieceHeight - remainderY < DISTANCE_FOR_NORMALIZATION ?
+                    y + pieceHeight - remainderY
+                :
+                    y
         }
-
-        return normalized;
     }
 
     function startDrag(event: React.MouseEvent) {
