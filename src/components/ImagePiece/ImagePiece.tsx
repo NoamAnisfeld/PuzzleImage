@@ -41,13 +41,16 @@ function ImagePiece({
     } = useContext(GlobalState);
 
     const {
-        relevantPosition,
+        isDragged,
+        positionDuringDrag,
         startDrag,
     } = useDrag({
         position,
         updatePosition,
         putOnTop,
     });
+
+    const relevantPosition = isDragged ? positionDuringDrag : position;
     
     return <svg
         className="image-piece"

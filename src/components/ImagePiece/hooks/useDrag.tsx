@@ -25,8 +25,7 @@ export default function useDrag({
 
     const
         [isDragged, setIsDragged] = useState(false),
-        [positionDuringDrag, setPositionDuringDrag] = useState<Position>(),
-        relevantPosition = isDragged ? positionDuringDrag : position;
+        [positionDuringDrag, setPositionDuringDrag] = useState<Position>();
 
     function normalizePosition({ x, y }: Position) {
         const normalized: Position = { x, y };
@@ -99,7 +98,8 @@ export default function useDrag({
     }
 
     return {
-        relevantPosition,
+        isDragged,
+        positionDuringDrag,
         startDrag,
     }
 }
