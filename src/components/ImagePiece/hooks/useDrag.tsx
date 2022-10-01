@@ -7,8 +7,8 @@ interface Position {
 }
 
 export default function useDrag({
-    position,
-    updatePosition,
+    position: restPosition,
+    updatePosition: updateRestPosition,
     putOnTop,
 }: {
     position: Position,
@@ -25,9 +25,9 @@ export default function useDrag({
 
     const
         [isDragged, setIsDragged] = useState(false),
-        [positionDuringDrag, setPositionDuringDrag] = useState<Position>();
+        [position, setPosition] = useState<Position>();
 
-    function normalizePosition({ x, y }: Position) {
+    function normalizeRestPosition({ x, y }: Position) {
         const normalized: Position = { x, y };
 
         // don't normalize if it's out of the image border
@@ -65,18 +65,18 @@ export default function useDrag({
 
     function startDrag(event: React.MouseEvent) {
         setIsDragged(true);
-        setPositionDuringDrag(position);
+        setPosition(restPosition);
         putOnTop();
 
-        const originalRelativePosition = {
-            x: position.x - event.pageX,
-            y: position.y - event.pageY
+        const relativeRestPosition = {
+            x: restPosition.x - event.pageX,
+            y: restPosition.y - event.pageY
         };
 
         function movePieceHandler(event: MouseEvent) {
-            setPositionDuringDrag({
-                x: originalRelativePosition.x + event.pageX,
-                y: originalRelativePosition.y + event.pageY
+            setPosition({
+                x: relativeRestPosition.x + event.pageX,
+                y: relativeRestPosition.y + event.pageY
             })
         }
 
@@ -84,9 +84,9 @@ export default function useDrag({
             event.stopPropagation();
             setIsDragged(false);
 
-            updatePosition(normalizePosition({
-                x: originalRelativePosition.x + event.pageX,
-                y: originalRelativePosition.y + event.pageY
+            updateRestPosition(normalizeRestPosition({
+                x: relativeRestPosition.x + event.pageX,
+                y: relativeRestPosition.y + event.pageY
             }));
 
             window.removeEventListener('mousemove', movePieceHandler);
@@ -99,7 +99,7 @@ export default function useDrag({
 
     return {
         isDragged,
-        positionDuringDrag,
+        positionDuringDrag: position,
         startDrag,
     }
 }
