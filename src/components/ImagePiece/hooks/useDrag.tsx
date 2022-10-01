@@ -51,16 +51,16 @@ export default function useDrag({
             x: 
                 remainderX < DISTANCE_FOR_NORMALIZATION ?
                     x - remainderX
-                : pieceWidth - remainderX < DISTANCE_FOR_NORMALIZATION ?
-                    x + pieceWidth - remainderX
+                :  remainderX + DISTANCE_FOR_NORMALIZATION > pieceWidth ?
+                    x - remainderX + pieceWidth
                 :
                     x,
 
             y:
                 remainderY < DISTANCE_FOR_NORMALIZATION ?
                     y - remainderY
-                : pieceHeight - remainderY < DISTANCE_FOR_NORMALIZATION ?
-                    y + pieceHeight - remainderY
+                : remainderY + DISTANCE_FOR_NORMALIZATION > pieceHeight ?
+                    y - remainderY + pieceHeight
                 :
                     y
         }
