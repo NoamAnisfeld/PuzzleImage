@@ -25,7 +25,11 @@ export default function useDrag({
 
     const
         [isDragged, setIsDragged] = useState(false),
-        [position, setPosition] = useState<Position>();
+        [position, setPosition] = useState<Position>(),
+        [moveOffset, setMoveOffset] = useState<Position>({
+            x: 0,
+            y: 0
+        });
 
     function normalizeRestPosition({ x, y }: Position) {
 
@@ -66,7 +70,50 @@ export default function useDrag({
         }
     }
 
-    function startDrag(event: React.MouseEvent) {
+    function handleClick(event: React.MouseEvent) {
+        if (!(event.target instanceof Element))
+            return;
+        
+        if (isDragged)
+            return;
+
+        const endDrag = startDrag({
+            x: event.pageX,
+            y: event.pageY,
+        });
+        
+        function cleanup() {
+            endDrag();
+            window.removeEventListener('click', cleanup, { capture: true });
+        }
+        window.addEventListener('click', cleanup, { capture: true });
+    }
+
+    function handleMouseDown(event: React.MouseEvent) {
+
+    }
+
+    function startDrag(initialPageOffset: Position) {
+        setIsDragged(true);
+        setMoveOffset({ x: 0, y: 0 });
+        // putOnTop();
+
+        function handleMouseMove(event: MouseEvent) {
+            setMoveOffset({
+                x: event.pageX - initialPageOffset.x,
+                y: event.pageY - initialPageOffset.y
+            })
+        }
+        window.addEventListener('mousemove', handleMouseMove);
+
+        function endDrag() {
+            setIsDragged(false);
+            window.removeEventListener('mousemove', handleMouseMove);
+        }
+        return endDrag;
+    }
+
+    function oldStartDrag(event: React.MouseEvent) {
         setIsDragged(true);
         setPosition(restPosition);
         putOnTop();
@@ -102,7 +149,10 @@ export default function useDrag({
 
     return {
         isDragged,
+        moveOffset,
+        handleClick,
+
         positionDuringDrag: position,
-        startDrag,
+        startDrag: oldStartDrag,
     }
 }
