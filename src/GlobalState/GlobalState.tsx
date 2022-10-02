@@ -23,6 +23,7 @@ const initialGlobalState = {
         "/PuzzleImage/Animated Minions.webp",
 	rows: 4,
 	cols: 3,
+    stickyDraggingMode: false,
 }
 
 type GlobalStateInterface = typeof initialGlobalState & Partial<{

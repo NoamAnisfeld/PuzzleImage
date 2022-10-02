@@ -71,6 +71,11 @@ function App() {
 					triggerRestart,
 					pickPiece: (position: Position) =>
 						alert('Pick a piece: ' + JSON.stringify(position)),
+					stickyDragMode: globalStateProvider.stickyDraggingMode,
+					setStickyDragMode: (value: boolean) =>
+						setGlobalStateProvider({
+							stickyDraggingMode: value
+						})
 				}}
 			/>
 			<GameBoard

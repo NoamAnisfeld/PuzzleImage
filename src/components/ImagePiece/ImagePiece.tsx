@@ -44,6 +44,7 @@ function ImagePiece({
     const {
         isDragged,
         moveOffset,
+        handleMouseDown,
         handleClick,
     } = useDrag({
         initialRestPosition: position,
@@ -68,6 +69,7 @@ function ImagePiece({
             left: relevantPosition.x - curveSize,
             zIndex
         }}
+        onMouseDown={isImageCompleted ? undefined : handleMouseDown}
         onClick={isImageCompleted ? undefined : handleClick}
     >
         <defs>

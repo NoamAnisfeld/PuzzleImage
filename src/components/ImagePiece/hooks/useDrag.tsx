@@ -22,6 +22,7 @@ export default function useDrag({
         pieceWidth,
         pieceHeight,
         curveSize,
+        stickyDraggingMode,
     } = useContext(GlobalState);
 
     const
@@ -74,12 +75,32 @@ export default function useDrag({
         updateRestPosition(autoAlignRestPosition(newPosition));
     }
 
-    function handleClick(event: React.MouseEvent) {
-        if (!(event.target instanceof Element))
-            return;
+    function handleMouseDown(event: React.MouseEvent) {
+        if (!(event.target instanceof Element) ||
+            isDragged ||
+            stickyDraggingMode
+        ) return;
+
+        event.preventDefault();
+
+        const dragObject = startDrag({
+            x: event.pageX,
+            y: event.pageY,
+        });
         
-        if (isDragged)
-            return;
+        function endDrag(event: MouseEvent) {
+            event.stopPropagation();
+            window.removeEventListener('mouseup', endDrag, { capture: true });
+            dragObject.endDrag();
+        }
+        window.addEventListener('mouseup', endDrag, { capture: true });
+    }
+
+    function handleClick(event: React.MouseEvent) {
+        if (!(event.target instanceof Element) ||
+            isDragged ||
+            !stickyDraggingMode
+        ) return;
 
         const dragObject = startDrag({
             x: event.pageX,
@@ -92,10 +113,6 @@ export default function useDrag({
             dragObject.endDrag();
         }
         window.addEventListener('click', endDrag, { capture: true });
-    }
-
-    function handleMouseDown(event: React.MouseEvent) {
-
     }
 
     function startDrag(initialPageOffset: Position) {
@@ -129,6 +146,7 @@ export default function useDrag({
     return {
         isDragged,
         moveOffset,
+        handleMouseDown,
         handleClick,
     }
 }
