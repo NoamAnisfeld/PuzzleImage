@@ -77,16 +77,17 @@ export default function useDrag({
         if (isDragged)
             return;
 
-        const endDrag = startDrag({
+        const dragObject = startDrag({
             x: event.pageX,
             y: event.pageY,
         });
         
-        function cleanup() {
-            endDrag();
-            window.removeEventListener('click', cleanup, { capture: true });
+        function endDrag(event: MouseEvent) {
+            event.stopPropagation();
+            window.removeEventListener('click', endDrag, { capture: true });
+            dragObject.endDrag();
         }
-        window.addEventListener('click', cleanup, { capture: true });
+        window.addEventListener('click', endDrag, { capture: true });
     }
 
     function handleMouseDown(event: React.MouseEvent) {
@@ -106,11 +107,16 @@ export default function useDrag({
         }
         window.addEventListener('mousemove', handleMouseMove);
 
-        function endDrag() {
-            setIsDragged(false);
-            window.removeEventListener('mousemove', handleMouseMove);
+        return {
+            endDrag() {
+                setIsDragged(false);
+                setPosition(position => {
+                    updateRestPosition(position);
+                    return position;
+                });
+                window.removeEventListener('mousemove', handleMouseMove);
+            }
         }
-        return endDrag;
     }
 
     function oldStartDrag(event: React.MouseEvent) {
