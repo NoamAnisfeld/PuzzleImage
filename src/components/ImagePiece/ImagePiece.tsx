@@ -8,6 +8,7 @@ interface Position {
     x: number,
     y: number
 }
+type PositionUpdater = (newPosition: Position) => void;
 
 function ImagePiece({
     uniqueId,
@@ -26,7 +27,7 @@ function ImagePiece({
     }
     shapePath: SVGPath,
     position: Position,
-    updatePosition: (newPosition: Position) => void,
+    updatePosition: PositionUpdater,
     zIndex: number,
     putOnTop: () => void,
     isImageCompleted?: boolean,
@@ -45,13 +46,9 @@ function ImagePiece({
         moveOffset,
         handleClick,
     } = useDrag({
-        // position,
-        // updatePosition,
-        updateRestMoveOffset: moveOffset => updatePosition({
-            x: position.x + moveOffset.x,
-            y: position.y + moveOffset.y
-        }),
-        putOnTop,
+        initialRestPosition: position,
+        updateRestPosition: updatePosition,
+        onStartDrag: () => putOnTop(),
     });
 
     const relevantPosition = isDragged ? {

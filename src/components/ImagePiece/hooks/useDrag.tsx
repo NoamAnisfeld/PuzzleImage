@@ -5,17 +5,16 @@ interface Position {
     x: number,
     y: number
 }
+type PositionUpdater = (newPosition: Position) => void;
 
 export default function useDrag({
-    // position: restPosition,
-    // updatePosition: updateRestPosition,
-    updateRestMoveOffset,
-    putOnTop,
+    initialRestPosition,
+    updateRestPosition,
+    onStartDrag,
 }: {
-    // position: Position,
-    // updatePosition: (newPosition: Position) => void,
-    updateRestMoveOffset: (moveOffset: Position) => void,
-    putOnTop: () => void,
+    initialRestPosition: Position,
+    updateRestPosition: PositionUpdater,
+    onStartDrag?: () => void,
 }) {
     const {
         imageWidth,
@@ -27,15 +26,14 @@ export default function useDrag({
 
     const
         [isDragged, setIsDragged] = useState(false),
-        // [position, setPosition] = useState<Position>(),
         [moveOffset, setMoveOffset] = useState<Position>({
             x: 0,
             y: 0
         });
 
-    function normalizeRestPosition({ x, y }: Position) {
+    function autoAlignRestPosition({ x, y }: Position) {
 
-        // don't normalize if it's out of the image border
+        // don't align if it's out of the image border
         if (x < -(pieceWidth + 2 * curveSize) ||
             x > (imageWidth - curveSize) ||
             y < -(pieceHeight + 2 * curveSize) ||
@@ -72,6 +70,10 @@ export default function useDrag({
         }
     }
 
+    function updateRestPositionWithAutoAlign(newPosition: Position) {
+        updateRestPosition(autoAlignRestPosition(newPosition));
+    }
+
     function handleClick(event: React.MouseEvent) {
         if (!(event.target instanceof Element))
             return;
@@ -99,7 +101,7 @@ export default function useDrag({
     function startDrag(initialPageOffset: Position) {
         setIsDragged(true);
         setMoveOffset({ x: 0, y: 0 });
-        // putOnTop();
+        if (onStartDrag) onStartDrag();
 
         function handleMouseMove(event: MouseEvent) {
             setMoveOffset({
@@ -113,7 +115,10 @@ export default function useDrag({
             endDrag() {
                 setIsDragged(false);
                 setMoveOffset(moveOffset => {
-                    updateRestMoveOffset(moveOffset);
+                    updateRestPositionWithAutoAlign({
+                        x: initialRestPosition.x + moveOffset.x,
+                        y: initialRestPosition.y + moveOffset.y
+                    });
                     return { x: 0, y: 0 };
                 });
                 window.removeEventListener('mousemove', handleMouseMove);
