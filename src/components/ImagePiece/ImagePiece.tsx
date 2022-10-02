@@ -42,15 +42,25 @@ function ImagePiece({
 
     const {
         isDragged,
+        moveOffset,
+        handleClick,
+
         positionDuringDrag,
         startDrag,
     } = useDrag({
         position,
         updatePosition,
+        updateRestMoveOffset: moveOffset => updatePosition({
+            x: position.x + moveOffset.x,
+            y: position.y + moveOffset.y
+        }),
         putOnTop,
     });
 
-    const relevantPosition = isDragged ? positionDuringDrag : position;
+    const relevantPosition = isDragged ? {
+        x: position.x + moveOffset.x,
+        y: position.y + moveOffset.y
+    } : position;
     
     return <svg
         className="image-piece"
@@ -64,7 +74,7 @@ function ImagePiece({
             left: relevantPosition.x - curveSize,
             zIndex
         }}
-        onClick={isImageCompleted ? undefined : startDrag}
+        onClick={isImageCompleted ? undefined : handleClick}
     >
         <defs>
             <path id={`outline-${uniqueId}`} d={shapePath} />

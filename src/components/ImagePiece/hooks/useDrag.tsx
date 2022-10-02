@@ -9,10 +9,12 @@ interface Position {
 export default function useDrag({
     position: restPosition,
     updatePosition: updateRestPosition,
+    updateRestMoveOffset,
     putOnTop,
 }: {
     position: Position,
     updatePosition: (newPosition: Position) => void,
+    updateRestMoveOffset: (moveOffset: Position) => void,
     putOnTop: () => void,
 }) {
     const {
@@ -110,9 +112,9 @@ export default function useDrag({
         return {
             endDrag() {
                 setIsDragged(false);
-                setPosition(position => {
-                    updateRestPosition(position);
-                    return position;
+                setMoveOffset(moveOffset => {
+                    updateRestMoveOffset(moveOffset);
+                    return { x: 0, y: 0 };
                 });
                 window.removeEventListener('mousemove', handleMouseMove);
             }
