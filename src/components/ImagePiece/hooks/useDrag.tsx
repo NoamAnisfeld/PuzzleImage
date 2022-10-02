@@ -126,40 +126,6 @@ export default function useDrag({
         }
     }
 
-    // function oldStartDrag(event: React.MouseEvent) {
-    //     setIsDragged(true);
-    //     setPosition(restPosition);
-    //     putOnTop();
-
-    //     const relativeRestPosition = {
-    //         x: restPosition.x - event.pageX,
-    //         y: restPosition.y - event.pageY
-    //     };
-
-    //     function movePieceHandler(event: MouseEvent) {
-    //         setPosition({
-    //             x: relativeRestPosition.x + event.pageX,
-    //             y: relativeRestPosition.y + event.pageY
-    //         })
-    //     }
-
-    //     function endDrag(event: MouseEvent) {
-    //         event.stopPropagation();
-    //         setIsDragged(false);
-
-    //         updateRestPosition(normalizeRestPosition({
-    //             x: relativeRestPosition.x + event.pageX,
-    //             y: relativeRestPosition.y + event.pageY
-    //         }));
-
-    //         window.removeEventListener('mousemove', movePieceHandler);
-    //         window.removeEventListener('click', endDrag, { capture: true });
-    //     }
-
-    //     window.addEventListener('mousemove', movePieceHandler);
-    //     window.addEventListener('click', endDrag, { capture: true });
-    // }
-
     return {
         isDragged,
         moveOffset,
