@@ -44,12 +44,9 @@ function ImagePiece({
         isDragged,
         moveOffset,
         handleClick,
-
-        positionDuringDrag,
-        startDrag,
     } = useDrag({
-        position,
-        updatePosition,
+        // position,
+        // updatePosition,
         updateRestMoveOffset: moveOffset => updatePosition({
             x: position.x + moveOffset.x,
             y: position.y + moveOffset.y

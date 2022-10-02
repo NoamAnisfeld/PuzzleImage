@@ -7,13 +7,13 @@ interface Position {
 }
 
 export default function useDrag({
-    position: restPosition,
-    updatePosition: updateRestPosition,
+    // position: restPosition,
+    // updatePosition: updateRestPosition,
     updateRestMoveOffset,
     putOnTop,
 }: {
-    position: Position,
-    updatePosition: (newPosition: Position) => void,
+    // position: Position,
+    // updatePosition: (newPosition: Position) => void,
     updateRestMoveOffset: (moveOffset: Position) => void,
     putOnTop: () => void,
 }) {
@@ -27,7 +27,7 @@ export default function useDrag({
 
     const
         [isDragged, setIsDragged] = useState(false),
-        [position, setPosition] = useState<Position>(),
+        // [position, setPosition] = useState<Position>(),
         [moveOffset, setMoveOffset] = useState<Position>({
             x: 0,
             y: 0
@@ -121,46 +121,43 @@ export default function useDrag({
         }
     }
 
-    function oldStartDrag(event: React.MouseEvent) {
-        setIsDragged(true);
-        setPosition(restPosition);
-        putOnTop();
+    // function oldStartDrag(event: React.MouseEvent) {
+    //     setIsDragged(true);
+    //     setPosition(restPosition);
+    //     putOnTop();
 
-        const relativeRestPosition = {
-            x: restPosition.x - event.pageX,
-            y: restPosition.y - event.pageY
-        };
+    //     const relativeRestPosition = {
+    //         x: restPosition.x - event.pageX,
+    //         y: restPosition.y - event.pageY
+    //     };
 
-        function movePieceHandler(event: MouseEvent) {
-            setPosition({
-                x: relativeRestPosition.x + event.pageX,
-                y: relativeRestPosition.y + event.pageY
-            })
-        }
+    //     function movePieceHandler(event: MouseEvent) {
+    //         setPosition({
+    //             x: relativeRestPosition.x + event.pageX,
+    //             y: relativeRestPosition.y + event.pageY
+    //         })
+    //     }
 
-        function endDrag(event: MouseEvent) {
-            event.stopPropagation();
-            setIsDragged(false);
+    //     function endDrag(event: MouseEvent) {
+    //         event.stopPropagation();
+    //         setIsDragged(false);
 
-            updateRestPosition(normalizeRestPosition({
-                x: relativeRestPosition.x + event.pageX,
-                y: relativeRestPosition.y + event.pageY
-            }));
+    //         updateRestPosition(normalizeRestPosition({
+    //             x: relativeRestPosition.x + event.pageX,
+    //             y: relativeRestPosition.y + event.pageY
+    //         }));
 
-            window.removeEventListener('mousemove', movePieceHandler);
-            window.removeEventListener('click', endDrag, { capture: true });
-        }
+    //         window.removeEventListener('mousemove', movePieceHandler);
+    //         window.removeEventListener('click', endDrag, { capture: true });
+    //     }
 
-        window.addEventListener('mousemove', movePieceHandler);
-        window.addEventListener('click', endDrag, { capture: true });
-    }
+    //     window.addEventListener('mousemove', movePieceHandler);
+    //     window.addEventListener('click', endDrag, { capture: true });
+    // }
 
     return {
         isDragged,
         moveOffset,
         handleClick,
-
-        positionDuringDrag: position,
-        startDrag: oldStartDrag,
     }
 }
