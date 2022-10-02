@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { GlobalState } from '../../../GlobalState/GlobalState';
 
 interface Position {
@@ -31,6 +31,16 @@ export default function useDrag({
             x: 0,
             y: 0
         });
+
+    useEffect(() => {
+        if (!isDragged) {
+            updateRestPositionWithAutoAlign({
+                x: initialRestPosition.x + moveOffset.x,
+                y: initialRestPosition.y + moveOffset.y
+            });
+        }
+        setMoveOffset({ x: 0, y: 0 });
+    }, [isDragged]);
 
     function autoAlignRestPosition({ x, y }: Position) {
 
@@ -131,13 +141,6 @@ export default function useDrag({
         return {
             endDrag() {
                 setIsDragged(false);
-                setMoveOffset(moveOffset => {
-                    updateRestPositionWithAutoAlign({
-                        x: initialRestPosition.x + moveOffset.x,
-                        y: initialRestPosition.y + moveOffset.y
-                    });
-                    return { x: 0, y: 0 };
-                });
                 window.removeEventListener('mousemove', handleMouseMove);
             }
         }
